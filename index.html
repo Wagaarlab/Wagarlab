@@ -11,22 +11,30 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        
+        // تم استبدال wagarlab بـ omalilhealth ليتوافق مع مشروعك الفعلي
         const firebaseConfig = {
             apiKey: "AIzaSyCndh68IOzYk1bzf8VXvQ5b6aS4b5TXI-o",
-            authDomain: "wagarlab.firebaseapp.com",
-            projectId: "wagarlab",
-            storageBucket: "wagarlab.firebasestorage.app",
+            authDomain: "omalilhealth.firebaseapp.com",
+            projectId: "omalilhealth",
+            storageBucket: "omalilhealth.firebasestorage.app",
             messagingSenderId: "1023228434530",
             appId: "1:1023228434530:web:1ddf72660d0a68b588193b"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
         window.dbSave = async (data) => {
             const ref = doc(db, "records", data.code.toUpperCase());
             const snap = await getDoc(ref);
-            if (snap.exists()) { await updateDoc(ref, { visits: arrayUnion(data.visit) }); }
-            else { await setDoc(ref, { name: data.name, code: data.code, visits: [data.visit] }); }
+            if (snap.exists()) { 
+                await updateDoc(ref, { visits: arrayUnion(data.visit) }); 
+            } else { 
+                await setDoc(ref, { name: data.name, code: data.code, visits: [data.visit] }); 
+            }
         };
+
         window.dbGet = async (code) => { 
             const snap = await getDoc(doc(db, "records", code.toUpperCase())); 
             return snap.exists() ? snap.data() : null; 
@@ -156,21 +164,28 @@
         try {
             const visit = { date: new Date().toLocaleDateString('ar-EG'), tests: currentVisitTests, total: document.getElementById('vTotal').innerText };
             await window.dbSave({ name, code, visit });
-            alert("✅ تم الحفظ! الكود: " + code);
+            alert("✅ تم الحفظ بنجاح! كود المريض هو: " + code);
             currentVisitTests = []; renderQueue(); document.getElementById('admName').value = "";
-        } catch(e) { alert("خطأ في الرفع"); }
+        } catch(e) { 
+            console.error(e);
+            alert("خطأ في الرفع: " + e.message); 
+        }
         finally { btn.disabled = false; btn.innerText = "حفظ الزيارة والرفع للسحابة ✅"; }
     }
 
     async function loadHistory() {
-        const data = await window.dbGet(document.getElementById('pSearch').value);
-        if(!data) return document.getElementById('historyOutput').innerHTML = "الكود غير صحيح";
-        document.getElementById('historyOutput').innerHTML = `<h3>المريض: ${data.name}</h3>` + data.visits.reverse().map(v => `
-            <div class="test-card" style="display:flex; justify-content:space-between; align-items:center;">
-                <span>بتاريخ: ${v.date} (الإجمالي: ${v.total || 0} ج.س)</span>
-                <button class="btn btn-blue" style="width:100px; padding:8px; font-size:14px;" onclick='printV("${data.name}","${data.code}",${JSON.stringify(v)})'>PDF</button>
-            </div>
-        `).join('');
+        try {
+            const data = await window.dbGet(document.getElementById('pSearch').value);
+            if(!data) return document.getElementById('historyOutput').innerHTML = "الكود غير صحيح أو لا توجد بيانات";
+            document.getElementById('historyOutput').innerHTML = `<h3>المريض: ${data.name}</h3>` + data.visits.reverse().map(v => `
+                <div class="test-card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>بتاريخ: ${v.date} (الإجمالي: ${v.total || 0} ج.س)</span>
+                    <button class="btn btn-blue" style="width:100px; padding:8px; font-size:14px;" onclick='printV("${data.name}","${data.code}",${JSON.stringify(v)})'>PDF</button>
+                </div>
+            `).join('');
+        } catch(e) {
+            alert("خطأ في جلب البيانات: " + e.message);
+        }
     }
 
     function printV(name, code, v) {
