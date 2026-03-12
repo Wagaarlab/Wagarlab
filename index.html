@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام معمل وقار الطبي - الإصدار الشامل 32</title>
+    <title>معمل وقار الطبي - النظام المتكامل</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,7 +11,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
         const firebaseConfig = {
             apiKey: "AIzaSyCndh68IOzYk1bzf8VXvQ5b6aS4b5TXI-o",
             authDomain: "wagarlab.firebaseapp.com",
@@ -22,9 +21,8 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
         window.dbSave = async (data) => {
-            const ref = doc(db, "records", data.code);
+            const ref = doc(db, "records", data.code.toUpperCase());
             const snap = await getDoc(ref);
             if (snap.exists()) { await updateDoc(ref, { visits: arrayUnion(data.visit) }); }
             else { await setDoc(ref, { name: data.name, code: data.code, visits: [data.visit] }); }
@@ -36,75 +34,78 @@
     </script>
 
     <style>
-        :root { --blue: #003366; --gold: #c5a059; --bg: #f8fafc; }
+        :root { --blue: #003366; --bg: #f8fafc; }
         body { font-family: 'Tajawal', sans-serif; background: var(--bg); margin: 0; padding: 10px; }
-        .app-container { max-width: 800px; background: white; margin: 15px auto; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 8px solid var(--blue); }
-        .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-        .tabs button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; background: #e2e8f0; }
+        .app-container { max-width: 850px; background: white; margin: 10px auto; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-top: 10px solid var(--blue); }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tabs button { flex: 1; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; background: #e2e8f0; font-size: 16px; }
         .tabs button.active { background: var(--blue); color: white; }
         .panel { display: none; } .panel.active { display: block; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 10px; box-sizing: border-box; font-family: inherit; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        input, textarea { width: 100%; padding: 14px; border: 2px solid #cbd5e1; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; font-size: 16px; font-family: inherit; }
+        .price-row { display: flex; gap: 10px; align-items: center; }
+        .btn { width: 100%; padding: 18px; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-size: 18px; }
         .btn-blue { background: var(--blue); }
-        .btn-green { background: #16a34a; }
-        .test-item { background: #f1f5f9; padding: 10px; border-radius: 8px; margin-bottom: 5px; font-size: 14px; border-right: 4px solid var(--blue); }
-        #printArea { width: 800px; padding: 40px; background: white; position: absolute; left: -9999px; color: black; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: right; }
-        th { background: #f4f4f4; }
+        .btn-green { background: #10b981; margin-top: 10px; }
+        .test-card { background: #f1f5f9; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-right: 6px solid var(--blue); }
+        #printArea { width: 800px; padding: 50px; background: white; position: absolute; left: -9999px; color: black; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #000; padding: 12px; text-align: left; font-size: 18px; }
+        th { background: #f0f0f0; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="color: var(--blue); margin: 0;">معمل وقار الطبي 🔬</h2>
-        <p style="margin: 5px 0; color: #64748b;">إشراف د. السني خالد محمد أحمد</p>
+        <h1 style="color: var(--blue); margin: 0;">معمل وقار الطبي 🔬</h1>
+        <p style="color: #64748b; font-weight: bold;">إشراف د. السني خالد محمد أحمد</p>
     </div>
 
     <div class="tabs">
-        <button id="pTab" class="active" onclick="switchTab('p')">استلام النتائج</button>
-        <button id="aTab" onclick="adminCheck()">لوحة المختبر</button>
+        <button id="pTab" class="active" onclick="switchTab('p')">بوابة النتائج</button>
+        <button id="aTab" onclick="adminCheck()">لوحة الإدارة والتسعير</button>
     </div>
 
     <div id="pPanel" class="panel active">
-        <input type="text" id="pSearch" placeholder="أدخل كود المريض (مثال: WQR-1234)" style="text-align: center;">
-        <button class="btn btn-blue" onclick="loadHistory()">بحث في السجل الطبي</button>
-        <div id="historyOutput" style="margin-top: 20px;"></div>
+        <input type="text" id="pSearch" placeholder="أدخل كود المريض (مثلاً WQR-1234)" style="text-align: center;">
+        <button class="btn btn-blue" onclick="loadHistory()">عرض النتائج</button>
+        <div id="historyOutput"></div>
     </div>
 
     <div id="aPanel" class="panel">
         <input type="text" id="admName" placeholder="اسم المريض بالكامل">
         <input type="text" id="admCode" placeholder="كود الملف (اتركه للتوليد التلقائي)">
         
-        <div style="background: #f0f7ff; padding: 15px; border-radius: 12px; margin-top: 10px;">
-            <input list="labList" id="tName" placeholder="اختر الفحص (32 فحص متاح)..." onchange="applyTpl()">
-            <textarea id="tRes" placeholder="النتائج..." style="height: 100px; direction: ltr; font-family: monospace;"></textarea>
-            <input type="number" id="tPrice" placeholder="السعر (ج.س)">
-            <button class="btn btn-blue" onclick="addTest()">+ إضافة الفحص للزيارة</button>
+        <div class="test-card">
+            <label><b>اختيار الفحص:</b></label>
+            <input list="labList" id="tName" placeholder="اختر من الـ 32 فحصاً..." onchange="applyTpl()">
+            <textarea id="tRes" placeholder="النتائج..." style="height: 150px; direction: ltr; font-weight: bold; font-family: monospace;"></textarea>
+            
+            <div class="price-row">
+                <input type="number" id="tPrice" placeholder="سعر الفحص (ج.س)">
+                <button class="btn btn-blue" style="padding: 12px; width: 40%;" onclick="addTest()">+ إضافة</button>
+            </div>
         </div>
 
-        <div id="visitQueue" style="display:none; margin-top: 15px; border: 2px solid var(--blue); padding: 15px; border-radius: 12px;">
-            <h5 style="margin: 0 0 10px 0;">الفحوصات المضافة حالياً:</h5>
+        <div id="visitQueue" style="display:none; border: 2px solid var(--blue); padding: 15px; border-radius: 15px;">
             <div id="queueList"></div>
-            <p style="font-weight: bold; margin-top: 10px;">الإجمالي: <span id="vTotal">0</span> ج.س</p>
-            <button class="btn btn-green" onclick="saveVisit()">حفظ الزيارة ورفعها للسحابة ✅</button>
+            <div style="font-weight: bold; font-size: 20px; margin: 10px 0;">الإجمالي: <span id="vTotal">0</span> ج.س</div>
+            <button class="btn btn-green" id="finalSaveBtn" onclick="saveVisit()">حفظ الزيارة والرفع للسحابة ✅</button>
         </div>
     </div>
 </div>
 
 <datalist id="labList">
-    <option value="CBC (Complete Blood Count)"><option value="ESR"><option value="Blood Group & RH"><option value="Malaria (B.F)"><option value="RBS (سكر عشوائي)"><option value="FBS (سكر صائم)"><option value="HbA1c (تراكمي)"><option value="Urea"><option value="Creatinine"><option value="Uric Acid"><option value="S. Cholesterol"><option value="Triglycerides"><option value="HDL / LDL"><option value="SGPT (ALT)"><option value="SGOT (AST)"><option value="Total Bilirubin"><option value="Direct Bilirubin"><option value="Alkaline Phosphatase"><option value="TSH"><option value="Free T4"><option value="PSA"><option value="Calcium"><option value="Widal Test"><option value="H. Pylori (Ab)"><option value="H. Pylori (Ag)"><option value="Pregnancy Test"><option value="HBsAg"><option value="HCV"><option value="Urine Analysis"><option value="Stool Analysis"><option value="Semen Analysis"><option value="General Swab">
+    <option value="Urine Analysis"><option value="CBC"><option value="Kidney Functions"><option value="Liver Functions"><option value="Lipid Profile"><option value="RBS (سكر عشوائي)"><option value="Widal Test"><option value="Malaria P/S"><option value="Stool Analysis"><option value="Pregnancy Test (Urine)"><option value="H. Pylori (Ag/Ab)"><option value="Hepatitis B/C"><option value="Uric Acid"><option value="Calcium"><option value="PSA"><option value="TSH"><option value="Semen Analysis">
 </datalist>
 
 <div id="printArea">
-    <div style="display: flex; justify-content: space-between; border-bottom: 4px solid var(--blue); padding-bottom: 10px;">
-        <div><h1 style="color: var(--blue); margin:0;">معمل وقار الطبي</h1><p>بإشراف د. السني خالد محمد أحمد</p></div>
-        <div style="text-align: left;"><p>التاريخ: <b id="prDate"></b></p><p>الكود: <b id="prCode"></b></p></div>
+    <div style="display: flex; justify-content: space-between; border-bottom: 5px solid var(--blue); padding-bottom: 10px;">
+        <div><h1 style="color: var(--blue); margin:0;">Waqar Medical Lab</h1><p>Dr. Alsunni Khalid - Specialist</p></div>
+        <div style="text-align: right;"><p>Date: <b id="prDate"></b></p><p>ID: <b id="prCode"></b></p></div>
     </div>
-    <div style="margin: 20px 0; font-size: 20px;">اسم المريض: <b id="prName"></b></div>
+    <div style="margin: 20px 0; font-size: 22px;">Patient Name: <b id="prName"></b></div>
     <div id="prTableArea"></div>
-    <div style="margin-top: 60px; text-align: left;"><p>توقيع المختبر: _______________</p></div>
 </div>
 
 <script>
@@ -119,20 +120,21 @@
     function applyTpl() {
         const t = document.getElementById('tName').value;
         const tpls = {
+            "Urine": "PHYSICAL EXAM:\nColor: ... | App: ...\nCHEMICAL EXAM:\nSugar: ... | Alb: ...\nMICROSCOPIC:\nPus Cells: ... /HPF\nRBCs: ... /HPF\nCrystals: ...",
             "CBC": "Hb: ... g/dL\nWBCs: ...\nPLT: ...",
-            "Urine Analysis": "Pus Cells: ... /HPF\nRBCs: ... /HPF\nSugar: ...\nAlbumin: ...",
-            "RBS": "Result: ... mg/dL\nRange: 70 - 140",
-            "Widal Test": "S. Typhi (O): ...\nS. Typhi (H): ...",
-            "Stool Analysis": "Parasite: Not Found\nPus Cells: ... /HPF"
+            "Kidney": "Urea: ...\nCreatinine: ...\nUric Acid: ...",
+            "Liver": "ALT: ... | AST: ...\nBilirubin (T): ...",
+            "Lipid": "Cholesterol: ...\nTriglycerides: ...\nHDL: ... | LDL: ..."
         };
-        document.getElementById('tRes').value = tpls[t.split(' ')[0]] || "Result: ...";
+        const key = Object.keys(tpls).find(k => t.includes(k));
+        document.getElementById('tRes').value = tpls[key] || "Result: ...";
     }
 
     function addTest() {
         const n = document.getElementById('tName').value;
         const r = document.getElementById('tRes').value;
         const p = parseFloat(document.getElementById('tPrice').value) || 0;
-        if(!n || !r) return alert("أكمل بيانات الفحص");
+        if(!n || !r) return alert("أكمل البيانات");
         currentVisitTests.push({ n, r, p });
         document.getElementById('tName').value = ""; document.getElementById('tRes').value = ""; document.getElementById('tPrice').value = "";
         renderQueue();
@@ -141,45 +143,48 @@
     function renderQueue() {
         const q = document.getElementById('visitQueue');
         q.style.display = currentVisitTests.length ? 'block' : 'none';
-        document.getElementById('queueList').innerHTML = currentVisitTests.map(t => `<div class="test-item">${t.n}</div>`).join('');
+        document.getElementById('queueList').innerHTML = currentVisitTests.map(t => `<div style="padding:5px; border-bottom:1px solid #ddd;">${t.n} - ${t.p} ج.س</div>`).join('');
         document.getElementById('vTotal').innerText = currentVisitTests.reduce((s, t) => s + t.p, 0);
     }
 
     async function saveVisit() {
+        const btn = document.getElementById('finalSaveBtn');
         const name = document.getElementById('admName').value;
         const code = document.getElementById('admCode').value || "WQR-" + Math.floor(1000 + Math.random() * 9000);
-        if(!name) return alert("اسم المريض مطلوب");
-        const visit = { date: new Date().toLocaleDateString('ar-EG'), tests: currentVisitTests, total: document.getElementById('vTotal').innerText };
-        await window.dbSave({ name, code, visit });
-        alert("تم الحفظ بنجاح! كود المريض: " + code);
-        currentVisitTests = []; renderQueue();
+        if(!name || !currentVisitTests.length) return alert("يرجى إكمال البيانات");
+        btn.disabled = true; btn.innerText = "جاري الرفع...";
+        try {
+            const visit = { date: new Date().toLocaleDateString('ar-EG'), tests: currentVisitTests, total: document.getElementById('vTotal').innerText };
+            await window.dbSave({ name, code, visit });
+            alert("✅ تم الحفظ! الكود: " + code);
+            currentVisitTests = []; renderQueue(); document.getElementById('admName').value = "";
+        } catch(e) { alert("خطأ في الرفع"); }
+        finally { btn.disabled = false; btn.innerText = "حفظ الزيارة والرفع للسحابة ✅"; }
     }
 
     async function loadHistory() {
         const data = await window.dbGet(document.getElementById('pSearch').value);
-        const out = document.getElementById('historyOutput');
-        if(!data) return out.innerHTML = "الكود غير مسجل";
-        out.innerHTML = `<h4>سجل المريض: ${data.name}</h4>`;
-        data.visits.reverse().forEach(v => {
-            out.innerHTML += `<div class="test-item" style="display:flex; justify-content:space-between; align-items:center;">
-                <span>زيارة ${v.date}</span>
-                <button class="btn btn-blue" style="width:80px; padding:5px; font-size:12px;" onclick='printV("${data.name}","${data.code}",${JSON.stringify(v)})'>PDF</button>
-            </div>`;
-        });
+        if(!data) return document.getElementById('historyOutput').innerHTML = "الكود غير صحيح";
+        document.getElementById('historyOutput').innerHTML = `<h3>المريض: ${data.name}</h3>` + data.visits.reverse().map(v => `
+            <div class="test-card" style="display:flex; justify-content:space-between; align-items:center;">
+                <span>بتاريخ: ${v.date} (الإجمالي: ${v.total || 0} ج.س)</span>
+                <button class="btn btn-blue" style="width:100px; padding:8px; font-size:14px;" onclick='printV("${data.name}","${data.code}",${JSON.stringify(v)})'>PDF</button>
+            </div>
+        `).join('');
     }
 
     function printV(name, code, v) {
         document.getElementById('prName').innerText = name;
         document.getElementById('prCode').innerText = code;
         document.getElementById('prDate').innerText = v.date;
-        let table = `<table><tr><th>الفحص</th><th>النتيجة</th></tr>`;
-        v.tests.forEach(t => { table += `<tr><td><b>${t.n}</b></td><td style="direction:ltr;">${t.r.replace(/\n/g,'<br>')}</td></tr>`; });
-        document.getElementById('prTableArea').innerHTML = table + `</table>`;
+        let table = `<table><tr><th style="width:35%">Investigation</th><th>Result</th></tr>`;
+        v.tests.forEach(t => { table += `<tr><td><b>${t.n}</b></td><td style="white-space: pre-wrap; direction:ltr;">${t.r}</td></tr>`; });
+        document.getElementById('prTableArea').innerHTML = table + `</table><div style="margin-top:20px; font-weight:bold; font-size:18px;">Total Paid: ${v.total || 0} SDG</div>`;
         const area = document.getElementById('printArea'); area.style.left = "0";
-        html2canvas(area).then(can => {
+        html2canvas(area, {scale: 2}).then(can => {
             const pdf = new jspdf.jsPDF();
             pdf.addImage(can.toDataURL('image/png'), 'PNG', 0, 0, 210, (can.height * 210) / can.width);
-            pdf.save(`Waqar_${name}_${v.date}.pdf`); area.style.left = "-9999px";
+            pdf.save(`Waqar_Lab_${name}.pdf`); area.style.left = "-9999px";
         });
     }
 </script>
