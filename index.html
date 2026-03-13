@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معمل وقار الحديث - النظام النهائي</title>
+    <title>معمل وقار الحديث - النظام المتكامل</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { initializeFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, collection, query, where, getDocs, persistentLocalCache, persistentMultipleTabManager, enableIndexedDbPersistence, terminate, waitForPendingWrites } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, collection, query, where, getDocs, persistentLocalCache, persistentMultipleTabManager } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyCndh68IOzYk1bzf8VXvQ5b6aS4b5TXI-o",
@@ -23,10 +23,10 @@
 
         const app = initializeApp(firebaseConfig);
         const db = initializeFirestore(app, {
-            experimentalForceLongPolling: true // إجبار المتصفح على تجاوز حظر الشبكات الضعيفة
+            experimentalForceLongPolling: true,
+            localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
         });
 
-        // وظيفة الحفظ الفائق - تنهي الانتظار إذا تأخر الرد
         window.dbSave = async (data) => {
             const ref = doc(db, "records", data.code.toUpperCase());
             const savePromise = setDoc(ref, { 
@@ -36,14 +36,11 @@
                 visits: arrayUnion(data.visit) 
             }, { merge: true });
 
-            // مؤقت زمني لعدم التعليق لأكثر من 10 ثوانٍ
             const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000));
-
             try {
                 await Promise.race([savePromise, timeout]);
                 return true;
             } catch (e) {
-                console.error("Save failed or timed out", e);
                 return false;
             }
         };
@@ -168,23 +165,23 @@
 
 <script>
     let tests = [];
-    const urineTpl = `Macro Examination:
-Color: ....
-Reaction: ....
-Albumin: ....
-Sugar: ....
+    const urineTpl = `Macro Examination :
+Color:....
+Reaction:....
+Albumin:.....
+Sugar:......
 Aston: ....
-Bile: ....
-PH: ....
+Bile:.....
+PH:.......
 
 Micro Examination:
-Pus Cells: ....
-RBCs: ....
-Epithil: ....
-Crystals: ....
-Casts: ....
-Ova: ....
-Other: ....`;
+Pus Cells.......
+RBCs:........
+Epithil :........
+Crystals:.......
+Casts:.......
+Ova:........
+Othar:.......`;
 
     function switchTab(t) {
         document.querySelectorAll('.panel, .tabs button').forEach(el => el.classList.remove('active'));
@@ -202,7 +199,7 @@ Other: ....`;
     function applyTpl() {
         const t = document.getElementById('tName').value;
         if(t.includes("Urine")) { document.getElementById('tRes').value = urineTpl; }
-        else if(t.includes("CBC")) { document.getElementById('tRes').value = "Hb: ... g/dl\\nWBCs: ... /cmm\\nPLT: ... /cmm"; }
+        else if(t.includes("CBC")) { document.getElementById('tRes').value = "Hb: ... g/dl\nWBCs: ... /cmm\nPLT: ... /cmm"; }
         else { document.getElementById('tRes').value = "Result: ...."; }
     }
 
@@ -236,21 +233,10 @@ Other: ....`;
     async function saveVisit() {
         const btn = document.getElementById('finalSaveBtn'), name = document.getElementById('admName').value, code = document.getElementById('admCode').value;
         if(!name || !tests.length) return alert("بيانات ناقصة");
-        
-        btn.disabled = true; 
-        btn.innerText = "جاري الاتصال بالسحابة...";
-        
-        const visitData = { date: new Date().toLocaleDateString('en-GB'), tests, total: tests.reduce((s,t)=>s+t.p,0) };
-        const ok = await window.dbSave({ name, code, visit: visitData });
-        
-        if(ok) {
-            alert("✅ تم الحفظ بنجاح!");
-            location.reload();
-        } else {
-            alert("⚠️ عذراً، لم نتمكن من الحفظ في السحابة الآن بسبب ضعف الإنترنت. يرجى التأكد من الشبكة والمحاولة مرة أخرى.");
-            btn.disabled = false;
-            btn.innerText = "تأكيد الحفظ النهائي ✅";
-        }
+        btn.disabled = true; btn.innerText = "جاري الحفظ الفوري...";
+        const ok = await window.dbSave({ name, code, visit: { date: new Date().toLocaleDateString('en-GB'), tests, total: tests.reduce((s,t)=>s+t.p,0) } });
+        if(ok) { alert("✅ تم الحفظ بنجاح!"); location.reload(); } 
+        else { alert("⚠️ تعذر الاتصال بالسحابة. يرجى التحقق من الإنترنت والمحاولة ثانية."); btn.disabled = false; btn.innerText = "تأكيد الحفظ النهائي ✅"; }
     }
 
     async function loadHistory(mode) {
