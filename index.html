@@ -2,15 +2,15 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Waqar Lab System | Dr. Alsunni</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام معمل وقار الحديث</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { initializeFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyCndh68IOzYk1bzf8VXvQ5b6aS4b5TXI-o",
@@ -21,216 +21,157 @@
             appId: "1:1023228434530:web:1ddf72660d0a68b588193b"
         };
         const app = initializeApp(firebaseConfig);
-        // حل مشكلة الحفظ السحابي النهائي
         const db = initializeFirestore(app, { experimentalForceLongPolling: true });
 
+        // حل مشكلة الحفظ: الإرسال المباشر
         window.dbSave = async (data) => {
             try {
                 const ref = doc(db, "records", data.code.toUpperCase());
-                await setDoc(ref, { 
-                    name: data.name, 
-                    code: data.code.toUpperCase(), 
-                    visits: arrayUnion(data.visit) 
-                }, { merge: true });
+                const snap = await getDoc(ref);
+                let visits = snap.exists() ? snap.data().visits : [];
+                visits.push(data.visit);
+                await setDoc(ref, { name: data.name, code: data.code.toUpperCase(), visits: visits }, { merge: true });
                 return true;
-            } catch (e) { return false; }
+            } catch (e) { console.error(e); return false; }
         };
 
-        window.adminSearch = async (name) => {
-            const q = query(collection(db, "records"), where("name", "==", name));
-            const snap = await getDocs(q);
+        // حل مشكلة البحث بالاسم بدون Index
+        window.dbAdminSearch = async (name) => {
+            const snap = await getDocs(collection(db, "records"));
             let results = [];
-            snap.forEach(d => results.push(d.data()));
+            snap.forEach(doc => {
+                if(doc.data().name.includes(name)) results.push(doc.data());
+            });
             return results;
         };
 
-        window.dbGet = async (code) => {
+        window.dbGetByCode = async (code) => {
             const snap = await getDoc(doc(db, "records", code.toUpperCase()));
             return snap.exists() ? snap.data() : null;
         };
     </script>
 
     <style>
-        :root { --primary: #003366; --accent: #10b981; --bg: #f1f5f9; --card: #ffffff; --text: #1e293b; }
-        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: 0.3s; }
-        .app-container { max-width: 600px; margin: auto; }
-        .main-header { text-align: center; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-top: 8px solid var(--primary); margin-bottom: 20px; }
-        .logo { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary); background: white; object-fit: contain; }
-        .nav-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .nav-tabs button { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: bold; background: var(--card); color: var(--text); cursor: pointer; }
-        .nav-tabs button.active { background: var(--primary); color: white; }
-        .card { background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 15px; }
-        input, select, textarea { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #e2e8f0; border-radius: 12px; background: var(--bg); color: var(--text); font-size: 16px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        :root { --primary: #003366; --bg: #f4f7f6; --card: #ffffff; --text: #1e293b; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .container { max-width: 600px; margin: auto; }
+        .header { text-align: center; background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border-top: 6px solid var(--primary); margin-bottom: 20px; }
+        .logo { width: 85px; height: 85px; border-radius: 50%; border: 3px solid var(--primary); background: white; object-fit: contain; }
+        .card { background: var(--card); padding: 20px; border-radius: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); margin-bottom: 15px; }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-accent { background: var(--accent); color: white; }
-        .test-row { background: var(--bg); padding: 12px; border-radius: 10px; margin-bottom: 8px; border-right: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .btn-accent { background: #10b981; color: white; }
+        .test-row { background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-right: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         #printArea { width: 800px; padding: 40px; background: white; position: absolute; left: -9999px; color: #000; }
-        .theme-toggle { position: fixed; top: 15px; left: 15px; background: var(--card); border: none; padding: 10px; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100; }
     </style>
 </head>
-<body data-theme="light">
+<body>
 
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-
-<div class="app-container">
-    <div class="main-header">
-        <img src="https://cdn.jsdelivr.net/gh/Wagaarlab/Wagarlab/209963.png" class="logo" alt="Lab Logo">
+<div class="container">
+    <div class="header">
+        <img src="https://raw.githubusercontent.com/Wagaarlab/Wagarlab/main/209963.png" class="logo">
         <h2 style="margin:10px 0 0; color:var(--primary);">معمل وقار الحديث 🔬</h2>
-        <p style="margin:5px 0 0;">إشراف د. السني خالد محمد أحمد</p>
+        <p style="margin:0;">د. السني خالد محمد أحمد</p>
     </div>
 
-    <div class="nav-tabs">
-        <button id="pBtn" class="active" onclick="showTab('p')">بوابة المرضى</button>
-        <button id="aBtn" onclick="askAuth()">لوحة الإدارة ⚙️</button>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <button class="btn btn-primary" onclick="showTab('p')">بحث المريض</button>
+        <button class="btn" style="background:white; color:#333;" onclick="checkAdmin()">الإدارة ⚙️</button>
     </div>
 
-    <div id="pTab">
+    <div id="pPanel">
         <div class="card">
-            <input type="text" id="pSearchCode" placeholder="أدخل كود المريض WQR-xxxx" style="text-align: center;">
-            <button class="btn btn-primary" onclick="searchPatient()">تحميل النتيجة السحابية 📥</button>
+            <input type="text" id="pInp" placeholder="أدخل الكود WQR-xxxx" style="text-align:center">
+            <button class="btn btn-primary" onclick="pSearch()">عرض النتيجة</button>
         </div>
-        <div id="pResults"></div>
+        <div id="pOut"></div>
     </div>
 
-    <div id="aTab" style="display:none;">
+    <div id="aPanel" style="display:none">
         <div class="card">
-            <h3>بحث في سجلات المرضى</h3>
-            <input type="text" id="adminSearchName" placeholder="اكتب اسم المريض للبحث في التاريخ...">
-            <button class="btn btn-primary" onclick="doAdminSearch()">بحث بالاسم 🔍</button>
-            <div id="adminResultsList" style="margin-top:10px;"></div>
+            <h3>البحث بالاسم</h3>
+            <input type="text" id="admSearchInp" placeholder="اكتب اسم المريض">
+            <button class="btn btn-primary" onclick="aSearch()">بحث 🔍</button>
+            <div id="admResults" style="margin-top:10px"></div>
         </div>
 
         <div class="card">
-            <h3>إضافة زيارة جديدة</h3>
-            <input type="text" id="admName" placeholder="اسم المريض بالكامل" oninput="genID()">
-            <input type="text" id="admCode" placeholder="كود الملف" readonly style="background:#f1f5f9">
+            <h3>إضافة مريض جديد</h3>
+            <input type="text" id="aName" placeholder="الاسم بالكامل" oninput="if(!aCode.value)aCode.value='WQR-'+Math.floor(1000+Math.random()*9000)">
+            <input type="text" id="aCode" placeholder="كود الملف" readonly style="background:#eee">
             <hr>
-            <select id="tSelect" onchange="applyTpl()">
-                <option value="">-- اختر فحصاً جاهزاً --</option>
+            <select id="tSel" onchange="if(this.value==='CBC')tRes.value='Hb: ...\nWBC: ...\nPLT: ...'">
+                <option value="">-- اختر فحصاً --</option>
                 <option value="CBC">Hematology (CBC)</option>
                 <option value="Urine">General Urine</option>
-                <option value="Stool">General Stool Examination</option>
-                <option value="Kidney">Kidney Functions</option>
-                <option value="Lipid">Lipid Profile</option>
-                <option value="Custom">فحص مخصص جديد...</option>
+                <option value="Custom">فحص مخصص...</option>
             </select>
-            <input type="text" id="customName" placeholder="اسم الفحص الجديد" style="display:none">
-            <textarea id="tRes" placeholder="النتائج..." style="height: 120px; direction: ltr; font-family: monospace;"></textarea>
+            <textarea id="tRes" placeholder="النتائج..." style="height:100px; direction:ltr"></textarea>
             <input type="number" id="tPrice" placeholder="السعر (SDG)">
-            <button class="btn btn-primary" onclick="addTest()">+ إضافة للمسودة</button>
+            <button class="btn btn-primary" onclick="addT()">+ إضافة للمسودة</button>
         </div>
 
-        <div id="draftCard" class="card" style="display:none;">
-            <h3>ملخص الفاتورة</h3>
-            <div id="draftList"></div>
-            <div style="padding:15px; background:#dcfce7; border-radius:10px; margin: 10px 0; color:#166534;">
-                الإجمالي المستحق: <b id="totalPrice">0</b> SDG
-            </div>
-            <button class="btn btn-accent" id="saveBtn" onclick="finalCommit()">حفظ وإرسال للسحابة ✅</button>
+        <div id="dCard" class="card" style="display:none">
+            <div id="dList"></div>
+            <div style="padding:10px; background:#e0f2fe; border-radius:10px; margin:10px 0">إجمالي: <b id="total">0</b> SDG</div>
+            <button class="btn btn-accent" id="sBtn" onclick="save()">حفظ نهائي للسحابة ✅</button>
         </div>
     </div>
 </div>
 
 <div id="printArea">
-    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 5px solid #003366; padding-bottom: 10px;">
-        <img src="https://cdn.jsdelivr.net/gh/Wagaarlab/Wagarlab/209963.png" style="height: 100px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 4px solid #003366; padding-bottom: 10px;">
+        <img src="https://raw.githubusercontent.com/Wagaarlab/Wagarlab/main/209963.png" style="height: 100px;">
         <div style="text-align: right;">
-            <h1 style="color:#003366; margin:0; font-size:32px;">Waqar Medical Lab</h1>
-            <p style="margin:5px 0; font-size:22px;"><b>Dr. Alsunni Khalid Mohammed Ahmed</b></p>
-            <p style="margin:0;">Laboratory Specialist</p>
+            <h1 style="color:#003366; margin:0;">Waqar Medical Lab</h1>
+            <p style="margin:5px 0;"><b>Dr. Alsunni Khalid Mohammed Ahmed</b></p>
         </div>
     </div>
-    <div style="margin: 30px 0; font-size: 18px; display:flex; justify-content: space-between; background:#f8fafc; padding:20px; border-radius:15px;">
-        <span>Patient: <b id="prName"></b></span>
-        <span>ID: <b id="prID"></b></span>
-        <span>Date: <b id="prDate"></b></span>
+    <div style="margin: 20px 0; background:#f1f5f9; padding:15px; border-radius:10px;">
+        اسم المريض: <b id="prN"></b> | الكود: <b id="prC"></b> | التاريخ: <b id="prD"></b>
     </div>
-    <div id="prTable"></div>
-    <div style="margin-top: 80px; text-align: right; padding-right: 40px;">
-        <p style="font-family: 'Dancing Script', cursive; font-size: 30px; margin:0;">Dr. Alsunni Khalid</p>
-        <div style="border-top: 2px solid #000; width: 180px; display: inline-block; margin-top:5px;">Signature & Stamp</div>
+    <div id="prT"></div>
+    <div style="margin-top:50px; text-align:right;">
+        <p style="font-family:'Dancing Script', cursive; font-size:24px; margin:0;">Dr. Alsunni Khalid</p>
+        <div style="border-top:1px solid #000; width:150px; display:inline-block">التوقيع والختم</div>
     </div>
 </div>
 
 <script>
-    let currentDraft = [];
-    const templates = {
-        "CBC": "Hb: ... (12-16)\nWBC: ... (4-11)\nPLT: ... (150-450)",
-        "Urine": "Pus Cells: ... /hpf\nRBCs: ... /hpf\nSugar: Nil\nProtein: Nil",
-        "Stool": "Consistency: Formed\nOva/Cyst: Not Detected",
-        "Kidney": "Urea: ... (15-45)\nCreatinine: ... (0.7-1.4)",
-        "Lipid": "Cholesterol: ... (<200)\nTriglycerides: ... (<150)"
-    };
-
-    function toggleTheme() { document.body.dataset.theme = document.body.dataset.theme === 'light' ? 'dark' : 'light'; }
-    function showTab(t) {
-        document.getElementById('pTab').style.display = t==='p'?'block':'none';
-        document.getElementById('aTab').style.display = t==='a'?'block':'none';
-        document.getElementById('pBtn').className = t==='p'?'active':'';
-        document.getElementById('aBtn').className = t==='a'?'active':'';
+    let q = [];
+    function showTab(t){ pPanel.style.display=t==='p'?'block':'none'; aPanel.style.display=t==='a'?'block':'none'; }
+    function checkAdmin(){ if(prompt("الرمز:")==="6519") showTab('a'); }
+    function addT(){
+        q.push({n:tSel.value, r:tRes.value, p:parseFloat(tPrice.value)||0});
+        dCard.style.display='block';
+        dList.innerHTML += `<div class="test-row"><span>${tSel.value}</span><b>${tPrice.value}</b></div>`;
+        total.innerText = q.reduce((s,x)=>s+x.p,0);
+        tRes.value=""; tPrice.value="";
     }
-    function askAuth() { if(prompt("كلمة سر الإدارة:") === "6519") showTab('a'); }
-    function genID() { if(!document.getElementById('admCode').value) document.getElementById('admCode').value = "WQR-"+Math.floor(1000+Math.random()*9000); }
-    
-    function applyTpl() {
-        const v = document.getElementById('tSelect').value;
-        document.getElementById('customName').style.display = v==='Custom'?'block':'none';
-        if(templates[v]) document.getElementById('tRes').value = templates[v];
+    async function save(){
+        sBtn.disabled=true; sBtn.innerText="جاري الرفع... ⏳";
+        const ok = await window.dbSave({name:aName.value, code:aCode.value, visit:{date:new Date().toLocaleString(), tests:q}});
+        if(ok){ alert("تم الحفظ سحابياً ✅"); location.reload(); } else { alert("خطأ!"); sBtn.disabled=false; }
     }
-
-    function addTest() {
-        let name = document.getElementById('tSelect').value;
-        if(name==='Custom') name = document.getElementById('customName').value;
-        const res = document.getElementById('tRes').value, price = parseFloat(document.getElementById('tPrice').value) || 0;
-        if(!name || !res) return alert("أكمل البيانات");
-        currentDraft.push({n: name, r: res, p: price});
-        document.getElementById('draftCard').style.display = 'block';
-        document.getElementById('draftList').innerHTML += `<div class="test-row"><span>${name}</span><b>${price} SDG</b></div>`;
-        document.getElementById('totalPrice').innerText = currentDraft.reduce((s, x) => s + x.p, 0);
-        document.getElementById('tRes').value = ""; document.getElementById('tPrice').value = "";
+    async function aSearch(){
+        const res = await window.dbAdminSearch(admSearchInp.value);
+        admResults.innerHTML = res.map(p=>`<div class="test-row" onclick="aName.value='${p.name}';aCode.value='${p.code}'">${p.name} (${p.code})</div>`).join('');
     }
-
-    async function finalCommit() {
-        const name = document.getElementById('admName').value, code = document.getElementById('admCode').value;
-        const btn = document.getElementById('saveBtn');
-        btn.disabled = true; btn.innerText = "جاري الحفظ والرفع... ⏳";
-        const ok = await window.dbSave({ name, code, visit: { date: new Date().toLocaleString('en-GB'), tests: currentDraft } });
-        if(ok) { alert("تم الحفظ بنجاح! السجل الآن سحابي ✅"); location.reload(); }
-        else { alert("فشل الاتصال بالسحابة! جرب متصفح خفي"); btn.disabled = false; }
+    async function pSearch(){
+        const d = await window.dbGetByCode(pInp.value);
+        if(!d) return alert("غير موجود");
+        pOut.innerHTML = `<div class="card"><b>${d.name}</b>` + d.visits.reverse().map(v=>`<div class="test-row"><span>${v.date}</span><button onclick='print("${d.name}","${d.code}",${JSON.stringify(v)})'>PDF</button></div>`).join('') + `</div>`;
     }
-
-    async function doAdminSearch() {
-        const name = document.getElementById('adminSearchName').value;
-        const res = await window.adminSearch(name);
-        const list = document.getElementById('adminResultsList');
-        if(res.length === 0) list.innerHTML = "لا توجد سجلات لهذا الاسم.";
-        else list.innerHTML = res.map(p => `<div class="test-row" onclick="fillAdmin('${p.name}','${p.code}')">${p.name} (كود: ${p.code}) - ${p.visits.length} زيارات</div>`).join('');
-    }
-
-    function fillAdmin(n, c) { document.getElementById('admName').value = n; document.getElementById('admCode').value = c; }
-
-    async function searchPatient() {
-        const code = document.getElementById('pSearchCode').value;
-        const d = await window.dbGet(code);
-        if(!d) return alert("الكود غير صحيح");
-        document.getElementById('pResults').innerHTML = `<div class="card"><h4>المريض: ${d.name}</h4>` + d.visits.reverse().map(v => `
-            <div class="test-row"><span>${v.date}</span><button onclick='printPDF("${d.name}","${d.code}",${JSON.stringify(v)})' style="background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:8px">تحميل PDF 📥</button></div>
-        `).join('') + `</div>`;
-    }
-
-    function printPDF(n, c, v) {
-        document.getElementById('prName').innerText = n; document.getElementById('prID').innerText = c; document.getElementById('prDate').innerText = v.date;
-        let html = `<table style="width:100%; border-collapse:collapse; margin-top:20px;"><tr><th style="border:1px solid #000; padding:12px; background:#eee">Investigation</th><th style="border:1px solid #000; padding:12px; background:#eee">Result / Normal Range</th></tr>`;
-        v.tests.forEach(t => html += `<tr><td style="border:1px solid #000; padding:12px;"><b>${t.n}</b></td><td style="border:1px solid #000; padding:12px; white-space:pre-wrap; direction:ltr">${t.r}</td></tr>`);
-        document.getElementById('prTable').innerHTML = html + `</table>`;
-        const el = document.getElementById('printArea'); el.style.left = "0";
-        html2canvas(el, {scale:2, useCORS:true}).then(can => {
+    function print(n,c,v){
+        prN.innerText=n; prC.innerText=c; prD.innerText=v.date;
+        prT.innerHTML = `<table style="width:100%; border-collapse:collapse">` + v.tests.map(t=>`<tr><td style="border:1px solid #000; padding:10px"><b>${t.n}</b></td><td style="border:1px solid #000; padding:10px; direction:ltr">${t.r}</td></tr>`).join('') + `</table>`;
+        const el = document.getElementById('printArea'); el.style.left="0";
+        html2canvas(el,{scale:2}).then(can=>{
             const pdf = new jspdf.jsPDF();
-            pdf.addImage(can.toDataURL('image/png'), 'PNG', 0, 0, 210, (can.height*210)/can.width);
-            pdf.save(`${n}_Waqar_Lab.pdf`); el.style.left = "-9999px";
-            setTimeout(() => { document.getElementById('pResults').innerHTML = ""; alert("تم تأمين الجلسة ومسح النتائج تلقائياً."); }, 500);
+            pdf.addImage(can.toDataURL('image/png'),'PNG',0,0,210,(can.height*210)/can.width);
+            pdf.save(n+".pdf"); el.style.left="-9999px";
+            pOut.innerHTML=""; alert("تم التحميل وتأمين البيانات.");
         });
     }
 </script>
