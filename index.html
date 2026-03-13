@@ -10,7 +10,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyCndh68IOzYk1bzf8VXvQ5b6aS4b5TXI-o",
@@ -24,28 +24,19 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // تفعيل ميزة العمل بدون إنترنت وتجنب خطأ Offline
-        enableIndexedDbPersistence(db).catch((err) => {
-            console.error("Persistence failed", err.code);
-        });
-
         window.dbSave = async (data) => {
-            try {
-                const ref = doc(db, "records", data.code.toUpperCase());
-                const snap = await getDoc(ref);
-                if (snap.exists()) { 
-                    await updateDoc(ref, { visits: arrayUnion(data.visit) }); 
-                } else { 
-                    await setDoc(ref, { name: data.name, code: data.code, visits: [data.visit] }); 
-                }
-            } catch (e) { alert("عذراً: مشكلة في الاتصال بالخادم، يرجى المحاولة مرة أخرى."); throw e; }
+            const ref = doc(db, "records", data.code.toUpperCase());
+            const snap = await getDoc(ref);
+            if (snap.exists()) { 
+                await updateDoc(ref, { visits: arrayUnion(data.visit) }); 
+            } else { 
+                await setDoc(ref, { name: data.name, code: data.code, visits: [data.visit] }); 
+            }
         };
 
         window.dbGet = async (code) => { 
-            try {
-                const snap = await getDoc(doc(db, "records", code.toUpperCase())); 
-                return snap.exists() ? snap.data() : null; 
-            } catch (e) { alert("خطأ في جلب البيانات: تأكد من جودة الإنترنت."); return null; }
+            const snap = await getDoc(doc(db, "records", code.toUpperCase())); 
+            return snap.exists() ? snap.data() : null; 
         };
     </script>
 
@@ -66,7 +57,8 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #000; padding: 12px; text-align: left; font-size: 18px; }
         th { background: #f0f0f0; }
-        .digital-signature { font-family: 'Dancing Script', cursive; font-size: 34px; color: #001f3f; margin-bottom: -10px; transform: rotate(-2deg); display: inline-block; }
+        /* ستايل التوقيع النصي ليكون مشابهاً لتوقيعك اليدوي */
+        .digital-signature { font-family: 'Dancing Script', cursive; font-size: 34px; color: #001f3f; margin-bottom: -10px; transform: rotate(-3deg); display: inline-block; }
     </style>
 </head>
 <body>
@@ -176,16 +168,16 @@
         try {
             const visit = { date: new Date().toLocaleDateString('ar-EG'), tests: currentVisitTests, total: currentVisitTests.reduce((s,t)=>s+t.p,0) };
             await window.dbSave({ name, code, visit });
-            alert("✅ تم الحفظ! الكود: " + code);
+            alert("✅ تم الحفظ بنجاح! كود المريض: " + code);
             currentVisitTests = []; renderQueue(); document.getElementById('admName').value = "";
         } catch(e) { console.error(e); }
         finally { btn.disabled = false; btn.innerText = "حفظ وتحديث السحابة ✅"; }
     }
 
     async function loadHistory() {
-        const codeInput = document.getElementById('pSearch').value;
-        if(!codeInput) return;
-        const data = await window.dbGet(codeInput);
+        const val = document.getElementById('pSearch').value;
+        if(!val) return;
+        const data = await window.dbGet(val);
         if(!data) return document.getElementById('historyOutput').innerHTML = "لا توجد بيانات لهذا الكود";
         document.getElementById('historyOutput').innerHTML = `<h3>المريض: ${data.name}</h3>` + data.visits.reverse().map(v => `
             <div class="test-card" style="display:flex; justify-content:space-between; align-items:center;">
@@ -213,4 +205,3 @@
 </script>
 </body>
 </html>
-
