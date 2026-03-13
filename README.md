@@ -1,2 +1,0 @@
-Omalihealt
-Laboratory test
