@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معمل وقار الحديث - النظام المتكامل</title>
+    <title>معمل وقار الحديث - الإصدار الفائق</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -22,27 +22,23 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        // تحديث: إجبار البروتوكول الأبسط لضمان العمل في الشبكات الضعيفة جداً
         const db = initializeFirestore(app, {
             experimentalForceLongPolling: true,
-            localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
+            useFetchStreams: false 
         });
 
         window.dbSave = async (data) => {
             const ref = doc(db, "records", data.code.toUpperCase());
-            const savePromise = setDoc(ref, { 
-                name: data.name, 
-                nameLower: data.name.toLowerCase(), 
-                code: data.code, 
-                visits: arrayUnion(data.visit) 
-            }, { merge: true });
-
-            const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000));
             try {
-                await Promise.race([savePromise, timeout]);
+                await setDoc(ref, { 
+                    name: data.name, 
+                    nameLower: data.name.toLowerCase(), 
+                    code: data.code, 
+                    visits: arrayUnion(data.visit) 
+                }, { merge: true });
                 return true;
-            } catch (e) {
-                return false;
-            }
+            } catch (e) { return false; }
         };
 
         window.dbGet = async (code) => { 
@@ -93,7 +89,7 @@
 
     <div class="tabs">
         <button id="pTab" class="active" onclick="switchTab('p')">بوابة النتائج</button>
-        <button id="aTab" onclick="adminCheck()">لوحة المالك والبحث</button>
+        <button id="aTab" onclick="adminCheck()">لوحة الإدارة</button>
     </div>
 
     <div id="pPanel" class="panel active">
@@ -116,13 +112,13 @@
             <input list="labList" id="tName" placeholder="نوع الفحص..." onchange="applyTpl()">
             <textarea id="tRes" placeholder="النتائج..." style="height: 150px; direction: ltr; font-weight: bold;"></textarea>
             <input type="number" id="tPrice" placeholder="السعر">
-            <button class="btn btn-blue" onclick="addTest()">+ إضافة الفحص للقائمة</button>
+            <button class="btn btn-blue" onclick="addTest()">+ إضافة الفحص</button>
         </div>
 
         <div id="visitQueue" style="display:none;">
             <div id="queueList"></div>
             <div id="totalDisp" style="font-weight: bold; margin: 15px 0;"></div>
-            <button class="btn btn-green" id="finalSaveBtn" onclick="saveVisit()">تأكيد الحفظ النهائي ✅</button>
+            <button class="btn btn-green" id="finalSaveBtn" onclick="saveVisit()">تأكيد الحفظ ✅</button>
         </div>
         <div id="historyOutput_a" style="margin-top: 20px;"></div>
     </div>
@@ -159,29 +155,12 @@
             <div class="digital-signature">Dr. Alsunni Khalid</div>
             <p style="border-top: 2px solid #000; width: 200px; padding-top: 5px;">Signature</p>
         </div>
-        <div style="opacity: 0.1;">OFFICIAL STAMP</div>
     </div>
 </div>
 
 <script>
     let tests = [];
-    const urineTpl = `Macro Examination :
-Color:....
-Reaction:....
-Albumin:.....
-Sugar:......
-Aston: ....
-Bile:.....
-PH:.......
-
-Micro Examination:
-Pus Cells.......
-RBCs:........
-Epithil :........
-Crystals:.......
-Casts:.......
-Ova:........
-Othar:.......`;
+    const urineTpl = `Color: ....\\nReaction: ....\\nAlbumin: ....\\nSugar: ....\\nPus Cells: ....\\nRBCs: ....`;
 
     function switchTab(t) {
         document.querySelectorAll('.panel, .tabs button').forEach(el => el.classList.remove('active'));
@@ -199,7 +178,7 @@ Othar:.......`;
     function applyTpl() {
         const t = document.getElementById('tName').value;
         if(t.includes("Urine")) { document.getElementById('tRes').value = urineTpl; }
-        else if(t.includes("CBC")) { document.getElementById('tRes').value = "Hb: ... g/dl\nWBCs: ... /cmm\nPLT: ... /cmm"; }
+        else if(t.includes("CBC")) { document.getElementById('tRes').value = "Hb: ... g/dl\\nWBCs: ... /cmm\\nPLT: ... /cmm"; }
         else { document.getElementById('tRes').value = "Result: ...."; }
     }
 
@@ -208,7 +187,7 @@ Othar:.......`;
         if(n.length < 2) return;
         const matches = await window.dbSearchByName(n);
         document.getElementById('searchResults').innerHTML = matches.map(m => `
-            <div class="search-item" onclick="selectPatient('${m.code}')">👤 ${m.name} (${m.code})</div>`).join('');
+            <div class="search-item" onclick="selectPatient('${m.code}')">👤 ${m.name}</div>`).join('');
     }
 
     function selectPatient(code) {
@@ -226,29 +205,26 @@ Othar:.......`;
 
     function render() {
         document.getElementById('visitQueue').style.display = tests.length ? 'block' : 'none';
-        document.getElementById('queueList').innerHTML = tests.map(t => `<div style="padding:5px;">• ${t.n} (${t.p} SDG)</div>`).join('');
+        document.getElementById('queueList').innerHTML = tests.map(t => `<div style="padding:5px;">• ${t.n}</div>`).join('');
         document.getElementById('totalDisp').innerText = "الإجمالي: " + tests.reduce((s,t)=>s+t.p,0) + " SDG";
     }
 
     async function saveVisit() {
         const btn = document.getElementById('finalSaveBtn'), name = document.getElementById('admName').value, code = document.getElementById('admCode').value;
-        if(!name || !tests.length) return alert("بيانات ناقصة");
-        btn.disabled = true; btn.innerText = "جاري الحفظ الفوري...";
+        btn.disabled = true; btn.innerText = "محاولة اتصال قوية بالسحابة...";
         const ok = await window.dbSave({ name, code, visit: { date: new Date().toLocaleDateString('en-GB'), tests, total: tests.reduce((s,t)=>s+t.p,0) } });
-        if(ok) { alert("✅ تم الحفظ بنجاح!"); location.reload(); } 
-        else { alert("⚠️ تعذر الاتصال بالسحابة. يرجى التحقق من الإنترنت والمحاولة ثانية."); btn.disabled = false; btn.innerText = "تأكيد الحفظ النهائي ✅"; }
+        if(ok) { alert("✅ تم بنجاح!"); location.reload(); } 
+        else { alert("❌ عذراً، الشبكة ضعيفة جداً. يرجى إعادة التحميل والمحاولة."); btn.disabled = false; btn.innerText = "تأكيد الحفظ ✅"; }
     }
 
     async function loadHistory(mode) {
         const c = document.getElementById('pSearch').value;
-        const out = document.getElementById('historyOutput_' + mode);
-        out.innerHTML = "جاري التحميل...";
         const d = await window.dbGet(c);
-        if(!d) { out.innerHTML = "لم يتم العثور على نتائج."; return; }
-        out.innerHTML = `<h3>سجل: ${d.name}</h3>` + d.visits.reverse().map(v => `
+        if(!d) { document.getElementById('historyOutput_'+mode).innerHTML = "لا توجد نتائج."; return; }
+        document.getElementById('historyOutput_'+mode).innerHTML = d.visits.reverse().map(v => `
             <div class="test-card" style="display:flex; justify-content:space-between; align-items:center;">
                 <span>التاريخ: ${v.date}</span>
-                <button class="btn btn-blue" style="width:80px; padding:8px;" onclick='printPDF("${d.name}","${d.code}",${JSON.stringify(v)})'>PDF</button>
+                <button class="btn btn-blue" style="width:70px; padding:5px;" onclick='printPDF("${d.name}","${d.code}",${JSON.stringify(v)})'>PDF</button>
             </div>`).join('');
     }
 
@@ -256,14 +232,14 @@ Othar:.......`;
         document.getElementById('prName').innerText = name;
         document.getElementById('prCode').innerText = code;
         document.getElementById('prDate').innerText = v.date;
-        let table = `<table><tr><th style="width:30%">Investigation</th><th>Result</th></tr>`;
-        v.tests.forEach(t => table += `<tr><td><b>${t.n}</b></td><td style="white-space:pre-wrap; font-family:monospace;">${t.r}</td></tr>`);
-        document.getElementById('prTableArea').innerHTML = table + `</table><p style="font-size:20px; color:var(--blue);"><b>Total Paid: ${v.total} SDG</b></p>`;
+        let table = `<table><tr><th>Investigation</th><th>Result</th></tr>`;
+        v.tests.forEach(t => table += `<tr><td><b>${t.n}</b></td><td style="white-space:pre-wrap;">${t.r}</td></tr>`);
+        document.getElementById('prTableArea').innerHTML = table + `</table><p><b>Total: ${v.total} SDG</b></p>`;
         const area = document.getElementById('printArea'); area.style.left = "0";
         html2canvas(area, {scale: 2, useCORS: true}).then(can => {
             const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
             pdf.addImage(can.toDataURL('image/png'), 'PNG', 0, 0, 210, (can.height * 210) / can.width);
-            pdf.save(`Waqar_Lab_${name}.pdf`); area.style.left = "-9999px";
+            pdf.save(`Result_${name}.pdf`); area.style.left = "-9999px";
         });
     }
 </script>
