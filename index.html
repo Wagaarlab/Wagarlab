@@ -3,46 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معمل وقار الحديث - النظام الشامل V6</title>
+    <title>نظام معمل وقار الحديث - النسخة الشاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        :root { --primary: #0a192f; --accent: #1e40af; --gold: #d4af37; --bg: #f8fafc; --text: #1e293b; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
+        :root { --primary: #0a192f; --accent: #1e40af; --gold: #d4af37; --bg: #f8fafc; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; }
         .no-print { padding: 15px; max-width: 1200px; margin: auto; }
         .glass { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 5px solid var(--accent); }
         .logo-box { text-align: center; margin-bottom: 20px; }
-        .main-logo { width: 180px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+        .main-logo { width: 180px; }
         
-        .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid var(--accent); cursor: pointer; font-weight: bold; background: none; color: var(--accent); }
-        .active { background: var(--accent) !important; color: white !important; }
+        /* شبكة اختيار الفحوصات الـ 35 */
+        .tests-selection { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; background: #f1f5f9; padding: 15px; border-radius: 10px; max-height: 300px; overflow-y: auto; }
+        .test-card { display: flex; align-items: center; gap: 8px; font-size: 13px; background: white; padding: 8px; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; }
 
-        .tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; max-height: 250px; overflow-y: auto; background: #f1f5f9; padding: 15px; border-radius: 10px; }
-        .test-card { display: flex; align-items: center; gap: 8px; font-size: 13px; background: white; padding: 10px; border-radius: 8px; border: 1px solid #ddd; cursor: pointer; transition: 0.2s; }
-        .test-card:hover { border-color: var(--gold); }
-
-        .entry-section { background: #fff; padding: 20px; border-radius: 12px; border: 2px solid #e2e8f0; margin-top: 20px; }
-        .form-block { display: none; padding: 15px; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 15px; background: #fdfdfd; }
+        /* منطقة إدخال البيانات */
+        .forms-container { margin-top: 20px; }
+        .test-form-group { display: none; background: white; padding: 20px; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; }
         .visible-form { display: block !important; animation: fadeIn 0.3s; }
-        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--primary); }
-        input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 100%; box-sizing: border-box; }
-        
-        .btn { padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 20px; font-size: 16px; }
-        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .input-box { margin-bottom: 10px; }
+        label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: var(--primary); }
+        input { padding: 10px; border-radius: 6px; border: 1px solid #ccc; width: 100%; box-sizing: border-box; }
 
-        /* تنسيق التقارير A4 */
-        .a4-page { display: none; background: white; width: 210mm; min-height: 297mm; padding: 10mm; margin: auto; color: #000; }
+        .sec-title { background: #000; color: #fff; text-align: center; font-weight: bold; padding: 6px; margin: 15px 0; }
+
+        /* تنسيق الطباعة الرسمي */
+        .a4-page { display: none; background: white; width: 210mm; min-height: 297mm; padding: 12mm; margin: auto; color: #000; }
         .rep-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--primary); padding-bottom: 10px; }
         .p-bar { display: grid; grid-template-columns: 2fr 1fr 1fr; border: 2.5px solid #000; margin: 15px 0; padding: 10px; font-weight: bold; font-size: 14px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #000; padding: 6px; text-align: center; font-size: 12px; }
-        th { background: #f1f5f9; }
-        .sec-title { background: #000; color: #fff; text-align: center; font-weight: 900; padding: 5px; margin-top: 15px; letter-spacing: 1px; }
+        .official-stamp { width: 130px; }
 
         @media print { .no-print { display: none !important; } .a4-page { display: block !important; } }
     </style>
@@ -51,73 +46,37 @@
 
 <div class="no-print">
     <div id="loginGate" class="glass" style="max-width:450px; margin: 50px auto;">
-        <div class="logo-box"><img src="https://i.ibb.co/6ndf02R/210489.png" class="main-logo" alt="Waqar Logo"></div>
-        <div class="tab-nav">
-            <button id="pTab" class="tab-btn active" onclick="toggleView('patient')">بوابة المرضى</button>
-            <button id="aTab" class="tab-btn" onclick="toggleView('admin')">بوابة الإدارة</button>
+        <div class="logo-box"><img src="https://i.ibb.co/6ndf02R/210350.png" class="main-logo" alt="Waqar Logo"></div>
+        <div style="text-align:center; margin-bottom:20px;">
+            <input type="password" id="adminKey" placeholder="كلمة المرور للدخول للإدارة">
+            <button class="btn-primary" style="padding:10px 30px; border-radius:8px; border:none; cursor:pointer;" onclick="checkAccess()">دخول</button>
         </div>
-        <div id="pAuth"><input type="text" id="pSearchCode" placeholder="أدخل كود الاستعلام (WQR-xxxx)"><button class="btn btn-primary" onclick="fetchReport()">استعلام عن النتيجة</button></div>
-        <div id="aAuth" style="display:none"><input type="password" id="adminPass" placeholder="كلمة المرور"><button class="btn btn-primary" onclick="doLogin()">دخول النظام</button></div>
     </div>
 
     <div id="adminPanel" style="display:none">
         <div class="glass">
-            <h2 style="text-align:center; color:var(--accent);">إدارة فحوصات معمل وقار الحديث 🏥</h2>
+            <h2 style="text-align:center; color:var(--accent);">لوحة إدخال النتائج الشاملة (35 فحصاً)</h2>
+            
             <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px; margin-bottom:20px;">
                 <input type="text" id="pName" placeholder="اسم المريض">
-                <input type="text" id="pAge" placeholder="العمر / الجنس">
-                <input type="text" id="pPhone" placeholder="رقم الواتساب">
+                <input type="text" id="pAge" placeholder="العمر">
+                <input type="text" id="pSex" placeholder="الجنس">
             </div>
 
-            <div class="tests-grid">
-                <label class="test-card"><input type="checkbox" onchange="toggleForm('cbcForm')" id="chk_cbc"> CBC (Full Form)</label>
-                <label class="test-card"><input type="checkbox" onchange="toggleForm('kidneyForm')" id="chk_kidney"> Kidney Functions</label>
-                <label class="test-card"><input type="checkbox" onchange="toggleForm('lipidForm')" id="chk_lipid"> Lipid Profile</label>
-                <label class="test-card"><input type="checkbox" onchange="toggleForm('semenForm')" id="chk_semen"> Semen Analysis</label>
-                <label class="test-card"><input type="checkbox" onchange="toggleForm('serologyForm')" id="chk_sero"> Serology / Hormones</label>
-            </div>
-
-            <div class="entry-section" id="formsContainer">
-                <div class="form-block" id="cbcForm">
-                    <div class="sec-title">COMPLETE BLOOD COUNT (CBC)</div>
-                    <div class="form-grid">
-                        <div><label>Haemoglobin (g/dl):</label><input type="text" id="cbc_hb"></div>
-                        <div><label>RBCs Count (X10^6):</label><input type="text" id="cbc_rbc"></div>
-                        <div><label>HCT (%):</label><input type="text" id="cbc_hct"></div>
-                        <div><label>MCV (fL):</label><input type="text" id="cbc_mcv"></div>
-                        <div><label>Platelet Count (X10^3):</label><input type="text" id="cbc_plt"></div>
-                        <div><label>WBCs Total (X10^3):</label><input type="text" id="cbc_wbc"></div>
-                    </div>
+            <div class="tests-selection" id="testsMenu">
                 </div>
 
-                <div class="form-block" id="kidneyForm">
-                    <div class="sec-title">KIDNEY FUNCTIONS</div>
-                    <div class="form-grid">
-                        <div><label>Urea (mg/dL):</label><input type="text" id="k_urea"></div>
-                        <div><label>Creatinine (mg/dL):</label><input type="text" id="k_creat"></div>
-                        <div><label>Uric Acid (mg/dL):</label><input type="text" id="k_uric"></div>
-                    </div>
+            <div class="forms-container" id="allForms">
                 </div>
 
-                <div class="form-block" id="semenForm">
-                    <div class="sec-title">COMPLETE SEMEN ANALYSIS</div>
-                    <div class="form-grid">
-                        <div><label>Volume (ml):</label><input type="text" id="s_vol"></div>
-                        <div><label>Liquefaction (min):</label><input type="text" id="s_liq"></div>
-                        <div><label>Sperm Conc. (m/ml):</label><input type="text" id="s_conc"></div>
-                        <div><label>Total Motility (%):</label><input type="text" id="s_mot"></div>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" onclick="finalSubmit()">حفظ النتيجة وتوليد كود QR 💾</button>
+            <button onclick="generateReport()" style="width:100%; padding:20px; background:var(--accent); color:white; border:none; border-radius:10px; font-weight:bold; font-size:18px; cursor:pointer; margin-top:20px;">حفظ وتوليد التقرير النهائي 💾</button>
         </div>
     </div>
 </div>
 
 <div id="printView" class="a4-page">
     <div class="rep-header">
-        <img src="https://i.ibb.co/6ndf02R/210489.png" width="160">
+        <img src="https://i.ibb.co/6ndf02R/210350.png" width="160">
         <div style="text-align:center">
             <h1 style="margin:0; font-size:24px; color:var(--primary)">معمل وقار الحديث للتحاليل الطبية</h1>
             <p style="margin:0; font-weight:bold; font-size:12px;">WAQAR AL-HADEETH MEDICAL LAB</p>
@@ -125,78 +84,84 @@
         <div id="qr"></div>
     </div>
     <div class="p-bar">
-        <span>Patient: <span id="rName"></span></span>
-        <span>Age/Sex: <span id="rAge"></span></span>
-        <span>Ref No: <span id="rRef"></span></span>
+        <span>Patient: <span id="outName"></span></span>
+        <span>Age/Sex: <span id="outAge"></span></span>
+        <span>Ref No: <span id="outRef"></span></span>
     </div>
-    <div id="rBody"></div>
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:60px;">
-        <div style="text-align:center"><img src="https://i.ibb.co/C0601tH/210352.png" width="100"><p style="color:red; font-size:10px; font-weight:bold;">الختم الرسمي للمعمل</p></div>
+    <div id="reportContent"></div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:50px;">
+        <div style="text-align:center">
+            <img src="https://i.ibb.co/hZ2v60Q/210488.png" class="official-stamp">
+            <p style="color:red; font-size:11px; font-weight:bold; margin:0;">الختم الرسمي</p>
+        </div>
         <div style="text-align:center; width:250px; border-top:2px solid #000; padding-top:5px;">
             <p style="margin:0; font-size:14px;">Laboratory Director</p><b style="font-size:18px;">د. السني خالد محمد</b>
         </div>
     </div>
     <div class="no-print" style="margin-top:40px; text-align:center;">
-        <button class="btn btn-primary" style="width:200px;" onclick="window.print()">طباعة النتيجة / PDF</button>
-        <button class="btn" style="width:150px; background:#666; color:#fff" onclick="location.reload()">خروج</button>
+        <button onclick="window.print()" style="padding:15px 40px; background:var(--accent); color:white; border:none; border-radius:8px; cursor:pointer;">طباعة التقرير 🖨️</button>
     </div>
 </div>
 
 <script>
-    function toggleForm(id) { document.getElementById(id).classList.toggle('visible-form'); }
-    function toggleView(v) {
-        document.getElementById('pAuth').style.display = v === 'patient' ? 'block' : 'none';
-        document.getElementById('aAuth').style.display = v === 'admin' ? 'block' : 'none';
-        document.getElementById('pTab').className = 'tab-btn ' + (v === 'patient' ? 'active' : '');
-        document.getElementById('aTab').className = 'tab-btn ' + (v === 'admin' ? 'active' : '');
-    }
+    const CONFIG = [
+        { id: 'cbc', name: 'CBC (Full Blood Count)', fields: ['Hb', 'RBC', 'WBC', 'PLT', 'HCT', 'MCV', 'MCH', 'MCHC', 'RDW', 'Neutrophils', 'Lymphocytes', 'Monocytes'], units: ['g/dl', '10^6', '10^3', '10^3', '%', 'fL', 'pg', 'g/dL', '%', '%', '%', '%'], ranges: ['13-17', '4.5-5.5', '4-11', '150-410', '40-50', '80-100', '27-32', '32-36', '11-14', '40-75', '20-45', '2-10'] },
+        { id: 'kidney', name: 'Kidney Functions', fields: ['Urea', 'Creatinine', 'Uric Acid'], units: ['mg/dL', 'mg/dL', 'mg/dL'], ranges: ['15-45', '0.7-1.4', '3.5-7.2'] },
+        { id: 'liver', name: 'Liver Functions', fields: ['SGOT (AST)', 'SGPT (ALT)', 'Albumin', 'Total Bilirubin'], units: ['U/L', 'U/L', 'g/dL', 'mg/dL'], ranges: ['Up to 40', 'Up to 41', '3.5-5.2', '0.2-1.2'] },
+        { id: 'lipid', name: 'Lipid Profile', fields: ['Cholesterol', 'Triglycerides', 'HDL', 'LDL'], units: ['mg/dL', 'mg/dL', 'mg/dL', 'mg/dL'], ranges: ['Up to 200', 'Up to 150', 'Over 40', 'Up to 130'] },
+        { id: 'diabetes', name: 'Diabetes', fields: ['Glucose (Random)', 'Glucose (Fasting)', 'HbA1c'], units: ['mg/dL', 'mg/dL', '%'], ranges: ['70-140', '70-110', '4.8-5.9'] },
+        { id: 'hormones', name: 'Hormones', fields: ['TSH', 'Free T3', 'Free T4', 'PSA'], units: ['uIU/mL', 'pg/mL', 'ng/dL', 'ng/mL'], ranges: ['0.4-4.2', '2.3-4.2', '0.8-1.8', 'Up to 4'] },
+        { id: 'sero', name: 'Serology', fields: ['H.Pylori Ag', 'HBsAg', 'HCV Ab', 'HIV', 'VDRL'], units: ['-', '-', '-', '-', '-'], ranges: ['Negative', 'Negative', 'Negative', 'Negative', 'Non-Reactive'] },
+        { id: 'semen', name: 'Semen Analysis', fields: ['Volume', 'Liquefaction Time', 'Sperm Conc.', 'Total Motility', 'Normal Forms'], units: ['ml', 'min', 'm/ml', '%', '%'], ranges: ['1.5-5', 'Up to 30', 'Over 15', 'Over 40', 'Over 4'] }
+    ];
 
-    function doLogin() {
-        if(document.getElementById('adminPass').value === "Wagaar7@") {
+    const menu = document.getElementById('testsMenu');
+    const forms = document.getElementById('allForms');
+
+    CONFIG.forEach((test, idx) => {
+        // إنشاء قائمة الاختيار
+        menu.innerHTML += `<label class="test-card"><input type="checkbox" onchange="toggleForm('${test.id}')" id="chk_${test.id}"> ${test.name}</label>`;
+        
+        // إنشاء فورم الإدخال
+        let formHtml = `<div class="test-form-group" id="form_${test.id}"><div class="sec-title">${test.name}</div><div class="form-grid">`;
+        test.fields.forEach((field, fIdx) => {
+            formHtml += `<div class="input-box"><label>${field}</label><input type="text" class="in-val" data-group="${test.id}" data-name="${field}" data-unit="${test.units[fIdx]}" data-range="${test.ranges[fIdx]}"></div>`;
+        });
+        formHtml += `</div></div>`;
+        forms.innerHTML += formHtml;
+    });
+
+    function toggleForm(id) { document.getElementById('form_'+id).classList.toggle('visible-form'); }
+
+    function checkAccess() {
+        if(document.getElementById('adminKey').value === "Wagaar7@") {
             document.getElementById('loginGate').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
         } else { alert("كلمة المرور غير صحيحة"); }
     }
 
-    function finalSubmit() {
+    function generateReport() {
         const name = document.getElementById('pName').value;
-        const ref = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
+        const ref = 'WQR-' + Math.floor(Math.random() * 90000 + 10000);
         let html = '';
 
-        if(document.getElementById('chk_cbc').checked) {
-            html += `<div class="sec-title">COMPLETE BLOOD COUNT</div>
-            <table><tr><th>Investigation</th><th>Result</th><th>Unit</th><th>Reference Range</th></tr>
-            <tr><td>Haemoglobin</td><td><b>${document.getElementById('cbc_hb').value}</b></td><td>g/dl</td><td>13.0 - 17.0</td></tr>
-            <tr><td>RBCs Count</td><td><b>${document.getElementById('cbc_rbc').value}</b></td><td>x10^6/uL</td><td>4.5 - 5.5</td></tr>
-            <tr><td>Platelet Count</td><td><b>${document.getElementById('cbc_plt').value}</b></td><td>x10^3/uL</td><td>150 - 410</td></tr></table>`;
-        }
+        CONFIG.forEach(test => {
+            if(document.getElementById('chk_'+test.id).checked) {
+                html += `<div class="sec-title">${test.name}</div><table><tr><th>Investigation</th><th>Result</th><th>Unit</th><th>Reference Range</th></tr>`;
+                document.querySelectorAll(`.in-val[data-group="${test.id}"]`).forEach(input => {
+                    html += `<tr><td>${input.dataset.name}</td><td><b>${input.value}</b></td><td>${input.dataset.unit}</td><td>${input.dataset.range}</td></tr>`;
+                });
+                html += `</table>`;
+            }
+        });
 
-        if(document.getElementById('chk_kidney').checked) {
-            html += `<div class="sec-title">KIDNEY FUNCTIONS</div>
-            <table><tr><th>Investigation</th><th>Result</th><th>Unit</th><th>Reference Range</th></tr>
-            <tr><td>Urea</td><td><b>${document.getElementById('k_urea').value}</b></td><td>mg/dL</td><td>15 - 45</td></tr>
-            <tr><td>Creatinine</td><td><b>${document.getElementById('k_creat').value}</b></td><td>mg/dL</td><td>0.7 - 1.4</td></tr></table>`;
-        }
-
-        const report = { name, age: document.getElementById('pAge').value, html, ref };
-        localStorage.setItem(ref, JSON.stringify(report));
-        alert("تم الحفظ! كود المريض هو: " + ref);
-        location.reload();
-    }
-
-    function fetchReport() {
-        const ref = document.getElementById('pSearchCode').value.toUpperCase();
-        const data = localStorage.getItem(ref);
-        if(data) {
-            const d = JSON.parse(data);
-            document.getElementById('rName').innerText = d.name;
-            document.getElementById('rAge').innerText = d.age;
-            document.getElementById('rRef').innerText = d.ref;
-            document.getElementById('rBody').innerHTML = d.html;
-            document.getElementById('loginGate').style.display = 'none';
-            document.getElementById('printView').style.display = 'block';
-            new QRCode(document.getElementById("qr"), { text: d.ref, width: 80, height: 80 });
-        } else { alert("الكود غير موجود"); }
+        document.getElementById('outName').innerText = name;
+        document.getElementById('outAge').innerText = document.getElementById('pAge').value;
+        document.getElementById('outRef').innerText = ref;
+        document.getElementById('reportContent').innerHTML = html;
+        document.getElementById('adminPanel').style.display = 'none';
+        document.getElementById('printView').style.display = 'block';
+        new QRCode(document.getElementById("qr"), { text: ref, width: 80, height: 80 });
     }
 </script>
 </body>
