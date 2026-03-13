@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معمل وقار الحديث - النظام المتكامل</title>
+    <title>معمل وقار الحديث - النظام الذكي</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -57,7 +57,6 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #000; padding: 12px; text-align: left; font-size: 18px; }
         th { background: #f0f0f0; }
-        /* ستايل التوقيع النصي ليكون مشابهاً لتوقيعك اليدوي */
         .digital-signature { font-family: 'Dancing Script', cursive; font-size: 34px; color: #001f3f; margin-bottom: -10px; transform: rotate(-3deg); display: inline-block; }
     </style>
 </head>
@@ -71,33 +70,46 @@
 
     <div class="tabs">
         <button id="pTab" class="active" onclick="switchTab('p')">بوابة النتائج</button>
-        <button id="aTab" onclick="adminCheck()">لوحة الإدارة والتسعير</button>
+        <button id="aTab" onclick="adminCheck()">لوحة الإدارة</button>
     </div>
 
     <div id="pPanel" class="panel active">
-        <input type="text" id="pSearch" placeholder="أدخل كود المريض (WQR-1234)" style="text-align: center;">
+        <input type="text" id="pSearch" placeholder="أدخل كود المريض (مثال: WQR-1234)" style="text-align: center;">
         <button class="btn btn-blue" onclick="loadHistory()">عرض النتائج</button>
-        <div id="historyOutput"></div>
+        <div id="historyOutput" style="margin-top: 20px;"></div>
     </div>
 
     <div id="aPanel" class="panel">
-        <input type="text" id="admName" placeholder="اسم المريض بالكامل">
-        <input type="text" id="admCode" placeholder="كود الملف">
+        <input type="text" id="admName" placeholder="اسم المريض بالكامل" oninput="generateAutoCode()">
+        <input type="text" id="admCode" placeholder="كود الملف (تلقائي)">
+        
         <div class="test-card">
+            <h4 style="margin:0 0 10px 0;">إضافة فحص جديد:</h4>
             <input list="labList" id="tName" placeholder="اختر الفحص..." onchange="applyTpl()">
-            <textarea id="tRes" placeholder="النتائج..." style="height: 120px; direction: ltr; font-weight: bold;"></textarea>
-            <input type="number" id="tPrice" placeholder="السعر">
-            <button class="btn btn-blue" onclick="addTest()">+ إضافة الفحص</button>
+            <textarea id="tRes" placeholder="النتائج..." style="height: 150px; direction: ltr; font-weight: bold;"></textarea>
+            <input type="number" id="tPrice" placeholder="السعر (SDG)">
+            <button class="btn btn-blue" onclick="addTestToList()">+ إدراج في الفاتورة</button>
         </div>
-        <div id="visitQueue" style="display:none;">
+
+        <div id="visitQueue" style="display:none; margin-top: 20px; border-top: 2px solid #eee; padding-top: 15px;">
+            <h4 style="color: var(--blue);">الفحوصات المضافة حالياً:</h4>
             <div id="queueList"></div>
-            <button class="btn btn-green" id="finalSaveBtn" onclick="saveVisit()">حفظ وتحديث السحابة ✅</button>
+            <div id="totalDisplay" style="font-weight: bold; margin: 10px 0; font-size: 18px;"></div>
+            <button class="btn btn-green" id="finalSaveBtn" onclick="saveVisitToCloud()">رفع النتائج وتحديث السحابة ✅</button>
         </div>
     </div>
 </div>
 
 <datalist id="labList">
-    <option value="Urine Analysis"><option value="CBC"><option value="Kidney Functions"><option value="Liver Functions"><option value="Lipid Profile"><option value="RBS"><option value="Widal Test"><option value="Malaria P/S"><option value="Stool Analysis">
+    <option value="CBC (Complete Blood Count)">
+    <option value="Urine Analysis">
+    <option value="Stool Analysis">
+    <option value="RBS (Random Blood Sugar)">
+    <option value="Kidney Function Test (KFT)">
+    <option value="Liver Function Test (LFT)">
+    <option value="Widal Test">
+    <option value="Malaria P/S (B.F.F.M)">
+    <option value="Lipid Profile">
 </datalist>
 
 <div id="printArea">
@@ -133,73 +145,163 @@
 
 <script>
     let currentVisitTests = [];
+
     function switchTab(t) {
         document.querySelectorAll('.panel, .tabs button').forEach(el => el.classList.remove('active'));
         document.getElementById(t+'Panel').classList.add('active');
         document.getElementById(t+'Tab').classList.add('active');
     }
-    function adminCheck() { if(prompt("رمز الدخول:") === "1001") switchTab('a'); }
-    
-    function applyTpl() {
-        const t = document.getElementById('tName').value;
-        const tpls = { "Urine": "Color: ...\nSugar: ...\nAlbumin: ...\nPus Cells: ...", "CBC": "Hb: ...\nWBCs: ...\nPLT: ..." };
-        document.getElementById('tRes').value = tpls[Object.keys(tpls).find(k => t.includes(k))] || "Result: ...";
+
+    function adminCheck() { if(prompt("رمز دخول الإدارة:") === "1001") switchTab('a'); }
+
+    // توليد كود تلقائي للمريض
+    function generateAutoCode() {
+        const name = document.getElementById('admName').value;
+        const codeInput = document.getElementById('admCode');
+        if(name.length > 2 && !codeInput.value) {
+            codeInput.value = "WQR-" + Math.floor(1000 + Math.random() * 9000);
+        }
     }
 
-    function addTest() {
-        const n = document.getElementById('tName').value, r = document.getElementById('tRes').value, p = parseFloat(document.getElementById('tPrice').value) || 0;
-        if(!n || !r) return alert("أكمل البيانات");
+    // القوالب التفصيلية للفحوصات
+    function applyTpl() {
+        const t = document.getElementById('tName').value;
+        const tpls = {
+            "CBC": "Hb: ... g/dl\nWBCs: ... /cmm\nPLT: ... /cmm\nPCV: ... %",
+            "Urine": "Color: Pale Yellow\nReaction: Acidic\nAlbumin: Nil\nSugar: Nil\nPus Cells: ... /HPF\nR.B.Cs: ... /HPF",
+            "Stool": "Color: Brown\nConsistency: Formed\nTrophozoite: Not seen\nCyst: Not seen\nHelminths: Not seen",
+            "Malaria": "Result: ...\nStage: ...\nDensity: ...",
+            "Widal": "S. Typhi (O): ...\nS. Typhi (H): ...\nS. Para A (H): ...\nS. Para B (H): ...",
+            "KFT": "Urea: ... mg/dl\nCreatinine: ... mg/dl\nUric Acid: ... mg/dl",
+            "LFT": "S. Bilirubin: ... mg/dl\nS.G.O.T: ... U/L\nS.G.P.T: ... U/L",
+            "Lipid": "Cholesterol: ... mg/dl\nTriglyceride: ... mg/dl\nHDL: ... mg/dl\nLDL: ... mg/dl"
+        };
+        const key = Object.keys(tpls).find(k => t.toUpperCase().includes(k));
+        document.getElementById('tRes').value = tpls[key] || "Investigation: ...\nResult: ...\nNormal Range: ...";
+    }
+
+    function addTestToList() {
+        const n = document.getElementById('tName').value;
+        const r = document.getElementById('tRes').value;
+        const p = parseFloat(document.getElementById('tPrice').value) || 0;
+        
+        if(!n || !r) return alert("يرجى ملء اسم الفحص والنتيجة");
+        
         currentVisitTests.push({ n, r, p });
-        document.getElementById('tName').value = ""; document.getElementById('tRes').value = ""; document.getElementById('tPrice').value = "";
+        
+        // مسح الحقول للإضافة التالية
+        document.getElementById('tName').value = "";
+        document.getElementById('tRes').value = "";
+        document.getElementById('tPrice').value = "";
+        
         renderQueue();
     }
 
     function renderQueue() {
         const q = document.getElementById('visitQueue');
-        q.style.display = currentVisitTests.length ? 'block' : 'none';
-        document.getElementById('queueList').innerHTML = currentVisitTests.map(t => `<div style="padding:8px; border-bottom:1px solid #ddd;">${t.n} - ${t.p} SDG</div>`).join('');
+        const list = document.getElementById('queueList');
+        const totalDiv = document.getElementById('totalDisplay');
+        
+        if(currentVisitTests.length > 0) {
+            q.style.display = 'block';
+            list.innerHTML = currentVisitTests.map((t, idx) => `
+                <div style="background:#fff; padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between;">
+                    <span><b>${t.n}</b></span>
+                    <span>${t.p} SDG <button onclick="removeTest(${idx})" style="color:red; border:none; background:none; cursor:pointer;">✖</button></span>
+                </div>
+            `).join('');
+            const total = currentVisitTests.reduce((sum, t) => sum + t.p, 0);
+            totalDiv.innerText = "إجمالي الفاتورة: " + total + " SDG";
+        } else {
+            q.style.display = 'none';
+        }
     }
 
-    async function saveVisit() {
-        const btn = document.getElementById('finalSaveBtn'), name = document.getElementById('admName').value;
-        const code = document.getElementById('admCode').value || "WQR-" + Math.floor(1000 + Math.random() * 9000);
-        if(!name || !currentVisitTests.length) return alert("يرجى إكمال البيانات");
-        btn.disabled = true; btn.innerText = "جاري الحفظ...";
+    function removeTest(i) {
+        currentVisitTests.splice(i, 1);
+        renderQueue();
+    }
+
+    async function saveVisitToCloud() {
+        const btn = document.getElementById('finalSaveBtn');
+        const name = document.getElementById('admName').value;
+        const code = document.getElementById('admCode').value;
+
+        if(!name || currentVisitTests.length === 0) return alert("البيانات ناقصة (الاسم أو الفحوصات)");
+
+        btn.disabled = true;
+        btn.innerText = "جاري الرفع للسحابة...";
+
         try {
-            const visit = { date: new Date().toLocaleDateString('ar-EG'), tests: currentVisitTests, total: currentVisitTests.reduce((s,t)=>s+t.p,0) };
-            await window.dbSave({ name, code, visit });
-            alert("✅ تم الحفظ بنجاح! كود المريض: " + code);
-            currentVisitTests = []; renderQueue(); document.getElementById('admName').value = "";
-        } catch(e) { console.error(e); }
-        finally { btn.disabled = false; btn.innerText = "حفظ وتحديث السحابة ✅"; }
+            const visitData = {
+                date: new Date().toLocaleDateString('ar-EG'),
+                tests: currentVisitTests,
+                total: currentVisitTests.reduce((s, t) => s + t.p, 0)
+            };
+
+            await window.dbSave({ name, code, visit: visitData });
+            
+            alert("✅ تم رفع النتائج بنجاح!\nكود المريض: " + code);
+            
+            // تصفير الواجهة بعد النجاح
+            currentVisitTests = [];
+            renderQueue();
+            document.getElementById('admName').value = "";
+            document.getElementById('admCode').value = "";
+        } catch(e) {
+            alert("خطأ في الرفع: " + e.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "رفع النتائج وتحديث السحابة ✅";
+        }
     }
 
     async function loadHistory() {
-        const val = document.getElementById('pSearch').value;
-        if(!val) return;
+        const val = document.getElementById('pSearch').value.trim();
+        if(!val) return alert("أدخل الكود أولاً");
+        
+        const output = document.getElementById('historyOutput');
+        output.innerHTML = "جاري البحث...";
+
         const data = await window.dbGet(val);
-        if(!data) return document.getElementById('historyOutput').innerHTML = "لا توجد بيانات لهذا الكود";
-        document.getElementById('historyOutput').innerHTML = `<h3>المريض: ${data.name}</h3>` + data.visits.reverse().map(v => `
-            <div class="test-card" style="display:flex; justify-content:space-between; align-items:center;">
-                <span>بتاريخ: ${v.date}</span>
-                <button class="btn btn-blue" style="width:100px; padding:8px;" onclick='printV("${data.name}","${data.code}",${JSON.stringify(v)})'>تحميل PDF</button>
-            </div>
-        `).join('');
+        if(!data) {
+            output.innerHTML = "<p style='color:red;'>عذراً، هذا الكود غير موجود في سجلاتنا.</p>";
+            return;
+        }
+
+        output.innerHTML = `<h3>النتائج السابقة للمريض: ${data.name}</h3>` + 
+            data.visits.reverse().map(v => `
+                <div class="test-card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <b>تاريخ الزيارة: ${v.date}</b><br>
+                        <small>عدد الفحوصات: ${v.tests.length}</small>
+                    </div>
+                    <button class="btn btn-blue" style="width:120px; padding:10px; font-size:14px;" onclick='preparePDF("${data.name}","${data.code}",${JSON.stringify(v)})'>تحميل PDF</button>
+                </div>
+            `).join('');
     }
 
-    function printV(name, code, v) {
+    function preparePDF(name, code, v) {
         document.getElementById('prName').innerText = name;
         document.getElementById('prCode').innerText = code;
         document.getElementById('prDate').innerText = v.date;
-        let table = `<table><tr><th style="width:35%">Investigation</th><th>Result</th></tr>`;
-        v.tests.forEach(t => { table += `<tr><td><b>${t.n}</b></td><td style="white-space: pre-wrap; direction:ltr;">${t.r}</td></tr>`; });
-        document.getElementById('prTableArea').innerHTML = table + `</table><div style="margin-top:20px; font-weight:bold; font-size:20px;">Total Paid: ${v.total} SDG</div>`;
-        const area = document.getElementById('printArea'); area.style.left = "0";
-        html2canvas(area, {scale: 2, useCORS: true, allowTaint: true}).then(can => {
+        
+        let tableRows = `<table><tr><th style="width:40%">Investigation</th><th>Result</th></tr>`;
+        v.tests.forEach(t => {
+            tableRows += `<tr><td><b>${t.n}</b></td><td style="white-space: pre-wrap; direction:ltr; font-family:monospace;">${t.r}</td></tr>`;
+        });
+        
+        document.getElementById('prTableArea').innerHTML = tableRows + `</table><div style="margin-top:20px; font-weight:bold; font-size:20px; text-align:right;">Total Paid: ${v.total} SDG</div>`;
+        
+        const area = document.getElementById('printArea');
+        area.style.left = "0";
+
+        html2canvas(area, {scale: 2, useCORS: true, allowTaint: true}).then(canvas => {
             const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-            const imgData = can.toDataURL('image/png');
-            pdf.addImage(imgData, 'PNG', 0, 0, 210, (can.height * 210) / can.width);
-            pdf.save(`Waqar_Lab_${name}.pdf`); area.style.left = "-9999px";
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 0, 0, 210, (canvas.height * 210) / canvas.width);
+            pdf.save(`Waqar_Lab_${name}.pdf`);
+            area.style.left = "-9999px";
         });
     }
 </script>
