@@ -3,224 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معمل وقار الحديث | بوابة النتائج</title>
+    <title>نظام معمل وقار الحديث المتكامل</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { initializeFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAMtySu0ZulKoWLfByBBDS05BIQ5qDNWE8",
-            authDomain: "wagaarlab-a1e6c.firebaseapp.com",
-            projectId: "wagaarlab-a1e6c",
-            storageBucket: "wagaarlab-a1e6c.firebasestorage.app",
-            messagingSenderId: "922691536177",
-            appId: "1:922691536177:web:d683fa18488853d3915c10"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = initializeFirestore(app, { experimentalForceLongPolling: true });
-
-        window.saveRecord = async (data) => {
-            const ref = doc(db, "records", data.code.toUpperCase());
-            await setDoc(ref, { ...data, timestamp: new Date().toLocaleString('ar-EG') }, { merge: true });
-            return true;
-        };
-
-        window.fetchRecord = async (code) => {
-            const ref = doc(db, "records", code.toUpperCase());
-            const snap = await getDoc(ref);
-            return snap.exists() ? snap.data() : null;
-        };
-    </script>
-
     <style>
-        :root { --primary: #0a192f; --accent: #1e40af; --gold: #d4af37; --success: #059669; }
-        body { font-family: 'Cairo', sans-serif; background: #0f172a; margin: 0; color: #fff; }
-        .app-container { max-width: 800px; margin: 20px auto; padding: 15px; }
-        .card { background: white; border-radius: 20px; color: #333; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3); margin-bottom: 20px; }
-        .banner { background: var(--primary); color: white; padding: 30px; text-align: center; border-bottom: 5px solid var(--gold); }
+        :root { --primary: #0a192f; --accent: #1e40af; --gold: #d4af37; --success: #25d366; }
+        body { font-family: 'Cairo', sans-serif; background: #0f172a; color: #333; margin: 0; }
+        .no-print { padding: 20px; max-width: 1000px; margin: auto; }
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         
-        /* بوابة المريض */
-        .portal-box { background: #f0f9ff; border: 2px solid var(--accent); border-radius: 15px; padding: 25px; text-align: center; }
-        .search-input { width: 100%; padding: 15px; font-size: 20px; text-align: center; border-radius: 10px; border: 2px solid #ddd; margin-bottom: 15px; font-weight: bold; }
+        .tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; background: #f1f5f9; padding: 15px; border-radius: 10px; max-height: 400px; overflow-y: auto; }
+        .test-item { background: white; padding: 8px; border-radius: 5px; border: 1px solid #ddd; font-size: 13px; display: flex; align-items: center; cursor: pointer; }
         
-        /* لوحة التحكم */
-        .admin-link { text-align: center; margin-top: 10px; font-size: 13px; color: #94a3b8; cursor: pointer; text-decoration: underline; }
-        .tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; max-height: 350px; overflow-y: auto; background: #f1f5f9; padding: 15px; border-radius: 10px; }
-        .test-item { background: white; padding: 8px; border-radius: 5px; font-size: 12px; border: 1px solid #ddd; display: flex; align-items: center; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; font-family: 'Cairo'; }
+        .btn { padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; }
+        .btn-wa { background: var(--success); color: white; width: 100%; margin-top: 10px; }
+        .btn-print { background: var(--accent); color: white; width: 100%; }
 
-        .btn { padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.3s; }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-success { background: var(--success); color: white; }
+        /* Report Layout */
+        .report-wrapper { display: none; background: white; color: #000; padding: 30px; min-height: 297mm; position: relative; box-sizing: border-box; }
+        .report-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .report-table th, .report-table td { border: 1.5px solid #94a3b8; padding: 10px; text-align: center; }
+        .report-table th { background: #f1f5f9; }
+        
+        .special-section { margin-top: 20px; border: 2px solid #000; border-radius: 8px; overflow: hidden; }
+        .special-title { background: var(--primary); color: white; padding: 8px; text-align: center; font-weight: bold; }
 
-        /* Report Style */
-        .report-wrapper { display: none; background: white; color: #000; padding: 40px; min-height: 297mm; }
-        .report-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); margin-bottom: 20px; padding-bottom: 10px; }
-        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        .results-table th, .results-table td { border: 1.5px solid #94a3b8; padding: 10px; text-align: center; }
-        .footer-logo { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 50px; }
-
-        @media print { .no-print { display: none !important; } .report-wrapper { display: block !important; padding: 10px; } }
+        @media print {
+            .no-print { display: none !important; }
+            .report-wrapper { display: block !important; padding: 10mm; }
+            body { background: white; }
+        }
     </style>
 </head>
 <body>
 
-<div class="app-container no-print">
+<div class="no-print">
     <div class="card">
-        <div class="banner">
-            <h2 style="margin:0;">مختبر وقار الحديث للتحاليل الطبية</h2>
-            <p style="margin:5px 0 0 0; opacity: 0.8;">دقة النتائج.. أمان لصحتك</p>
+        <h2 style="text-align:center; color:var(--primary); margin-top:0;">إدارة نتائج معمل وقار الحديث</h2>
+        
+        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px;">
+            <input type="text" id="pName" placeholder="اسم المريض بالكامل">
+            <input type="number" id="pAge" placeholder="العمر">
+            <input type="text" id="pPhone" placeholder="رقم الواتساب (مثال: 2499...)">
+        </div>
+        <input type="text" id="pCode" readonly style="background:#e2e8f0; font-weight:bold; color:var(--accent);">
+
+        <h4>اختر الفحوصات (35 فحصاً معتمداً):</h4>
+        <div class="tests-grid">
+            <label class="test-item"><input type="checkbox" class="t-check" value="Glucose (Random)" data-u="mg/dl" data-n="70-140"> Glucose (Random)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Glucose (Fasting)" data-u="mg/dl" data-n="70-110"> Glucose (Fasting)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Urea" data-u="mg/dl" data-n="15-45"> Urea</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Creatinine" data-u="mg/dl" data-n="0.6-1.4"> Creatinine</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Uric Acid" data-u="mg/dl" data-n="3.5-7.2"> Uric Acid</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Cholesterol" data-u="mg/dl" data-n="< 200"> Cholesterol</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Triglycerides" data-u="mg/dl" data-n="< 150"> Triglycerides</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="HDL" data-u="mg/dl" data-n="> 40"> HDL</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="LDL" data-u="mg/dl" data-n="< 130"> LDL</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="SGPT (ALT)" data-u="U/L" data-n="Up to 40"> SGPT (ALT)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="SGOT (AST)" data-u="U/L" data-n="Up to 40"> SGOT (AST)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Bilirubin (Total)" data-u="mg/dl" data-n="0.1-1.2"> Bilirubin (Total)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Bilirubin (Direct)" data-u="mg/dl" data-n="Up to 0.3"> Bilirubin (Direct)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Albumin" data-u="g/dl" data-n="3.5-5.0"> Albumin</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Total Protein" data-u="g/dl" data-n="6.6-8.7"> Total Protein</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Hemoglobin (Hb)" data-u="g/dl" data-n="12-18"> Hemoglobin (Hb)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="W.B.Cs" data-u="c/mm" data-n="4000-11000"> W.B.Cs</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Platelets" data-u="c/mm" data-n="150k-450k"> Platelets</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="E.S.R" data-u="mm/hr" data-n="0-20"> E.S.R</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Malaria (BF)" data-u="-" data-n="Negative"> Malaria (BF)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Blood Group" data-u="-" data-n="-"> Blood Group</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="H. Pylori (Ag)" data-u="-" data-n="Negative"> H. Pylori (Ag)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="HBsAg" data-u="-" data-n="Negative"> HBsAg (B)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="HCV" data-u="-" data-n="Negative"> HCV (C)</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="HIV 1&2" data-u="-" data-n="Negative"> HIV 1&2</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Widal Test" data-u="-" data-n="Negative"> Widal Test</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Brucella" data-u="-" data-n="Negative"> Brucella</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Pregnancy Test" data-u="-" data-n="Negative"> Pregnancy Test</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="ASO Titre" data-u="IU/ml" data-n="Up to 200"> ASO Titre</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="RF" data-u="IU/ml" data-n="Up to 8"> RF</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="TSH" data-u="uIU/ml" data-n="0.4-4.2"> TSH</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="PSA" data-u="ng/ml" data-n="0-4.0"> PSA</label>
+            <label class="test-item"><input type="checkbox" class="t-check" value="Vitamin D" data-u="ng/ml" data-n="30-100"> Vitamin D</label>
+            <label class="test-item" style="color:red; font-weight:bold;"><input type="checkbox" id="checkUrine"> Urine Analysis (Full)</label>
+            <label class="test-item" style="color:red; font-weight:bold;"><input type="checkbox" id="checkStool"> Stool Exam (Full)</label>
         </div>
 
-        <div class="portal-box" id="patientSection">
-            <h3 style="margin-top:0; color: var(--accent);">استعلام عن نتيجة فحص</h3>
-            <input type="text" id="searchCode" class="search-input" placeholder="WQR-XXXX">
-            <button class="btn btn-primary" onclick="patientSearch()">عرض نتيجتي الآن 🔍</button>
-        </div>
-
-        <div id="adminArea" style="display:none; padding:25px;">
-            <h3>إصدار نتيجة جديدة</h3>
-            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px; margin-bottom:15px;">
-                <input type="text" id="pName" placeholder="اسم المريض">
-                <input type="number" id="pAge" placeholder="العمر">
-                <input type="text" id="pPhone" placeholder="واتساب">
-            </div>
-            <input type="text" id="pCode" readonly style="background:#eee; margin-bottom:15px; padding:10px; width:100%; box-sizing:border-box; font-weight:bold;">
-
-            <h4>قائمة الفحوصات (35 فحصاً):</h4>
-            <div class="tests-grid" id="tGrid">
-                <label class="test-item"><input type="checkbox" value="Glucose (Random)" data-u="mg/dl" data-n="70-140"> Glucose (R)</label>
-                <label class="test-item"><input type="checkbox" value="Glucose (Fasting)" data-u="mg/dl" data-n="70-110"> Glucose (F)</label>
-                <label class="test-item"><input type="checkbox" value="Urea" data-u="mg/dl" data-n="15-45"> Urea</label>
-                <label class="test-item"><input type="checkbox" value="Creatinine" data-u="mg/dl" data-n="0.6-1.4"> Creatinine</label>
-                <label class="test-item"><input type="checkbox" value="Uric Acid" data-u="mg/dl" data-n="3.5-7.2"> Uric Acid</label>
-                <label class="test-item"><input type="checkbox" value="Cholesterol" data-u="mg/dl" data-n="< 200"> Cholesterol</label>
-                <label class="test-item"><input type="checkbox" value="Triglycerides" data-u="mg/dl" data-n="< 150"> Triglycerides</label>
-                <label class="test-item"><input type="checkbox" value="HDL" data-u="mg/dl" data-n="> 40"> HDL</label>
-                <label class="test-item"><input type="checkbox" value="LDL" data-u="mg/dl" data-n="< 130"> LDL</label>
-                <label class="test-item"><input type="checkbox" value="SGPT (ALT)" data-u="U/L" data-n="Up to 40"> SGPT (ALT)</label>
-                <label class="test-item"><input type="checkbox" value="SGOT (AST)" data-u="U/L" data-n="Up to 40"> SGOT (AST)</label>
-                <label class="test-item"><input type="checkbox" value="Bilirubin (T)" data-u="mg/dl" data-n="0.1-1.2"> Bilirubin (T)</label>
-                <label class="test-item"><input type="checkbox" value="Bilirubin (D)" data-u="mg/dl" data-n="Up to 0.3"> Bilirubin (D)</label>
-                <label class="test-item"><input type="checkbox" value="Albumin" data-u="g/dl" data-n="3.5-5.0"> Albumin</label>
-                <label class="test-item"><input type="checkbox" value="Total Protein" data-u="g/dl" data-n="6.6-8.7"> Total Protein</label>
-                <label class="test-item"><input type="checkbox" value="Hb" data-u="g/dl" data-n="12-18"> Hemoglobin</label>
-                <label class="test-item"><input type="checkbox" value="W.B.Cs" data-u="c/mm" data-n="4000-11000"> W.B.Cs</label>
-                <label class="test-item"><input type="checkbox" value="Platelets" data-u="c/mm" data-n="150k-450k"> Platelets</label>
-                <label class="test-item"><input type="checkbox" value="E.S.R" data-u="mm/hr" data-n="0-20"> E.S.R</label>
-                <label class="test-item"><input type="checkbox" value="Malaria (BF)" data-u="" data-n="Negative"> Malaria</label>
-                <label class="test-item"><input type="checkbox" value="Blood Group" data-u="" data-n="-"> Blood Group</label>
-                <label class="test-item"><input type="checkbox" value="H. Pylori (Ag)" data-u="" data-n="Negative"> H. Pylori</label>
-                <label class="test-item"><input type="checkbox" value="HBsAg" data-u="" data-n="Negative"> HBsAg</label>
-                <label class="test-item"><input type="checkbox" value="HCV" data-u="" data-n="Negative"> HCV</label>
-                <label class="test-item"><input type="checkbox" value="HIV 1&2" data-u="" data-n="Negative"> HIV</label>
-                <label class="test-item"><input type="checkbox" value="Widal Test" data-u="" data-n="Negative"> Widal Test</label>
-                <label class="test-item"><input type="checkbox" value="Brucella" data-u="" data-n="Negative"> Brucella</label>
-                <label class="test-item"><input type="checkbox" value="Pregnancy" data-u="" data-n="Negative"> Pregnancy</label>
-                <label class="test-item"><input type="checkbox" value="ASO Titre" data-u="IU/ml" data-n="< 200"> ASO Titre</label>
-                <label class="test-item"><input type="checkbox" value="RF" data-u="IU/ml" data-n="< 8"> RF</label>
-                <label class="test-item"><input type="checkbox" value="TSH" data-u="uIU/ml" data-n="0.4-4.2"> TSH</label>
-                <label class="test-item"><input type="checkbox" value="PSA" data-u="ng/ml" data-n="0-4.0"> PSA</label>
-                <label class="test-item"><input type="checkbox" value="Vit D" data-u="ng/ml" data-n="30-100"> Vit D</label>
-                <label class="test-item"><input type="checkbox" value="Urine Analysis" data-u="" data-n="Normal"> Urine Analysis</label>
-                <label class="test-item"><input type="checkbox" value="Stool Analysis" data-u="" data-n="Normal"> Stool Analysis</label>
-            </div>
-
-            <div id="dynamicInputs" style="margin-top:15px;"></div>
-            <button class="btn btn-success" style="margin-top:20px;" onclick="processSave()">حفظ واعتماد النتيجة ✅</button>
-        </div>
-
-        <div class="admin-link" onclick="adminAuth()">دخول الموظفين فقط</div>
+        <div id="dynamicInputs" style="margin-top:20px;"></div>
+        
+        <button class="btn btn-print" style="margin-top:20px;" onclick="generateReport()">إصدار التقرير النهائي 🚀</button>
     </div>
 </div>
 
 <div id="reportPage" class="report-wrapper">
     <div class="report-header">
-        <img src="https://i.ibb.co/hR0pXpP/210350.png" style="width:140px;" alt="Logo">
+        <img src="https://i.ibb.co/hR0pXpP/210350.png" style="width:150px;">
         <div style="text-align:center;">
             <h1 style="margin:0; color:var(--primary);">معمل وقار الحديث للتحاليل الطبية</h1>
-            <p style="margin:0; font-weight:900;">WAQAR AL-HADEETH MEDICAL LAB</p>
+            <p style="margin:5px 0; font-weight:900;">WAQAR AL-HADEETH MEDICAL LAB</p>
         </div>
         <div id="qrcode"></div>
     </div>
 
-    <div style="background:#f1f5f9; padding:15px; border:1px solid #ddd; border-radius:10px; display:grid; grid-template-columns: 2fr 1fr 1fr; margin-bottom:20px;">
-        <div><b>Patient:</b> <span id="rName"></span></div>
+    <div style="background:#f8fafc; padding:15px; border:1px solid #cbd5e1; border-radius:10px; display:grid; grid-template-columns: 2fr 1fr 1fr; margin-bottom:20px;">
+        <div><b>Patient Name:</b> <span id="rName"></span></div>
         <div><b>Age:</b> <span id="rAge"></span></div>
         <div><b>Ref Code:</b> <span id="rRef"></span></div>
     </div>
 
-    <table class="results-table">
-        <thead><tr><th>Investigation</th><th>Result</th><th>Unit</th><th>Range</th></tr></thead>
+    <table class="report-table">
+        <thead><tr><th>Investigation</th><th>Result</th><th>Unit</th><th>Normal Range</th></tr></thead>
         <tbody id="rBody"></tbody>
     </table>
 
-    <div class="footer-logo">
-        <div style="text-align:center;">
-            <img src="https://i.ibb.co/C0601tH/210352.png" style="width:140px;" alt="Seal">
-            <p style="font-size:12px; font-weight:bold; color:red; margin:0;">OFFICIAL SEAL</p>
-        </div>
-        <div style="text-align:center; width:250px; border-top:2px solid #000;">
-            <p style="margin:5px 0;">Lab Director</p>
-            <b style="font-size:18px;">د. السني خالد محمد</b>
-        </div>
+    <div id="urineFull" style="display:none;" class="special-section">
+        <div class="special-title">URINE ANALYSIS REPORT</div>
+        <table class="report-table">
+            <tr><td><b>Physical:</b> Color: <span id="uCol"></span> | Aspect: <span id="uAsp"></span></td><td><b>Chemical:</b> pH: <span id="uPh"></span> | Alb: <span id="uAlb"></span></td></tr>
+            <tr><td colspan="2"><b>Microscopic:</b> Pus: <span id="uPus"></span> | RBCs: <span id="uRbc"></span> | Crystals: <span id="uCry"></span> | Epithelial: <span id="uEpi"></span></td></tr>
+        </table>
     </div>
 
-    <div class="no-print" style="margin-top:30px; display:flex; gap:10px; justify-content:center;">
-        <button class="btn btn-primary" style="width:150px;" onclick="window.print()">طباعة PDF</button>
-        <button id="waBtn" class="btn btn-success" style="width:150px;">واتساب</button>
-        <button class="btn" style="width:150px; background:#64748b;" onclick="location.reload()">إغلاق</button>
+    <div id="stoolFull" style="display:none;" class="special-section">
+        <div class="special-title">STOOL EXAMINATION REPORT</div>
+        <table class="report-table">
+            <tr><td><b>Macro:</b> Color: <span id="sCol"></span> | Consist: <span id="sCon"></span></td><td><b>Micro:</b> Pus: <span id="sPus"></span> | RBCs: <span id="sRbc"></span></td></tr>
+            <tr><td colspan="2"><b>Findings:</b> Ova/Cyst: <span id="sOva"></span> | Parasites: <span id="sPar"></span> | Others: <span id="sOth"></span></td></tr>
+        </table>
+    </div>
+
+    <div style="margin-top:60px; display:flex; justify-content:space-between; align-items: flex-end;">
+        <div style="text-align:center;"><img src="https://i.ibb.co/C0601tH/210352.png" style="width:150px;"><p style="color:red; font-weight:bold; margin:0;">LAB SEAL</p></div>
+        <div style="text-align:center; width:250px; border-top:2px solid #000; padding-top:10px;"><p style="margin:0;">Lab Specialist</p><b style="font-size:18px;">د. السني خالد محمد</b></div>
+    </div>
+
+    <div class="no-print" style="margin-top:30px; display:flex; gap:12px; justify-content:center;">
+        <button class="btn btn-print" style="width:200px;" onclick="window.print()">طباعة التقرير</button>
+        <button id="waBtn" class="btn btn-wa" style="width:200px;">إرسال عبر واتساب 🟢</button>
+        <button class="btn" style="width:200px; background:#64748b;" onclick="location.reload()">مريض جديد</button>
     </div>
 </div>
 
 <script>
-    function adminAuth() {
-        let p = prompt("أدخل كلمة مرور النظام:");
-        if(p === "6519") {
-            document.getElementById('patientSection').style.display = 'none';
-            document.getElementById('adminArea').style.display = 'block';
-            document.getElementById('pCode').value = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
-        }
-    }
+    document.getElementById('pCode').value = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
 
-    async function patientSearch() {
-        const code = document.getElementById('searchCode').value.trim().toUpperCase();
-        if(!code) return alert("يرجى إدخال الكود");
-        const data = await window.fetchRecord(code);
-        if(data) { renderReport(data); } else { alert("الكود غير صحيح أو النتيجة لم تصدر بعد."); }
-    }
-
-    document.getElementById('tGrid').addEventListener('change', function() {
-        const div = document.getElementById('dynamicInputs'); div.innerHTML = '<h5>أدخل القيم:</h5>';
-        document.querySelectorAll('#tGrid input:checked').forEach(cb => {
-            div.innerHTML += `<div style="margin-bottom:8px;">${cb.value}: <input type="text" class="v-in" data-n="${cb.value}" data-u="${cb.dataset.u}" data-r="${cb.dataset.n}"></div>`;
+    document.addEventListener('change', function() {
+        let html = '<h4>إدخال النتائج:</h4>';
+        document.querySelectorAll('.t-check:checked').forEach(cb => {
+            html += `<div style="margin-bottom:8px;">${cb.value}: <input type="text" class="res-in" data-n="${cb.value}" data-u="${cb.dataset.u}" data-r="${cb.dataset.n}"></div>`;
         });
+        if(document.getElementById('checkUrine').checked) {
+            html += `<div style="background:#e0f2fe; padding:10px; border-radius:10px; margin-top:10px;"><b>بيانات البول:</b><br>
+            Color: <input type="text" id="inUCol" value="Yellow"> Pus: <input type="text" id="inUPus"> RBCs: <input type="text" id="inURbc"> Crystals: <input type="text" id="inUCry"></div>`;
+        }
+        if(document.getElementById('checkStool').checked) {
+            html += `<div style="background:#fef3c7; padding:10px; border-radius:10px; margin-top:10px;"><b>بيانات البراز:</b><br>
+            Consist: <input type="text" id="inSCon" value="Soft"> Pus: <input type="text" id="inSPus"> Ova/Cyst: <input type="text" id="inSOva"></div>`;
+        }
+        document.getElementById('dynamicInputs').innerHTML = html;
     });
 
-    async function processSave() {
-        const results = Array.from(document.querySelectorAll('.v-in')).map(i => ({ name: i.dataset.n, val: i.value, unit: i.dataset.u, norm: i.dataset.r }));
-        const data = { name: document.getElementById('pName').value, age: document.getElementById('pAge').value, code: document.getElementById('pCode').value, phone: document.getElementById('pPhone').value, results };
-        if(await window.saveRecord(data)) { renderReport(data); }
-    }
+    function generateReport() {
+        document.getElementById('rName').innerText = document.getElementById('pName').value;
+        document.getElementById('rAge').innerText = document.getElementById('pAge').value;
+        const code = document.getElementById('pCode').value;
+        document.getElementById('rRef').innerText = code;
 
-    function renderReport(data) {
-        document.querySelector('.app-container').style.display = 'none';
-        document.getElementById('reportPage').style.display = 'block';
-        document.getElementById('rName').innerText = data.name;
-        document.getElementById('rAge').innerText = data.age;
-        document.getElementById('rRef').innerText = data.code;
-        document.getElementById('rBody').innerHTML = data.results.map(r => `<tr><td><b>${r.name}</b></td><td style="font-size:18px; font-weight:900;">${r.val}</td><td>${r.unit}</td><td>${r.norm}</td></tr>`).join('');
-        document.getElementById('qrcode').innerHTML = "";
-        new QRCode(document.getElementById("qrcode"), { text: data.code, width: 70, height: 70 });
-        
-        if(data.phone) {
-            document.getElementById('waBtn').onclick = () => {
-                window.open(`https://wa.me/${data.phone}?text=مرحباً ${data.name}، نتيجتك من معمل وقار الحديث جاهزة. كود الدخول: ${data.code}`, '_blank');
-            };
+        let rows = '';
+        document.querySelectorAll('.res-in').forEach(i => {
+            rows += `<tr><td><b>${i.dataset.n}</b></td><td style="font-size:18px; font-weight:900;">${i.value}</td><td>${i.dataset.u}</td><td>${i.dataset.r}</td></tr>`;
+        });
+        document.getElementById('rBody').innerHTML = rows;
+
+        if(document.getElementById('checkUrine').checked) {
+            document.getElementById('urineFull').style.display = 'block';
+            document.getElementById('uCol').innerText = document.getElementById('inUCol').value;
+            document.getElementById('uPus').innerText = document.getElementById('inUPus').value;
+            document.getElementById('uRbc').innerText = document.getElementById('inURbc').value;
+            document.getElementById('uCry').innerText = document.getElementById('inUCry').value;
         }
+        if(document.getElementById('checkStool').checked) {
+            document.getElementById('stoolFull').style.display = 'block';
+            document.getElementById('sCon').innerText = document.getElementById('inSCon').value;
+            document.getElementById('sPus').innerText = document.getElementById('inSPus').value;
+            document.getElementById('sOva').innerText = document.getElementById('inSOva').value;
+        }
+
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), { text: code, width: 80, height: 80 });
+
+        // تفعيل زر الواتساب
+        document.getElementById('waBtn').onclick = () => {
+            const name = document.getElementById('pName').value;
+            const phone = document.getElementById('pPhone').value;
+            const msg = `مرحباً ${name}، نتيجتك الطبية من معمل وقار الحديث جاهزة للتحميل.%0Aرقم المرجع: ${code}`;
+            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+        };
+
+        document.querySelector('.no-print').style.display = 'none';
+        document.getElementById('reportPage').style.display = 'block';
     }
 </script>
 </body>
 </html>
+
