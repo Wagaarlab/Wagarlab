@@ -3,222 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام معمل وقار الحديث - النسخة المستقرة</title>
+    <title>نظام معمل وقار الحديث - الإصدار الاحترافي V5</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root { --primary: #0a192f; --accent: #1e40af; --gold: #d4af37; --bg: #f8fafc; --text: #1e293b; }
-        @media (prefers-color-scheme: dark) { :root { --bg: #0f172a; --text: #f1f5f9; } }
         body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
         .no-print { padding: 15px; max-width: 1200px; margin: auto; }
-        .glass { background: white; color: #333; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 25px; margin-bottom: 20px; border-top: 5px solid var(--gold); }
-        .logo-container { text-align: center; margin-bottom: 15px; }
-        .main-logo { width: 150px; border-radius: 10px; border: 2px solid var(--gold); }
+        .glass { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 25px; border-top: 5px solid var(--gold); }
+        .logo-box { text-align: center; margin-bottom: 15px; }
+        .main-logo { width: 140px; border-radius: 10px; }
         
-        .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--accent); cursor: pointer; font-weight: bold; background: none; color: var(--accent); }
+        /* التبويبات */
+        .tab-nav { display: flex; gap: 8px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid var(--accent); cursor: pointer; font-weight: bold; background: none; color: var(--accent); }
         .active { background: var(--accent) !important; color: white !important; }
 
-        .tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; max-height: 350px; overflow-y: auto; background: #f1f5f9; padding: 15px; border-radius: 10px; margin: 15px 0; }
-        .test-card { display: flex; align-items: center; gap: 8px; font-size: 13px; background: white; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+        /* شبكة الفحوصات */
+        .tests-container { background: #f1f5f9; padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid #ddd; }
+        .tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; max-height: 250px; overflow-y: auto; }
+        .test-card { display: flex; align-items: center; gap: 6px; font-size: 12px; background: white; padding: 8px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; }
+
+        /* منطقة الإدخال */
+        .entry-section { background: #fff; padding: 20px; border-radius: 12px; border: 2px dashed var(--accent); margin-top: 20px; }
+        .input-row { display: none; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .visible-row { display: flex !important; }
         
-        input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 100%; box-sizing: border-box; margin: 5px 0; font-family: 'Cairo'; }
-        .btn { padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 10px; }
+        input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Cairo'; width: 100%; box-sizing: border-box; }
+        .btn { padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-gold { background: var(--gold); color: white; }
 
-        /* التنسيق الطباعي A4 */
-        .a4-page { display: none; background: white; width: 210mm; min-height: 297mm; padding: 12mm; margin: auto; color: #000; position: relative; }
+        /* التنسيق الطباعي */
+        .a4-page { display: none; background: white; width: 210mm; min-height: 297mm; padding: 12mm; margin: auto; color: #000; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
         .rep-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
-        .p-bar { display: grid; grid-template-columns: 2fr 1fr 1fr; border: 2px solid #000; margin: 15px 0; padding: 10px; font-weight: bold; }
+        .p-info { display: grid; grid-template-columns: 2fr 1fr 1fr; border: 2px solid #000; margin: 15px 0; padding: 10px; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #000; padding: 6px; text-align: center; font-size: 12px; }
-        .sec-title { background: #000; color: #fff; padding: 5px; font-weight: bold; text-align: center; margin-top: 15px; }
+        .sec-head { background: #000; color: #fff; text-align: center; font-weight: bold; padding: 4px; margin-top: 12px; }
 
-        @media print { .no-print { display: none !important; } .a4-page { display: block !important; } }
+        @media print { .no-print { display: none !important; } .a4-page { display: block !important; box-shadow: none; } }
     </style>
 </head>
 <body>
 
 <div class="no-print">
-    <div id="authGate" class="glass" style="max-width:450px; margin: 60px auto;">
-        <div class="logo-container">
-            <img src="https://i.ibb.co/hR0pXpP/210350.png" class="main-logo" alt="Waqar Lab Logo">
-        </div>
+    <div id="loginGate" class="glass" style="max-width:400px; margin: 60px auto;">
+        <div class="logo-box"><img src="https://i.ibb.co/hR0pXpP/210350.png" class="main-logo" alt="Logo"></div>
         <div class="tab-nav">
-            <button id="pTab" class="tab-btn active" onclick="switchView('patient')">استعلام مريض</button>
-            <button id="aTab" class="tab-btn" onclick="switchView('admin')">لوحة الإدارة</button>
+            <button id="pTab" class="tab-btn active" onclick="toggleAuth('patient')">استلام نتيجة</button>
+            <button id="aTab" class="tab-btn" onclick="toggleAuth('admin')">لوحة الإدارة</button>
         </div>
-        <div id="pView">
-            <input type="text" id="patientRef" placeholder="أدخل كود المرجع (WQR-xxxx)">
-            <button class="btn btn-primary" onclick="searchForReport()">عرض النتيجة</button>
-        </div>
-        <div id="aView" style="display:none">
-            <input type="password" id="adminPass" placeholder="كلمة المرور">
-            <button class="btn btn-primary" onclick="adminLogin()">دخول للمدير</button>
-        </div>
+        <div id="pAuth"><input type="text" id="pRefSearch" placeholder="أدخل كود المريض WQR-xxxx"><button class="btn btn-primary" onclick="searchReport()">عرض</button></div>
+        <div id="aAuth" style="display:none"><input type="password" id="adminKey" placeholder="كلمة المرور"><button class="btn btn-primary" onclick="login()">دخول</button></div>
     </div>
 
     <div id="adminPanel" style="display:none">
         <div class="glass">
-            <h2 style="text-align:center; color:var(--accent);">إدارة نتائج معمل وقار</h2>
-            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px;">
-                <input type="text" id="pName" placeholder="اسم المريض بالكامل">
-                <input type="text" id="pAge" placeholder="العمر">
-                <input type="text" id="pPhone" placeholder="رقم الواتساب">
+            <h2 style="text-align:center; color:var(--accent);">إدارة فحوصات معمل وقار الحديث</h2>
+            
+            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px; margin-bottom:20px;">
+                <input type="text" id="patName" placeholder="اسم المريض">
+                <input type="text" id="patAge" placeholder="العمر">
+                <input type="text" id="patPhone" placeholder="رقم الواتساب">
             </div>
 
-            <h4 style="margin-top:20px;">البحث في السجل: <input type="text" id="histSearch" onkeyup="filterHistory()" placeholder="ابحث باسم المريض أو الكود..."></h4>
-            <div id="historyPreview" style="max-height:100px; overflow-y:auto; background:#eee; padding:5px; border-radius:8px;"></div>
-
-            <h4>اختر الفحوصات المطلوبة:</h4>
-            <div class="tests-grid" id="testList"></div>
-            
-            <div id="entryFields" style="background:#fff; padding:15px; border:1px dashed var(--accent); border-radius:10px;">
-                <p style="color:gray; text-align:center;">اختر فحصاً من القائمة أعلاه لبدء إدخال البيانات...</p>
+            <div style="background:#eee; padding:10px; border-radius:10px; margin-bottom:15px;">
+                <b>البحث في السجل:</b> <input type="text" id="searchHistory" onkeyup="searchLogs()" placeholder="ابحث باسم المريض أو الكود...">
+                <div id="logResults" style="max-height:80px; overflow-y:auto; font-size:13px; margin-top:5px;"></div>
             </div>
-            
-            <button class="btn btn-gold" onclick="generateAndSave()">حفظ النتيجة وتوليد الكود ✨</button>
+
+            <div class="tests-container">
+                <b>اختر الفحوصات (لن يتم مسح البيانات عند التبديل):</b>
+                <div class="tests-grid" id="menu"></div>
+            </div>
+
+            <div class="entry-section" id="fieldsArea">
+                <p id="hintText" style="text-align:center; color:#999;">اختر فحصاً من القائمة أعلاه للبدء...</p>
+            </div>
+
+            <button class="btn btn-gold" onclick="saveData()">إرسال وحفظ النتيجة النهائية ✨</button>
         </div>
     </div>
 </div>
 
-<div id="reportPage" class="a4-page">
+<div id="printReport" class="a4-page">
     <div class="rep-header">
-        <img src="https://i.ibb.co/hR0pXpP/210350.png" width="140">
+        <img src="https://i.ibb.co/hR0pXpP/210350.png" width="130">
         <div style="text-align:center">
             <h1 style="margin:0; font-size:24px; color:var(--primary)">معمل وقار الحديث للتحاليل الطبية</h1>
             <p style="margin:0; font-weight:bold; font-size:12px;">WAQAR AL-HADEETH MEDICAL LAB</p>
         </div>
         <div id="qrcode"></div>
     </div>
-    <div class="p-bar">
-        <span>Name: <b id="outName"></b></span>
-        <span>Age: <b id="outAge"></b></span>
-        <span>Ref: <b id="outRef"></b></span>
+    <div class="p-info">
+        <span>Name: <span id="rName"></span></span>
+        <span>Age: <span id="rAge"></span></span>
+        <span>Ref: <span id="rRef"></span></span>
     </div>
-    <div id="outContent"></div>
+    <div id="rContent"></div>
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:50px;">
-        <div style="text-align:center"><img src="https://i.ibb.co/C0601tH/210352.png" width="100"><p style="color:red; font-size:10px; font-weight:bold;">الختم الرسمي</p></div>
-        <div style="text-align:center; width:250px; border-top:2px solid #000;"><p style="margin:5px 0;">Laboratory Director</p><b style="font-size:18px;">د. السني خالد محمد</b></div>
+        <div style="text-align:center"><img src="https://i.ibb.co/C0601tH/210352.png" width="90"><p style="color:red; font-size:10px; font-weight:bold;">الختم الرسمي</p></div>
+        <div style="text-align:center; width:250px; border-top:2px solid #000; padding-top:5px;">
+            <p style="margin:0;">Lab Director</p><b style="font-size:18px;">د. السني خالد محمد</b>
+        </div>
     </div>
     <div class="no-print" style="margin-top:30px; text-align:center;">
-        <button class="btn btn-primary" style="width:150px;" onclick="window.print()">طباعة</button>
-        <button class="btn btn-gold" style="width:150px;" onclick="location.reload()">خروج</button>
+        <button class="btn btn-primary" style="width:140px;" onclick="window.print()">طباعة PDF</button>
+        <button class="btn btn-gold" style="width:140px;" onclick="location.reload()">إغلاق</button>
     </div>
 </div>
 
 <script>
-    const TESTS_CONFIG = [
-        {n: "Glucose (Random)", u: "mg/dl", r: "70-140"}, {n: "Glucose (Fasting)", u: "mg/dl", r: "70-110"},
-        {n: "Urea", u: "mg/dl", r: "15-45"}, {n: "Creatinine", u: "mg/dl", r: "0.6-1.4"},
-        {n: "Uric Acid", u: "mg/dl", r: "3.5-7.2"}, {n: "Cholesterol", u: "mg/dl", r: "Up to 200"},
-        {n: "TSH", u: "µIU/mL", r: "0.4-4.2"}, {n: "H.Pylori (Ag)", u: "-", r: "Negative"},
-        {n: "HBV (ICT)", u: "-", r: "Negative"}, {n: "CBC (Full)", isBig: true, id: "cbc"},
-        {n: "Urine (Full)", isBig: true, id: "urine"}, {n: "Stool (Full)", isBig: true, id: "stool"}
+    const MASTER_TESTS = [
+        {n: "Glucose (Random)", u: "mg/dl", r: "70-140"}, {n: "Urea", u: "mg/dl", r: "15-45"},
+        {n: "Creatinine", u: "mg/dl", r: "0.6-1.4"}, {n: "Uric Acid", u: "mg/dl", r: "3.5-7.2"},
+        {n: "Cholesterol", u: "mg/dl", r: "Up to 200"}, {n: "TSH", u: "µIU/mL", r: "0.4-4.2"},
+        {n: "H.Pylori (Ag)", u: "-", r: "Negative"}, {n: "HBV (ICT)", u: "-", r: "Negative"},
+        {n: "CBC (Hb/WBC)", isSpecial: true, id: "cbc"}, {n: "Urine (Full)", isSpecial: true, id: "urine"}
     ];
 
-    const menu = document.getElementById('testList');
-    TESTS_CONFIG.forEach(t => {
-        menu.innerHTML += `<label class="test-card"><input type="checkbox" onchange="renderFields()" class="t-chk" value="${t.n}" data-u="${t.u||''}" data-r="${t.r||''}" data-big="${t.isBig||false}" data-id="${t.id||''}"> ${t.n}</label>`;
+    const menu = document.getElementById('menu');
+    const fieldsArea = document.getElementById('fieldsArea');
+
+    MASTER_TESTS.forEach((t, index) => {
+        // إنشاء قائمة الاختيار
+        menu.innerHTML += `<label class="test-card"><input type="checkbox" onchange="toggleRow('${index}')" id="chk_${index}"> ${t.n}</label>`;
+        
+        // إنشاء صفوف الإدخال مسبقاً (مخفية)
+        let rowHtml = `<div class="input-row" id="row_${index}">`;
+        if(t.isSpecial) {
+            if(t.id === "cbc") rowHtml += `<b>CBC:</b> Hb <input type="text" id="cbc_hb" style="width:80px"> WBC <input type="text" id="cbc_wbc" style="width:80px">`;
+            if(t.id === "urine") rowHtml += `<b>Urine:</b> Pus <input type="text" id="u_pus" style="width:80px"> RBC <input type="text" id="u_rbc" style="width:80px">`;
+        } else {
+            rowHtml += `<span style="width:150px">${t.n}:</span> <input type="text" class="v-val" data-n="${t.n}" data-u="${t.u}" data-r="${t.r}" placeholder="النتيجة">`;
+        }
+        rowHtml += `</div>`;
+        fieldsArea.innerHTML += rowHtml;
     });
 
-    function switchView(v) {
-        document.getElementById('pView').style.display = v === 'patient' ? 'block' : 'none';
-        document.getElementById('aView').style.display = v === 'admin' ? 'block' : 'none';
+    function toggleRow(idx) {
+        const row = document.getElementById(`row_${idx}`);
+        const chk = document.getElementById(`chk_${idx}`);
+        row.classList.toggle('visible-row', chk.checked);
+        document.getElementById('hintText').style.display = document.querySelectorAll('.t-chk:checked').length > 0 ? 'none' : 'block';
+    }
+
+    function toggleAuth(v) {
+        document.getElementById('pAuth').style.display = v === 'patient' ? 'block' : 'none';
+        document.getElementById('aAuth').style.display = v === 'admin' ? 'block' : 'none';
         document.getElementById('pTab').classList.toggle('active', v === 'patient');
         document.getElementById('aTab').classList.toggle('active', v === 'admin');
     }
 
-    function adminLogin() {
-        if(document.getElementById('adminPass').value === "Wagaar7@") {
-            document.getElementById('authGate').style.display = 'none';
+    function login() {
+        if(document.getElementById('adminKey').value === "Wagaar7@") {
+            document.getElementById('loginGate').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
-            updateHistoryList();
-        } else { alert("كلمة المرور غير صحيحة"); }
+        } else { alert("خطأ!"); }
     }
 
-    // إصلاح مشكلة مسح البيانات: نستخدم كائن لحفظ القيم مؤقتاً
-    let tempValues = {};
-    function renderFields() {
-        const container = document.getElementById('entryFields');
-        // حفظ القيم الحالية قبل إعادة الرندرة
-        document.querySelectorAll('.val-in').forEach(i => tempValues[i.id] = i.value);
-        
-        let html = '<h4>أدخل النتائج بعناية:</h4>';
-        document.querySelectorAll('.t-chk:checked').forEach(c => {
-            if(c.dataset.big === "true") {
-                if(c.dataset.id === "cbc") html += `<div class="sec-title">CBC FORM</div>Hb: <input type="text" class="val-in" id="cbc_hb"> WBCs: <input type="text" class="val-in" id="cbc_wbc">`;
-                if(c.dataset.id === "urine") html += `<div class="sec-title">URINE FORM</div>Pus: <input type="text" class="val-in" id="u_pus"> RBCs: <input type="text" class="val-in" id="u_rbc">`;
-            } else {
-                const safeId = c.value.replace(/\s/g, '_');
-                html += `<div>${c.value}: <input type="text" class="val-in row-val" id="${safeId}" data-n="${c.value}" data-u="${c.dataset.u}" data-r="${c.dataset.r}"></div>`;
-            }
-        });
-        container.innerHTML = html;
-        
-        // استعادة القيم المحفوظة
-        for(let id in tempValues) {
-            if(document.getElementById(id)) document.getElementById(id).value = tempValues[id];
-        }
-    }
-
-    function generateAndSave() {
-        const name = document.getElementById('pName').value;
+    function saveData() {
+        const name = document.getElementById('patName').value;
         const ref = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
         const date = new Date().toLocaleString('ar-EG');
         
-        let content = '<table><thead><tr><th>Test</th><th>Result</th><th>Unit</th><th>Range</th></tr></thead><tbody>';
-        document.querySelectorAll('.row-val').forEach(i => {
+        let content = '<table><tr><th>Test</th><th>Result</th><th>Unit</th><th>Range</th></tr>';
+        document.querySelectorAll('.visible-row .v-val').forEach(i => {
             content += `<tr><td>${i.dataset.n}</td><td><b>${i.value}</b></td><td>${i.dataset.u}</td><td>${i.dataset.r}</td></tr>`;
         });
-        content += '</tbody></table>';
+        content += '</table>';
 
-        if(document.getElementById('cbc_hb')) {
-            content += `<div class="sec-title">CBC DETAILS</div><table><tr><th>Hb</th><td>${document.getElementById('cbc_hb').value}</td><th>WBCs</th><td>${document.getElementById('cbc_wbc').value}</td></tr></table>`;
+        if(document.getElementById('cbc_hb') && document.getElementById('chk_8').checked) {
+            content += `<div class="sec-head">CBC Analysis</div><table><tr><th>Hb</th><td>${document.getElementById('cbc_hb').value}</td><th>WBC</th><td>${document.getElementById('cbc_wbc').value}</td></tr></table>`;
         }
 
-        const report = { name, age: document.getElementById('pAge').value, content, ref, date };
+        const report = { name, age: document.getElementById('patAge').value, content, ref, date };
         localStorage.setItem(ref, JSON.stringify(report));
         
-        let history = JSON.parse(localStorage.getItem('wq_history') || '[]');
-        history.unshift(report);
-        localStorage.setItem('wq_history', JSON.stringify(history));
+        let logs = JSON.parse(localStorage.getItem('lab_logs') || '[]');
+        logs.unshift(report);
+        localStorage.setItem('lab_logs', JSON.stringify(logs));
 
-        alert("تم الحفظ! كود المريض هو: " + ref);
-        location.reload(); // الآن نفرغ البيانات فقط بعد التأكيد النهائي
+        alert("تم الحفظ بنجاح! كود المريض: " + ref);
+        location.reload();
     }
 
-    function filterHistory() {
-        const q = document.getElementById('histSearch').value.toLowerCase();
-        const history = JSON.parse(localStorage.getItem('wq_history') || '[]');
-        const filtered = history.filter(h => h.name.toLowerCase().includes(q) || h.ref.includes(q));
-        let html = '';
-        filtered.slice(0, 5).forEach(h => {
-            html += `<div style="cursor:pointer; padding:5px; border-bottom:1px solid #ccc;" onclick="loadFromHistory('${h.ref}')">${h.name} - ${h.ref}</div>`;
-        });
-        document.getElementById('historyPreview').innerHTML = html;
+    function searchLogs() {
+        const q = document.getElementById('searchHistory').value.toLowerCase();
+        const logs = JSON.parse(localStorage.getItem('lab_logs') || '[]');
+        const filtered = logs.filter(l => l.name.toLowerCase().includes(q) || l.ref.includes(q));
+        document.getElementById('logResults').innerHTML = filtered.slice(0, 3).map(l => `<div onclick="loadOld('${l.ref}')" style="background:#fff; padding:5px; margin:2px; cursor:pointer;">${l.name} (${l.ref})</div>`).join('');
     }
 
-    function loadFromHistory(ref) {
-        const data = JSON.parse(localStorage.getItem(ref));
-        document.getElementById('patientRef').value = ref;
-        searchForReport();
+    function loadOld(ref) {
+        document.getElementById('pRefSearch').value = ref;
+        searchReport();
     }
 
-    function searchForReport() {
-        const ref = document.getElementById('patientRef').value.toUpperCase();
+    function searchReport() {
+        const ref = document.getElementById('pRefSearch').value.toUpperCase();
         const data = localStorage.getItem(ref);
         if(data) {
             const d = JSON.parse(data);
-            document.getElementById('outName').innerText = d.name;
-            document.getElementById('outAge').innerText = d.age;
-            document.getElementById('outRef').innerText = d.ref;
-            document.getElementById('outContent').innerHTML = d.content;
-            document.getElementById('authGate').style.display = 'none';
-            document.getElementById('reportPage').style.display = 'block';
-            new QRCode(document.getElementById("qrcode"), { text: d.ref, width: 80, height: 80 });
-        } else { alert("الكود غير موجود"); }
+            document.getElementById('rName').innerText = d.name;
+            document.getElementById('rAge').innerText = d.age;
+            document.getElementById('rRef').innerText = d.ref;
+            document.getElementById('rContent').innerHTML = d.content;
+            document.getElementById('loginGate').style.display = 'none';
+            document.getElementById('printReport').style.display = 'block';
+            new QRCode(document.getElementById("qrcode"), { text: d.ref, width: 75, height: 75 });
+        } else { alert("الكود غير صحيح"); }
     }
 </script>
 </body>
