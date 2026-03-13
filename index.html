@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معمل وقار الحديث - النظام النهائي</title>
+    <title>معمل وقار الحديث - النسخة المستقرة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, enableNetwork } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, initializeFirestore, persistentLocalCache } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyCndh68IOzYk1bzf8VXvQ5b6aS4b5TXI-o",
@@ -22,10 +22,13 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // إجبار المتصفح على الاتصال بالشبكة فوراً
-        enableNetwork(db).then(() => console.log("Network enabled"));
+        
+        // إعدادات خاصة للعمل في الشبكات الضعيفة (Long Polling)
+        const db = initializeFirestore(app, {
+            experimentalForceLongPolling: true, 
+            useFetchStreams: false,
+            localCache: persistentLocalCache()
+        });
 
         window.dbSave = async (data) => {
             const ref = doc(db, "records", data.code.toUpperCase());
@@ -98,13 +101,13 @@
             <input list="labList" id="tName" placeholder="اختر الفحص..." onchange="applyTpl()">
             <textarea id="tRes" placeholder="النتائج..." style="height: 120px; direction: ltr; font-weight: bold;"></textarea>
             <input type="number" id="tPrice" placeholder="السعر">
-            <button class="btn btn-blue" onclick="addTest()">+ إضافة الفحص للزيارة</button>
+            <button class="btn btn-blue" onclick="addTest()">+ إضافة الفحص</button>
         </div>
 
         <div id="visitQueue" style="display:none; margin-top: 15px;">
             <div id="queueList"></div>
             <div id="totalDisp" style="font-weight: bold; margin: 10px 0;"></div>
-            <button class="btn btn-green" id="finalSaveBtn" onclick="saveVisit()">حفظ النتائج نهائياً ✅</button>
+            <button class="btn btn-green" id="finalSaveBtn" onclick="saveVisit()">حفظ وتحديث السحابة الآن ✅</button>
         </div>
     </div>
 </div>
@@ -201,7 +204,7 @@
         } else {
             alert("❌ خطأ في الاتصال. يرجى التأكد من تشغيل الإنترنت وعمل Refresh للصفحة.");
         }
-        btn.disabled = false; btn.innerText = "حفظ النتائج نهائياً ✅";
+        btn.disabled = false; btn.innerText = "حفظ وتحديث السحابة الآن ✅";
     }
 
     async function loadHistory() {
@@ -233,4 +236,4 @@
 </script>
 </body>
 </html>
- 
+
