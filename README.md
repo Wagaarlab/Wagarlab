@@ -1,2 +1,2 @@
-# Wagarlab
+Omalihealt
 Laboratory test
