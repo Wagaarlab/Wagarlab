@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wagaar Lab | Next-Gen System</title>
+    <title>WAGAAR LAB | Premium System</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { initializeFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -35,258 +35,234 @@
     </script>
 
     <style>
-        :root {
-            --main-dark: #0a0e14;
-            --accent-violet: #8b5cf6;
-            --gold: #d4af37;
-            --glass: rgba(255, 255, 255, 0.95);
-        }
+        :root { --main: #0a192f; --accent: #8b5cf6; --gold: #d4af37; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: #020617; margin: 0; color: #333; overflow-x: hidden; }
+        
+        /* تأثير المنظور ثلاثي الأبعاد */
+        .glass-container { max-width: 950px; margin: 30px auto; background: rgba(255, 255, 255, 0.98); border-radius: 25px; transform: rotateX(1deg); box-shadow: 0 20px 60px rgba(139, 92, 246, 0.2); overflow: hidden; }
+        
+        .header-banner { background: linear-gradient(135deg, #0a192f 0%, #1e1b4b 100%); padding: 40px; text-align: center; position: relative; border-bottom: 5px solid var(--gold); }
+        .lab-logo-box { width: 90px; height: 90px; background: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 45px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        
+        /* شبكة الفحوصات الـ 35+ */
+        .tests-library { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 350px; overflow-y: auto; background: #f1f5f9; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; }
+        .test-btn { background: white; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; display: flex; align-items: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .test-btn:hover { border-color: var(--accent); background: #fefeff; }
+        .test-btn input { margin-left: 10px; accent-color: var(--accent); }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0e14 100%);
-            margin: 0;
-            perspective: 1500px;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            overflow-x: hidden;
-        }
+        /* الأزرار والنيون */
+        .action-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4); font-size: 16px; margin-top: 15px; }
+        .action-btn:active { transform: scale(0.98); }
 
-        /* حاوية ثلاثية المنظور */
-        .perspective-wrapper {
-            width: 100%;
-            max-width: 850px;
-            transform-style: preserve-3d;
-            transform: rotateX(5deg) rotateY(-5deg);
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 20px;
-        }
-
-        .perspective-wrapper:hover {
-            transform: rotateX(0deg) rotateY(0deg);
-        }
-
-        .main-card {
-            background: var(--glass);
-            border-radius: 30px;
-            box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.25);
-            color: #1a1a1a;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.2);
-            position: relative;
-        }
-
-        .glow-effect {
-            position: absolute;
-            bottom: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 100px;
-            background: var(--accent-violet);
-            filter: blur(80px);
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #002d5b 0%, #1a1a2e 100%);
-            padding: 40px;
-            text-align: center;
-            border-bottom: 4px solid var(--gold);
-        }
-
-        .btn-violet {
-            background: #fff;
-            border: 2px solid var(--accent-violet);
-            color: var(--accent-violet);
-            padding: 16px;
-            border-radius: 15px;
-            font-weight: 900;
-            cursor: pointer;
-            width: 100%;
-            font-size: 18px;
-            transition: 0.3s;
-            box-shadow: 0 10px 20px -10px var(--accent-violet);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-violet:hover {
-            background: var(--accent-violet);
-            color: #fff;
-            box-shadow: 0 0 30px var(--accent-violet);
-        }
-
-        /* القائمة المستخرجة */
-        .tests-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            padding: 20px;
-            background: #f8fafc;
-            border-radius: 20px;
-        }
-
-        .test-item {
-            background: #fff;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .test-item:hover { border-color: var(--accent-violet); }
-
-        /* التقرير الطبي الملكي */
-        .report-doc {
-            display: none;
-            background: #fff;
-            padding: 40px;
-            color: #000;
-            text-align: right;
-        }
-
-        .report-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 5px double #002d5b;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
+        /* التقرير الطبي الحديث */
+        .report-page { display: none; background: white; padding: 40px; color: black; min-height: 297mm; }
+        .report-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--main); padding-bottom: 20px; margin-bottom: 20px; }
+        .patient-card { display: grid; grid-template-columns: repeat(3, 1fr); background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #eee; font-size: 14px; }
+        
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .results-table th { background: #f1f5f9; padding: 12px; border: 1px solid #e2e8f0; text-align: right; font-size: 13px; }
+        .results-table td { padding: 12px; border: 1px solid #e2e8f0; font-size: 14px; }
+        .bold-res { font-weight: bold; color: var(--main); font-size: 16px; }
 
         @media print {
             .no-print { display: none !important; }
-            body { background: white; perspective: none; }
-            .perspective-wrapper { transform: none !important; padding: 0; }
-            .report-doc { display: block !important; }
+            .report-page { display: block !important; padding: 0; }
+            body { background: white; }
+            .glass-container { transform: none; box-shadow: none; margin: 0; max-width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="perspective-wrapper no-print">
-        <div class="main-card">
-            <div class="header">
-                <h1 style="margin:0; letter-spacing: 2px;">WAGAAR LAB</h1>
-                <p style="color: var(--gold); margin: 5px 0 0 0; font-weight: bold;">MODERN DIGITAL DIAGNOSTICS</p>
+<div class="glass-container no-print">
+    <div class="header-banner">
+        <div class="lab-logo-box">🔬</div>
+        <h1 style="margin:0; color:var(--gold); letter-spacing: 2px;">WAGAAR LAB</h1>
+        <p style="color:rgba(255,255,255,0.8); margin-top:5px;">Digital Diagnostic Solution</p>
+    </div>
+
+    <div style="padding: 30px;">
+        <div id="pView">
+            <h3 style="text-align:center;">استلام النتائج الإلكترونية</h3>
+            <input type="text" id="sCode" placeholder="أدخل كود المريض (مثال: WQR-1234)" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ddd; font-size:18px; text-align:center;">
+            <button class="action-btn" onclick="doSearch()">استعراض التقرير 📄</button>
+            <p style="text-align:center; color:#666; font-size:12px; margin-top:20px; cursor:pointer;" onclick="goAdmin()">دخول الإدارة 🔑</p>
+        </div>
+
+        <div id="aView" style="display:none;">
+            <h3 style="border-right: 5px solid var(--accent); padding-right:15px;">تسجيل مريض جديد</h3>
+            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px;">
+                <input type="text" id="pName" placeholder="اسم المريض بالكامل" style="padding:12px; border-radius:8px; border:1px solid #ddd;">
+                <input type="number" id="pAge" placeholder="العمر" style="padding:12px; border-radius:8px; border:1px solid #ddd;">
+                <select id="pGender" style="padding:12px; border-radius:8px; border:1px solid #ddd;">
+                    <option value="ذكر">ذكر</option>
+                    <option value="أنثى">أنثى</option>
+                </select>
+            </div>
+            <input type="text" id="pCode" readonly style="width:100%; margin-top:10px; background:#f1f5f9; border:none; padding:10px; font-weight:bold; color:var(--accent);">
+
+            <p style="font-weight:bold; margin:20px 0 10px 0;">اختر الفحوصات (موسوعة الفحوصات):</p>
+            <div class="tests-library" id="tGrid">
+                <label class="test-btn"><input type="checkbox" value="Glucose(R)" data-u="mg/dl" data-n="70-140"> Glucose (Random)</label>
+                <label class="test-btn"><input type="checkbox" value="Glucose(F)" data-u="mg/dl" data-n="70-110"> Glucose (Fasting)</label>
+                <label class="test-btn"><input type="checkbox" value="Urea" data-u="mg/dl" data-n="15-45"> Urea</label>
+                <label class="test-btn"><input type="checkbox" value="Creatinine" data-u="mg/dl" data-n="0.6-1.4"> Creatinine</label>
+                <label class="test-btn"><input type="checkbox" value="Uric Acid" data-u="mg/dl" data-n="3.5-7.2"> Uric Acid</label>
+                <label class="test-btn"><input type="checkbox" value="Cholesterol" data-u="mg/dl" data-n="< 200"> Cholesterol</label>
+                <label class="test-btn"><input type="checkbox" value="Triglycerides" data-u="mg/dl" data-n="< 150"> Triglycerides</label>
+                <label class="test-btn"><input type="checkbox" value="HDL" data-u="mg/dl" data-n="> 40"> HDL (Good)</label>
+                <label class="test-btn"><input type="checkbox" value="LDL" data-u="mg/dl" data-n="< 130"> LDL (Bad)</label>
+                <label class="test-btn"><input type="checkbox" value="S.G.P.T (ALT)" data-u="U/L" data-n="up to 40"> S.G.P.T (ALT)</label>
+                <label class="test-btn"><input type="checkbox" value="S.G.O.T (AST)" data-u="U/L" data-n="up to 40"> S.G.O.T (AST)</label>
+                <label class="test-btn"><input type="checkbox" value="Albumin" data-u="g/dl" data-n="3.5-5.0"> Albumin</label>
+                <label class="test-btn"><input type="checkbox" value="Bilirubin(T)" data-u="mg/dl" data-n="0.1-1.2"> Bilirubin (Total)</label>
+                <label class="test-btn"><input type="checkbox" value="Hemoglobin" data-u="g/dl" data-n="M:13-18 | F:12-16"> Hemoglobin (Hb)</label>
+                <label class="test-btn"><input type="checkbox" value="W.B.Cs" data-u="c/mm" data-n="4,000-11,000"> W.B.Cs</label>
+                <label class="test-btn"><input type="checkbox" value="Platelets" data-u="c/mm" data-n="150k-450k"> Platelets</label>
+                <label class="test-btn"><input type="checkbox" value="E.S.R" data-u="mm/hr" data-n="M:0-15 | F:0-20"> E.S.R</label>
+                <label class="test-btn"><input type="checkbox" value="Malaria(BF)" data-u="" data-n="Negative"> Malaria (B.F)</label>
+                <label class="test-btn"><input type="checkbox" value="H.Pylori(Ab)" data-u="" data-n="Negative"> H. Pylori (Ab)</label>
+                <label class="test-btn"><input type="checkbox" value="HBsAg" data-u="" data-n="Non-Reactive"> Hepatitis B (HBsAg)</label>
+                <label class="test-btn"><input type="checkbox" value="HIV" data-u="" data-n="Non-Reactive"> HIV 1&2</label>
+                <label class="test-btn"><input type="checkbox" value="V.D.R.L" data-u="" data-n="Non-Reactive"> V.D.R.L</label>
+                <label class="test-btn"><input type="checkbox" value="Pregnancy" data-u="" data-n="Negative"> Pregnancy Test</label>
+                <label class="test-btn"><input type="checkbox" value="TSH" data-u="uIU/ml" data-n="0.4-4.2"> TSH</label>
+                <label class="test-btn"><input type="checkbox" value="Calcium" data-u="mg/dl" data-n="8.5-10.5"> Calcium (Total)</label>
+                <label class="test-btn"><input type="checkbox" value="Vitamin D" data-u="ng/ml" data-n="30-100"> Vitamin D</label>
+                <label class="test-btn"><input type="checkbox" value="PSA" data-u="ng/ml" data-n="0-4.0"> PSA (Prostate)</label>
             </div>
 
-            <div style="padding: 30px;" id="contentArea">
-                <div id="patientView">
-                    <h3 style="color:#002d5b;">استلام نتائجك السحابية ☁️</h3>
-                    <input type="text" id="searchCode" placeholder="أدخل كود الفحص..." style="width:100%; padding:18px; border-radius:15px; border:2px solid #eee; margin-bottom:15px; font-size:18px;">
-                    <button class="btn-violet" onclick="playSound(); doSearch();">عرض التقرير الطبي 📄</button>
-                    <p style="text-align:center; margin-top:20px; color:#666; font-size:12px; cursor:pointer;" onclick="openAdmin()">لوحة الإدارة 🔑</p>
-                </div>
+            <div id="inputFields" style="margin-top:20px;"></div>
 
-                <div id="adminView" style="display:none;">
-                    <h2 style="color:var(--accent-violet);">إدخال نتائج المختبر</h2>
-                    <input type="text" id="pName" placeholder="اسم المريض الرباعي" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
-                    <input type="text" id="pCode" placeholder="الكود التعريفي (WQR-XXX)" style="width:100%; padding:12px; margin-bottom:20px; border-radius:10px; border:1px solid #ddd;">
-                    
-                    <div class="tests-grid" id="testsGrid">
-                        <label class="test-item"><input type="checkbox" value="Glucose (R)" data-unit="mg/dl" data-norm="70-140"> Glucose (Random)</label>
-                        <label class="test-item"><input type="checkbox" value="Urea" data-unit="mg/dl" data-norm="15-45"> Urea</label>
-                        <label class="test-item"><input type="checkbox" value="Creatinine" data-unit="mg/dl" data-norm="0.6-1.4"> Creatinine</label>
-                        <label class="test-item"><input type="checkbox" value="Hemoglobin" data-unit="g/dl" data-norm="13-18"> Hemoglobin (Hb)</label>
-                        <label class="test-item"><input type="checkbox" value="Malaria (BF)" data-unit="" data-norm="Negative"> Malaria (BF)</label>
-                    </div>
-
-                    <div id="dynamicInputs" style="margin-top:20px;"></div>
-                    <button class="btn-violet" style="background:var(--accent-violet); color:#fff; margin-top:20px;" onclick="playSound(); doSave();">اعتماد وحفظ نهائي ✅</button>
+            <div style="background:#fff7ed; padding:15px; border-radius:12px; margin-top:20px; border:1px solid #fed7aa;">
+                <p style="margin:0 0 10px 0; font-weight:bold; color:#9a3412;">الحسابات المالية 💰</p>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="number" id="fTotal" placeholder="الإجمالي (SDG)" oninput="calcRes()" style="padding:10px; border-radius:8px; border:1px solid #ddd;">
+                    <input type="number" id="fPaid" placeholder="المدفوع (SDG)" oninput="calcRes()" style="padding:10px; border-radius:8px; border:1px solid #ddd;">
                 </div>
+                <p style="margin:10px 0 0 0;">المتبقي: <span id="fRemain" style="font-weight:bold; color:red;">0</span> SDG</p>
             </div>
-            <div class="glow-effect"></div>
+
+            <button class="action-btn" style="background:#16a34a;" onclick="doSave()">حفظ واعتماد النتيجة نهائياً ✅</button>
+        </div>
+    </div>
+</div>
+
+<div id="repPage" class="report-page">
+    <div class="report-header">
+        <div style="text-align:right;">
+            <h1 style="color:var(--main); margin:0;">معمل وقار الحديث</h1>
+            <p style="margin:0; font-size:14px;">WAGAAR MODERN MEDICAL LABORATORY</p>
+            <p style="margin:0; font-size:12px;">شندي - جوار صيدلية المدينة | هاتف: 0123456789</p>
+        </div>
+        <div style="text-align:left;">
+            <div style="border:2px solid var(--main); padding:10px; border-radius:10px; font-weight:bold;">W-LAB</div>
         </div>
     </div>
 
-    <div id="reportDoc" class="report-doc">
-        <div class="report-header">
-            <div>
-                <h1 style="color:#002d5b; margin:0;">معمل وقار الحديث</h1>
-                <p>Wagaar Modern Medical Lab | شندي</p>
-            </div>
-            <div style="text-align:left;">
-                <p><b>التاريخ:</b> <span id="resDate"></span></p>
-                <p><b>ID:</b> <span id="resCode"></span></p>
-            </div>
-        </div>
-        <p><b>اسم المريض:</b> <span id="resName"></span></p>
-        <table style="width:100%; border-collapse: collapse; margin-top:20px;">
-            <thead>
-                <tr style="background:#f0f4f8;">
-                    <th style="padding:15px; border:1px solid #ddd; text-align:right;">الفحص</th>
-                    <th style="padding:15px; border:1px solid #ddd; text-align:right;">النتيجة</th>
-                    <th style="padding:15px; border:1px solid #ddd; text-align:right;">المعدل الطبيعي</th>
-                </tr>
-            </thead>
-            <tbody id="resTableBody"></tbody>
-        </table>
-        <div style="margin-top:100px; display:flex; justify-content:space-between;">
-            <div style="border-top:2px solid #000; padding:10px 40px;">ختم المعمل</div>
-            <div style="border-top:2px solid #000; padding:10px 40px;">توقيع الأخصائي</div>
-        </div>
-        <button class="btn-violet no-print" style="margin-top:50px;" onclick="window.print()">طباعة التقرير PDF 📥</button>
-        <button class="btn-violet no-print" style="background:#666; color:#fff; margin-top:10px;" onclick="location.reload()">رجوع</button>
+    <h3 style="text-align:center; text-decoration: underline;">LABORATORY TEST REPORT</h3>
+
+    <div class="patient-card">
+        <div><b>اسم المريض:</b> <span id="rName"></span></div>
+        <div><b>العمر/الجنس:</b> <span id="rAgeSex"></span></div>
+        <div style="text-align:left;"><b>التاريخ:</b> <span id="rDate"></span></div>
+        <div><b>رقم الملف (ID):</b> <span id="rID"></span></div>
     </div>
 
-    <script>
-        // دالة الصوت
-        function playSound() {
-            const audio = new Audio('https://www.soundjay.com/buttons/button-16.mp3');
-            audio.play();
-        }
+    <table class="results-table">
+        <thead>
+            <tr>
+                <th>Investigation (الفحص)</th>
+                <th>Result (النتيجة)</th>
+                <th>Unit (الوحدة)</th>
+                <th>Normal Range (المعدل الطبيعي)</th>
+            </tr>
+        </thead>
+        <tbody id="rTable"></tbody>
+    </table>
 
-        function openAdmin() {
-            if(prompt("رمز الدخول:") === "6519") {
-                document.getElementById('patientView').style.display = 'none';
-                document.getElementById('adminView').style.display = 'block';
-            }
-        }
+    <div id="finRow" style="margin-top:20px; font-size:13px; border:1px solid #eee; padding:10px; border-radius:5px;">
+        <span><b>المدفوع:</b> <span id="rPaid"></span></span> | 
+        <span><b>المتبقي:</b> <span id="rRemain"></span></span>
+    </div>
 
-        document.getElementById('testsGrid').addEventListener('change', function() {
-            const area = document.getElementById('dynamicInputs');
-            area.innerHTML = '';
-            document.querySelectorAll('#testsGrid input:checked').forEach(cb => {
-                area.innerHTML += `<div style="margin-bottom:10px;"><label>${cb.value}:</label><input type="text" class="res-val" data-name="${cb.value}" data-unit="${cb.dataset.unit}" data-norm="${cb.dataset.norm}" style="width:100%; padding:8px;"></div>`;
-            });
+    <div style="margin-top:60px; display:flex; justify-content: space-between;">
+        <div style="text-align:center; width:180px;">
+            <p style="font-size:12px; border-top:1px solid #000; padding-top:5px;">ختم المعمل الرسمي</p>
+        </div>
+        <div style="text-align:center;">
+            <p style="margin:0; font-weight:bold;">د. السني خالد محمد</p>
+            <p style="margin:0; font-size:11px;">أخصائي المختبرات الطبية</p>
+            <p style="font-size:12px; border-top:1px solid #000; padding-top:5px;">التوقيع المعتمد</p>
+        </div>
+    </div>
+
+    <div class="no-print" style="margin-top:50px; text-align:center;">
+        <button class="action-btn" style="width:250px;" onclick="window.print()">طباعة التقرير / PDF 📥</button>
+        <button class="action-btn" style="width:250px; background:#666;" onclick="location.reload()">رجوع</button>
+    </div>
+</div>
+
+<script>
+    function goAdmin() {
+        if(prompt("كلمة المرور:") === "6519") {
+            document.getElementById('pView').style.display = 'none';
+            document.getElementById('aView').style.display = 'block';
+            document.getElementById('pCode').value = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
+        }
+    }
+
+    function calcRes() {
+        const t = document.getElementById('fTotal').value || 0;
+        const p = document.getElementById('fPaid').value || 0;
+        document.getElementById('fRemain').innerText = t - p;
+    }
+
+    document.getElementById('tGrid').addEventListener('change', function() {
+        const area = document.getElementById('inputFields');
+        area.innerHTML = '';
+        document.querySelectorAll('#tGrid input:checked').forEach(cb => {
+            area.innerHTML += `
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px; background:#fff; padding:8px; border-radius:8px; border:1px solid #eee;">
+                <label style="flex:1; font-weight:bold; font-size:13px;">${cb.value}:</label>
+                <input type="text" class="v-val" data-n="${cb.value}" data-u="${cb.dataset.u}" data-norm="${cb.dataset.n}" style="flex:2; padding:8px; border:1px solid #ddd; border-radius:5px;" placeholder="النتيجة">
+            </div>`;
         });
+    });
 
-        async function doSave() {
-            const results = Array.from(document.querySelectorAll('.res-val')).map(i => ({
-                name: i.dataset.name, val: i.value, unit: i.dataset.unit, norm: i.dataset.norm
-            }));
-            const data = {
-                name: document.getElementById('pName').value,
-                code: document.getElementById('pCode').value,
-                fullResults: results
-            };
-            if(await window.saveRecord(data)) { alert("تم الحفظ سحابياً بنجاح ✅"); location.reload(); }
-        }
+    async function doSave() {
+        const res = Array.from(document.querySelectorAll('.v-val')).map(i => ({
+            name: i.dataset.n, val: i.value, unit: i.dataset.u, norm: i.dataset.norm
+        }));
+        const data = {
+            name: document.getElementById('pName').value,
+            age: document.getElementById('pAge').value,
+            sex: document.getElementById('pGender').value,
+            code: document.getElementById('pCode').value,
+            paid: document.getElementById('fPaid').value,
+            rem: document.getElementById('fRemain').innerText,
+            results: res
+        };
+        if(!data.name || res.length === 0) return alert("أدخل البيانات");
+        if(await window.saveRecord(data)) { alert("تم الحفظ سحابياً!"); location.reload(); }
+    }
 
-        async function doSearch() {
-            const data = await window.searchRecord(document.getElementById('searchCode').value);
-            if(data) {
-                document.querySelector('.perspective-wrapper').style.display = 'none';
-                document.getElementById('reportDoc').style.display = 'block';
-                document.getElementById('resName').innerText = data.name;
-                document.getElementById('resCode').innerText = data.code;
-                document.getElementById('resDate').innerText = data.timestamp;
-                document.getElementById('resTableBody').innerHTML = data.fullResults.map(r => `
-                    <tr><td style="padding:12px; border:1px solid #ddd;">${r.name}</td><td style="padding:12px; border:1px solid #ddd; font-weight:bold;">${r.val} ${r.unit}</td><td style="padding:12px; border:1px solid #ddd;">${r.norm}</td></tr>
-                `).join('');
-            } else { alert("الكود غير موجود!"); }
-        }
-    </script>
+    async function doSearch() {
+        const data = await window.searchRecord(document.getElementById('sCode').value);
+        if(data) {
+            document.querySelector('.glass-container').style.display = 'none';
+            document.getElementById('repPage').style.display = 'block';
+            document.getElementById('rName').innerText = data.name;
+            document.getElementById('rAgeSex').innerText = data.age + " سنة / " + data.sex;
+            document.getElementById('rID').innerText = data.code;
+            document.getElementById('rDate').innerText = data.timestamp;
+            document.getElementById('rPaid').innerText = data.paid + " SDG";
+            document.getElementById('rRemain').innerText = data.rem + " SDG";
+            document.getElementById('rTable').innerHTML = data.results.map(r => `
+                <tr><td>${r.name}</td><td class="bold-res">${r.val}</td><td>${r.unit}</td><td style="font-size:12px; color:#555;">${r.norm}</td></tr>
+            `).join('');
+        } else alert("الكود غير موجود!");
+    }
+</script>
 </body>
 </html>
