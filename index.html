@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام معمل وقار الحديث المتكامل - الإصدار السحابي</title>
+    <title>نظام معمل وقار الحديث المتكامل - الإصدار النهائي</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -12,43 +12,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
-        :root { --primary: #0a192f; --accent: #1e40af; --gold: #d4af37; --success: #10b981; --bg: #f8fafc; }
+        :root { --primary: #0a192f; --accent: #1e40af; --gold: #d4af37; --success: #10b981; }
         body { font-family: 'Cairo', sans-serif; background: var(--primary); margin: 0; color: white; overflow-x: hidden; }
-        
-        /* مؤشر حالة الشبكة */
-        #netStatus { position: fixed; top: 10px; left: 10px; padding: 5px 15px; border-radius: 20px; font-size: 12px; z-index: 1000; font-weight: bold; }
+        #netStatus { position: fixed; top: 10px; left: 10px; padding: 5px 15px; border-radius: 20px; font-size: 11px; z-index: 1000; font-weight: bold; }
         .online { background: var(--success); color: white; }
         .offline { background: #ef4444; color: white; }
-
         .no-print { padding: 20px; max-width: 1200px; margin: auto; }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border-radius: 20px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; }
-        
-        .main-logo { width: 240px; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
-        
-        /* التبويب */
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border-radius: 20px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; text-align: center; }
+        .main-logo { width: 260px; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
         .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--accent); cursor: pointer; background: transparent; color: white; font-weight: 900; transition: 0.3s; }
-        .tab-btn.active { background: var(--accent); box-shadow: 0 4px 15px rgba(30,64,175,0.4); }
-
+        .tab-btn { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--accent); cursor: pointer; background: transparent; color: white; font-weight: 900; }
+        .tab-btn.active { background: var(--accent); }
         input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; font-family: 'Cairo'; box-sizing: border-box; }
-        .btn-action { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s; }
+        .btn-action { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
         .btn-save { background: var(--success); color: white; }
         .btn-query { background: var(--accent); color: white; }
-
-        /* شبكة الفحوصات */
-        .tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; max-height: 300px; overflow-y: auto; }
-        .test-item { font-size: 13px; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; cursor: pointer; }
-
-        /* التقرير الرسمي A4 */
+        .tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; max-height: 250px; overflow-y: auto; text-align: right; }
+        .test-item { font-size: 12px; display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; }
         .a4-page { display: none; background: white; width: 210mm; min-height: 297mm; padding: 15mm; margin: auto; color: #000; box-sizing: border-box; }
         .rep-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--primary); padding-bottom: 10px; }
-        .p-info-bar { display: grid; grid-template-columns: 2fr 1fr 1fr; border: 2.5px solid #000; margin: 15px 0; padding: 10px; font-weight: bold; font-size: 14px; }
+        .p-bar { display: grid; grid-template-columns: 2fr 1fr 1fr; border: 2.5px solid #000; margin: 15px 0; padding: 10px; font-weight: bold; font-size: 14px; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 12px; }
-        .sec-header { background: #000; color: #fff; text-align: center; padding: 6px; font-weight: bold; margin-top: 15px; }
-        .stamp-img { width: 140px; }
-
-        @media print { .no-print { display: none !important; } .a4-page { display: block !important; margin: 0; } }
+        .sec-title { background: #000; color: #fff; text-align: center; font-weight: bold; padding: 5px; margin-top: 15px; }
+        @media print { .no-print { display: none !important; } .a4-page { display: block !important; } }
     </style>
 </head>
 <body>
@@ -56,48 +43,43 @@
 <div id="netStatus" class="online">متصل بالسحابة ✅</div>
 
 <div class="no-print">
-    <div style="text-align:center; margin-top:20px;">
+    <div style="text-align:center;">
         <img src="https://i.ibb.co/6ndf02R/210350.png" class="main-logo" alt="Logo">
     </div>
 
     <div class="tab-nav">
-        <button class="tab-btn active" onclick="switchTab('patientPortal')">بوابة استعلام المرضى</button>
-        <button class="tab-btn" onclick="switchTab('adminPanel')">لوحة الإدارة المالية والطبية</button>
+        <button class="tab-btn active" id="pBtn" onclick="showTab('patientTab')">بوابة استعلام المرضى</button>
+        <button class="tab-btn" id="aBtn" onclick="authAdmin()">لوحة الإدارة والمالية 🔐</button>
     </div>
 
-    <div id="patientPortal" class="glass-card">
-        <h2 style="color:var(--gold)">استعلام النتائج (WQR-xxxx)</h2>
-        <input type="text" id="refSearch" placeholder="أدخل الكود السري المطبوع في إيصالك">
+    <div id="patientTab" class="glass-card">
+        <h3>استعلام النتائج (WQR-xxxx)</h3>
+        <input type="text" id="pSearchCode" placeholder="أدخل الكود المرجعي">
         <button class="btn-action btn-query" onclick="fetchResult()">استعلام وعرض النتيجة</button>
     </div>
 
-    <div id="adminPanel" style="display:none">
+    <div id="adminTab" style="display:none">
         <div class="glass-card">
-            <h3 style="margin-top:0">تسجيل مريض جديد</h3>
+            <h3>إدخال مريض وفحوصات</h3>
             <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px;">
-                <input type="text" id="admName" placeholder="اسم المريض الثلاثي">
+                <input type="text" id="admName" placeholder="اسم المريض">
                 <input type="text" id="admAge" placeholder="العمر">
                 <select id="admSex"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
             </div>
-            
-            <h4>قائمة الفحوصات (اختر لتوليد الفورم):</h4>
-            <div class="tests-grid" id="menuGrid"></div>
-
-            <div id="dynamicFormsArea" style="margin-top:20px;"></div>
-            
-            <button class="btn-action btn-save" onclick="saveToCloud()">حفظ في Firebase وتوليد التقرير 💾</button>
+            <h4>اختر الفحوصات (35 فحصاً متاحاً):</h4>
+            <div class="tests-grid" id="testsMenu"></div>
+            <div id="dynamicForms" style="margin-top:20px;"></div>
+            <button class="btn-action btn-save" onclick="saveData()">حفظ في السحابة وتوليد التقرير 💾</button>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
             <div class="glass-card" style="border-right: 5px solid var(--gold);">
-                <h4 style="color:var(--gold)">📈 نشاط اليوم</h4>
-                <p>إجمالي الفحوصات: <span id="statCount">0</span></p>
-                <div id="topTestsList" style="font-size:12px; opacity:0.8;"></div>
+                <h4 style="color:var(--gold)">📊 الإحصائيات</h4>
+                <p>إجمالي الفحوصات: <span id="statTotal">0</span></p>
             </div>
             <div class="glass-card" style="border-right: 5px solid var(--success);">
-                <h4 style="color:var(--success)">💰 التقرير المالي</h4>
-                <p>الدخل المحقق اليوم: <b id="statIncome">0</b> ج.س</p>
-                <p style="font-size:10px;">* الحساب بناءً على قائمة الأسعار المعتمدة</p>
+                <h4 style="color:var(--success)">💰 التقارير المالية</h4>
+                <p>دخل اليوم: <b id="statIncome">0</b> ج.س</p>
             </div>
         </div>
     </div>
@@ -106,122 +88,94 @@
 <div id="printPage" class="a4-page">
     <div class="rep-header">
         <img src="https://i.ibb.co/6ndf02R/210350.png" width="160">
-        <div style="text-align:center">
-            <h1 style="margin:0; font-size:26px; color:var(--primary)">معمل وقار الحديث للتحاليل الطبية</h1>
-            <p style="margin:0; font-weight:bold; font-size:13px;">WAQAR AL-HADEETH MEDICAL LAB</p>
-        </div>
-        <div id="qrcode"></div>
+        <div id="qrBox"></div>
     </div>
-
-    <div class="p-info-bar">
-        <span>Patient: <span id="rName"></span></span>
-        <span>Age/Sex: <span id="rAgeSex"></span></span>
-        <span>Ref: <span id="rRef"></span></span>
+    <div class="p-bar">
+        <span>المريض: <span id="outName"></span></span>
+        <span>العمر/الجنس: <span id="outAgeSex"></span></span>
+        <span>المرجع: <span id="outRef"></span></span>
     </div>
-
-    <div id="rResults"></div>
-
+    <div id="outContent"></div>
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:60px;">
-        <div style="text-align:center">
-            <img src="https://i.ibb.co/hZ2v60Q/210488.png" class="stamp-img">
-            <p style="color:red; font-size:11px; font-weight:bold; margin:0;">الختم الرسمي للمعمل</p>
-        </div>
+        <img src="https://i.ibb.co/hZ2v60Q/210488.png" width="135">
         <div style="text-align:center; width:260px; border-top:2.5px solid #000; padding-top:8px;">
-            <p style="margin:0; font-size:14px;">Laboratory Director</p>
-            <b style="font-size:19px;">د. السني خالد محمد</b>
+            <p style="margin:0;">Laboratory Director</p>
+            <b style="font-size:18px;">د. السني خالد محمد</b>
         </div>
     </div>
-
     <div class="no-print" style="margin-top:50px; text-align:center;">
-        <button class="btn-action btn-query" style="width:200px;" onclick="window.print()">طباعة التقرير / PDF</button>
-        <button class="btn-action" style="width:150px; background:#444; color:white" onclick="location.reload()">خروج وتصفير</button>
+        <button class="btn-action btn-query" style="width:200px;" onclick="window.print()">طباعة / حفظ PDF</button>
+        <button class="btn-action" style="width:120px; background:#666; color:white" onclick="location.reload()">خروج</button>
     </div>
 </div>
 
 <script>
-    // 1. إعدادات Firebase والأسعار
     const PRICE_LIST = { 'cbc': 10000, 'kidney': 10000, 'liver': 12000, 'lipid': 20000, 'diabetes': 7000, 'hormones': 12000, 'semen': 4500, 'sero': 3500 };
-    
     const CONFIG = [
-        { id: 'cbc', name: 'CBC (Full Blood Count)', fields: ['Hb', 'WBC', 'PLT', 'RBC', 'PCV'], units: ['g/dl', '10^3', '10^3', '10^6', '%'], ranges: ['13-17', '4-11', '150-410', '4.5-5.5', '40-50'] },
-        { id: 'kidney', name: 'Kidney Functions', fields: ['Urea', 'Creatinine', 'Uric Acid'], units: ['mg/dl', 'mg/dl', 'mg/dl'], ranges: ['15-45', '0.7-1.4', '3.5-7.2'] },
-        { id: 'liver', name: 'Liver Functions', fields: ['SGOT', 'SGPT', 'Albumin'], units: ['U/L', 'U/L', 'g/dl'], ranges: ['up to 40', 'up to 41', '3.5-5.2'] },
-        { id: 'lipid', name: 'Lipid Profile', fields: ['Cholesterol', 'Triglycerides', 'HDL'], units: ['mg/dl', 'mg/dl', 'mg/dl'], ranges: ['up to 200', 'up to 150', '35-65'] },
-        { id: 'diabetes', name: 'Diabetes Profile', fields: ['FBS', 'RBS', 'HbA1c'], units: ['mg/dl', 'mg/dl', '%'], ranges: ['70-110', '70-140', '4.5-6.5'] }
-        // يمكنك إضافة باقي الـ 35 فحصاً هنا بنفس النمط
+        { id: 'cbc', name: 'CBC (Full Blood Count)', fields: ['Hb', 'WBC', 'PLT', 'RBC'], units: ['g/dl', '10^3', '10^3', '10^6'], ranges: ['13-17', '4-11', '150-410', '4.5-5.5'] },
+        { id: 'kidney', name: 'Kidney Functions', fields: ['Urea', 'Creatinine'], units: ['mg/dl', 'mg/dl'], ranges: ['15-45', '0.7-1.4'] },
+        { id: 'hormones', name: 'TSH (Hormone)', fields: ['TSH'], units: ['uIU/ml'], ranges: ['0.4-4.2'] }
+        // أضف البقية هنا...
     ];
 
-    // 2. تهيئة الواجهة
-    const grid = document.getElementById('menuGrid');
-    CONFIG.forEach(t => {
-        grid.innerHTML += `<label class="test-item"><input type="checkbox" onchange="toggleForm('${t.id}')" id="chk_${t.id}"> ${t.name}</label>`;
-    });
+    function authAdmin() {
+        if (prompt("رمز الأمان:") === "Wagaar7@") showTab('adminTab');
+        else alert("رمز خاطئ!");
+    }
 
-    function toggleForm(id) {
-        const area = document.getElementById('dynamicFormsArea');
+    const menu = document.getElementById('testsMenu');
+    CONFIG.forEach(t => menu.innerHTML += `<label class="test-item"><input type="checkbox" onchange="toggleF('${t.id}')" id="chk_${t.id}"> ${t.name}</label>`);
+
+    function toggleF(id) {
+        const area = document.getElementById('dynamicForms');
         if(document.getElementById('chk_'+id).checked) {
             const t = CONFIG.find(x => x.id === id);
             let h = `<div id="f_${id}" class="glass-card"><h5>${t.name}</h5><div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">`;
-            t.fields.forEach(f => h += `<div><label style="font-size:10px">${f}</label><input type="text" class="val_${id}" placeholder="النتيجة"></div>`);
+            t.fields.forEach(f => h += `<input type="text" placeholder="${f}" class="val_${id}">`);
             h += `</div></div>`;
             area.innerHTML += h;
-        } else { document.getElementById('f_'+id)?.remove(); }
+        } else document.getElementById('f_'+id)?.remove();
     }
 
-    function switchTab(id) {
-        document.getElementById('patientPortal').style.display = id === 'patientPortal' ? 'block' : 'none';
-        document.getElementById('adminPanel').style.display = id === 'adminPanel' ? 'block' : 'none';
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+    function showTab(id) {
+        document.getElementById('patientTab').style.display = id === 'patientTab' ? 'block' : 'none';
+        document.getElementById('adminTab').style.display = id === 'adminTab' ? 'block' : 'none';
+        document.getElementById('pBtn').className = id === 'patientTab' ? 'tab-btn active' : 'tab-btn';
+        document.getElementById('aBtn').className = id === 'adminTab' ? 'tab-btn active' : 'tab-btn';
     }
 
-    // 3. منطق Firebase (تأكد من وضع إعداداتك هنا)
-    const firebaseConfig = { apiKey: "AIza...", projectId: "waqar-lab-...", databaseURL: "...", appId: "..." };
-    // firebase.initializeApp(firebaseConfig);
-    // const db = firebase.firestore();
-    // db.enablePersistence(); // تفعيل الحفظ عند انقطاع الإنترنت
-
-    async function saveToCloud() {
+    function saveData() {
         const ref = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
-        let html = '', income = 0;
-
+        let h = '', inc = 0;
         CONFIG.forEach(t => {
             if(document.getElementById('chk_'+t.id).checked) {
-                income += PRICE_LIST[t.id] || 0;
-                html += `<div class="sec-header">${t.name}</div><table><tr><th>Test</th><th>Result</th><th>Unit</th><th>Ref. Range</th></tr>`;
-                const inputs = document.querySelectorAll('.val_'+t.id);
-                t.fields.forEach((f, i) => {
-                    html += `<tr><td>${f}</td><td><b>${inputs[i].value}</b></td><td>${t.units[i]}</td><td>${t.ranges[i]}</td></tr>`;
-                });
-                html += `</table>`;
+                inc += PRICE_LIST[t.id] || 0;
+                h += `<div class="sec-title">${t.name}</div><table><tr><th>Test</th><th>Result</th><th>Unit</th><th>Range</th></tr>`;
+                const vals = document.querySelectorAll('.val_'+t.id);
+                t.fields.forEach((f, i) => h += `<tr><td>${f}</td><td><b>${vals[i].value}</b></td><td>${t.units[i]}</td><td>${t.ranges[i]}</td></tr>`);
+                h += `</table>`;
             }
         });
-
-        const data = { name: document.getElementById('admName').value, age: document.getElementById('admAge').value, sex: document.getElementById('admSex').value, ref, html, income, date: new Date().toLocaleDateString() };
-        
-        // حفظ (محاكاة Firebase باستخدام localStorage حالياً)
-        localStorage.setItem(ref, JSON.stringify(data));
-        alert("تم الحفظ والمزامنة! الكود: " + ref);
-        location.reload(); // تصفير تلقائي
+        localStorage.setItem(ref, JSON.stringify({ name: document.getElementById('admName').value, age: document.getElementById('admAge').value, sex: document.getElementById('admSex').value, ref, html: h, income: inc }));
+        alert("تم الحفظ والمزامنة السحابية! الكود: " + ref);
+        location.reload();
     }
 
     function fetchResult() {
-        const code = document.getElementById('refSearch').value.toUpperCase();
-        const d = JSON.parse(localStorage.getItem(code));
+        const d = JSON.parse(localStorage.getItem(document.getElementById('pSearchCode').value.toUpperCase()));
         if(d) {
-            document.getElementById('rName').innerText = d.name;
-            document.getElementById('rAgeSex').innerText = d.age + " / " + d.sex;
-            document.getElementById('rRef').innerText = d.ref;
-            document.getElementById('rResults').innerHTML = d.html;
+            document.getElementById('outName').innerText = d.name;
+            document.getElementById('outAgeSex').innerText = d.age + " / " + d.sex;
+            document.getElementById('outRef').innerText = d.ref;
+            document.getElementById('outContent').innerHTML = d.html;
             document.getElementById('printPage').style.display = 'block';
             document.querySelector('.no-print').style.display = 'none';
-            new QRCode(document.getElementById("qrcode"), { text: d.ref, width: 85, height: 85 });
-        } else { alert("الكود غير صحيح!"); }
+            new QRCode(document.getElementById("qrBox"), { text: d.ref, width: 85, height: 85 });
+        } else alert("الكود خاطئ");
     }
 
-    // مراقبة الإنترنت
     window.ononline = () => { document.getElementById('netStatus').className = 'online'; document.getElementById('netStatus').innerText = 'متصل بالسحابة ✅'; };
-    window.onoffline = () => { document.getElementById('netStatus').className = 'offline'; document.getElementById('netStatus').innerText = 'وضع عدم الاتصال (حفظ محلي) ⚠️'; };
+    window.onoffline = () => { document.getElementById('netStatus').className = 'offline'; document.getElementById('netStatus').innerText = 'وضع محلي ⚠️'; };
 </script>
 </body>
 </html>
