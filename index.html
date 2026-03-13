@@ -49,7 +49,7 @@
 
         window.dbGet = async (code) => { 
             try {
-                const snap = await getDoc(doc(db, "records", code.toUpperCase())); 
+                const snap = await getDoc(doc(doc(db, "records", code.toUpperCase()))); 
                 return snap.exists() ? snap.data() : null;
             } catch (e) { return null; }
         };
@@ -57,7 +57,6 @@
 
     <style>
         :root { --blue: #003366; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0; }
-        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --blue: #38bdf8; --border: #334155; }
         * { box-sizing: border-box; transition: 0.3s; }
         body { font-family: 'Tajawal', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
         .app-container { width: 100%; max-width: 900px; margin: auto; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--blue); }
@@ -72,8 +71,6 @@
         .btn-blue { background: var(--blue); }
         .btn-green { background: #10b981; }
         .test-card { background: var(--bg); padding: 20px; border-radius: 15px; border-right: 6px solid var(--blue); margin-bottom: 15px; }
-        .search-results { border: 1px solid var(--blue); border-radius: 12px; max-height: 200px; overflow-y: auto; display: none; margin-bottom: 15px; background: var(--card); }
-        .search-item { padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; }
         #printArea { width: 800px; padding: 40px; background: white; position: absolute; left: -9999px; color: black; }
         .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid #003366; padding-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -85,7 +82,7 @@
 <div class="app-container">
     <div class="header">
         <h1 style="color: var(--blue); margin: 0;">معمل وقار الحديث 🔬</h1>
-        <p>بإشراف: د. السني خالد محمد أحمد السني</p>
+        <p>إدارة: د. السني خالد محمد أحمد السني</p>
     </div>
 
     <div class="tabs">
@@ -95,33 +92,27 @@
 
     <div id="pPanel" class="panel active">
         <input type="text" id="pSearch" placeholder="كود المريض (WQR-XXXX)" style="text-align: center;">
-        <button class="btn btn-blue" onclick="loadHistory('p')">بحث وجلب النتائج ☁️</button>
+        <button class="btn btn-blue" onclick="loadHistory('p')">جلب النتائج ☁️</button>
         <div id="historyOutput_p" style="margin-top: 20px;"></div>
     </div>
 
     <div id="aPanel" class="panel">
-        <div style="background: rgba(56,189,248,0.1); padding: 15px; border-radius: 15px; margin-bottom: 15px;">
-            <input type="text" id="adminSearchInput" placeholder="🔍 بحث عن مريض مسجل..." oninput="doSearch()">
-            <div id="searchResults" class="search-results"></div>
-        </div>
-
         <input type="text" id="admName" placeholder="اسم المريض الجديد" oninput="autoCode()">
         <input type="text" id="admCode" placeholder="كود الملف" readonly style="background: var(--bg);">
 
         <div class="test-card">
             <input list="labList" id="tName" placeholder="اختر نوع الفحص" onchange="applyTpl()">
-            <textarea id="tRes" placeholder="النتائج..." style="height: 180px; direction: ltr; font-family: monospace;"></textarea>
+            <textarea id="tRes" placeholder="النتائج..." style="height: 150px; direction: ltr; font-family: monospace;"></textarea>
             <input type="number" id="tPrice" placeholder="السعر" oninput="calcFin()">
             <button class="btn btn-blue" onclick="addTest()">+ إضافة للمسودة</button>
         </div>
 
         <div id="visitQueue" style="display:none;">
             <div id="queueList"></div>
-            <div style="background: #e0f2fe; padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; font-weight: bold;">
-                الإجمالي: <span id="totalDisp">0</span> | المتبقي: <span id="remDisp" style="color:red">0</span>
-                <input type="number" id="paidAmt" placeholder="المدفوع" style="width: 100px; margin: 0 10px;" oninput="calcFin()" value="0">
+            <div style="background: #e0f2fe; padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px;">
+                الإجمالي: <span id="totalDisp">0</span> | المدفوع: <input type="number" id="paidAmt" style="width:80px; margin:0" oninput="calcFin()" value="0">
             </div>
-            <button class="btn btn-green" id="saveBtn" onclick="saveVisit()" style="margin-top: 15px;">رفع وحفظ في السحابة ✅</button>
+            <button class="btn btn-green" id="saveBtn" onclick="saveVisit()" style="margin-top: 15px;">حفظ ورفع السجلات ✅</button>
         </div>
         <div id="historyOutput_a"></div>
     </div>
@@ -133,48 +124,36 @@
     <option value="General Stool Examination">
     <option value="Lipid Profile">
     <option value="Kidney Functions">
-    <option value="Glucose Tolerance Curve (GTT)">
-    <option value="Thyroid & Vitamins">
-    <option value="Serology Report">
-    <option value="Culture and Sensitivity">
     <option value="Complete Semen Analysis">
 </datalist>
 
 <div id="printArea">
     <div class="print-header">
         <div style="display: flex; align-items: center; gap: 20px;">
-            <img src="https://raw.githubusercontent.com/Wagaarlab/Wagarlab/main/209963.png" style="height: 110px; width: 110px; border-radius: 50%;" crossOrigin="anonymous">
+            <img src="https://raw.githubusercontent.com/Wagaarlab/Wagarlab/main/209963.png" style="height: 100px; width: 100px; border-radius: 50%;" crossOrigin="anonymous">
             <div>
-                <h1 style="color: #003366; margin:0; font-size: 38px;">Waqar Medical Lab</h1>
-                <p style="margin: 5px 0; font-size: 18px;"><b>Dr. Alsunni Khalid Mohammed Ahmed</b></p>
+                <h1 style="color: #003366; margin:0;">Waqar Medical Lab</h1>
+                <p style="margin: 5px 0;"><b>Dr. Alsunni Khalid Mohammed Ahmed</b></p>
                 <p style="margin: 0; font-size: 14px;">Laboratory Specialist Doctor</p>
             </div>
         </div>
-        <div style="text-align: right; font-size: 16px;">ID: <b id="prCode"></b><br>Date: <b id="prDate"></b></div>
+        <div style="text-align: right;">ID: <b id="prCode"></b><br>Date: <b id="prDate"></b></div>
     </div>
-    <div style="margin: 25px 0; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-        Patient: <b id="prName"></b>
-    </div>
+    <div style="margin: 20px 0; font-size: 18px;">Patient: <b id="prName"></b></div>
     <div id="prTableArea"></div>
-    <div id="prFinance" style="margin-top: 20px; font-weight: bold; font-size: 16px;"></div>
-    <div style="margin-top: 60px; text-align: right;">
-        <p style="font-family: 'Dancing Script', cursive; font-size: 32px; margin:0;">Dr. Alsunni Khalid</p>
-        <p style="border-top: 2px solid #000; width: 200px; display: inline-block; margin-top: 5px;">Signature</p>
+    <div style="margin-top: 50px; text-align: right;">
+        <p style="font-family: 'Dancing Script', cursive; font-size: 28px; margin:0;">Dr. Alsunni Khalid</p>
+        <p style="border-top: 2px solid #000; width: 150px; display: inline-block;">Signature</p>
     </div>
 </div>
 
 <script>
     let tests = [];
     const templates = {
-        "General Urine Examination": "--- Physical Examination ---\nColor: Amber Yellow\nReaction: Acidic / pH 5.0\nS.G: ... (1015 - 1025)\n--- Chemical Examination ---\nProtein: Absent\nGlucose: Absent\nKetone: Absent\nNitrite: Absent\n--- Microscopic Examination ---\nPus Cells: ... (0 - 1)\nRBCs: ... (1 - 2)\nCrystals: Absent\nCasts: Absent",
-        "Hematology Report (CBC)": "Hb: ... g/dl (12.0 - 16.0)\nPCV: ... % (33 - 51)\nRBC: ... X10^12/l (4.0 - 5.2)\nMCV: ... fl (80 - 100)\nMCH: ... pg (26 - 34)\nPlatelet: ... X10^9/l (140 - 440)\nWBC: ... X10^9/l (4.5 - 11.0)\nNeutrophils: ... %\nLymphocytes: ... %",
-        "General Stool Examination": "--- Macroscopic ---\nColor: Brownish\nConsistency: Formed\nBlood: Absent\n--- Microscopic ---\nPus Cells: ... (0 - 1)\nRBCs: ... (0 - 1)\nOva/Cyst: Not Detected",
-        "Lipid Profile": "Cholesterol: ... mg/dL (50 - 200)\nTriglycerides: ... mg/dL (40 - 160)\nHDL: ... mg/dL (35 - 200)\nLDL: ... mg/dL (0 - 140)",
-        "Kidney Functions": "Urea: ... mg/dL (15 - 45)\nCreatinine: ... mg/dL (0.7 - 1.4)\nUric Acid: ... mg/dL (3.4 - 7.0)",
-        "Glucose Tolerance Curve (GTT)": "F.B.G: ... mg/dL (70 - 110)\n30 min: ... mg/dL\n60 min: ... mg/dL\n120 min: ... mg/dL\n180 min: ... mg/dL",
-        "Thyroid & Vitamins": "TSH: ... µIU/mL (0.27 - 4.2)\nVit D: ... ng/mL (30 - 100)\nVit B12: ... pg/mL (200 - 900)",
-        "Serology Report": "ASOT: ... U/mL (< 200)\nCRP: ... IU/mL (< 6.0)\nRF: ... U/mL (< 8.0)\nH.Pylori Ag: Negative\nTyphoid IgG/M: Negative",
-        "Complete Semen Analysis": "Volume: ... (>= 1.5 ml)\npH: ... (>= 7.5)\nConc: ... (>= 15 m/ml)\nMotility (PR): ... % (>= 32%)\nNormal Forms: ... %"
+        "General Urine Examination": "Color: Amber Yellow\nReaction: Acidic / pH 5.0\nS.G: 1020 (1015-1025)\nProtein: Absent\nGlucose: Absent\nPus Cells: 0-1\nRBCs: 1-2",
+        "Hematology Report (CBC)": "Hb: 14.2 g/dl (12.0-16.0)\nPCV: 41.9 % (33-51)\nRBC: 5.31 X10^12/l\nWBC: 8.06 X10^9/l\nPlatelet: 417 X10^9/l",
+        "General Stool Examination": "Color: Brownish\nConsistency: Formed\nPus Cells: 2-3\nRBCs: 0-1\nOva: Not Detected",
+        "Complete Semen Analysis": "Volume: 3 ml (>= 1.5)\npH: 8 (>= 7.5)\nConc: 30 m/ml (>= 15)\nMotility (PR): 50% (>= 32%)"
     };
 
     function switchTab(t) {
@@ -182,21 +161,15 @@
         document.getElementById(t+'Panel').classList.add('active');
         document.getElementById(t+'Tab').classList.add('active');
     }
-    function adminCheck() { if(prompt("Pass:")==="1001") switchTab('a'); }
+
+    function adminCheck() { 
+        if(prompt("كلمة المرور الإدارية:") === "6519") switchTab('a'); 
+        else alert("خطأ في الرقم السري");
+    }
+
     function autoCode() { if(!document.getElementById('admCode').value) document.getElementById('admCode').value = "WQR-"+Math.floor(1000+Math.random()*8999); }
     function applyTpl() { const v = document.getElementById('tName').value; if(templates[v]) document.getElementById('tRes').value = templates[v]; }
     
-    async function doSearch() {
-        const v = document.getElementById('adminSearchInput').value;
-        const res = document.getElementById('searchResults');
-        if(v.length < 2) { res.style.display="none"; return; }
-        const results = await window.dbSearchByName(v);
-        res.style.display="block";
-        res.innerHTML = results.map(r => `<div class="search-item" onclick="selectPat('${r.code}')">👤 ${r.name}</div>`).join('');
-    }
-
-    function selectPat(c) { document.getElementById('pSearch').value = c; loadHistory('a'); document.getElementById('searchResults').style.display="none"; }
-
     function addTest() {
         const n = document.getElementById('tName').value, r = document.getElementById('tRes').value, p = parseFloat(document.getElementById('tPrice').value)||0;
         if(!n || !r) return alert("أكمل البيانات");
@@ -209,34 +182,31 @@
     function calcFin() {
         const t = tests.reduce((s,x)=>s+x.p,0), p = parseFloat(document.getElementById('paidAmt').value)||0;
         document.getElementById('totalDisp').innerText = t;
-        document.getElementById('remDisp').innerText = t-p;
     }
 
     async function saveVisit() {
-        const btn = document.getElementById('saveBtn'), name = document.getElementById('admName').value, code = document.getElementById('admCode').value;
-        btn.disabled = true; btn.innerText = "جاري الحفظ...";
+        const name = document.getElementById('admName').value, code = document.getElementById('admCode').value;
         const t = tests.reduce((s,x)=>s+x.p,0), p = parseFloat(document.getElementById('paidAmt').value)||0;
         const ok = await window.dbSave({ name, code, visit: { date: new Date().toLocaleDateString('en-GB'), tests, total:t, paid:p, remaining:t-p } });
-        if(ok) { alert("تم الحفظ بنجاح ✅"); location.reload(); } else { btn.disabled=false; btn.innerText="إعادة المحاولة"; }
+        if(ok) { alert("تم الحفظ بنجاح ✅"); location.reload(); }
     }
 
     async function loadHistory(m) {
         const c = document.getElementById('pSearch').value;
         const d = await window.dbGet(c);
-        if(!d) return alert("لا توجد بيانات");
-        document.getElementById('historyOutput_'+m).innerHTML = `<h3>مريض: ${d.name}</h3>` + d.visits.reverse().map(v => `
+        if(!d) return alert("الكود غير موجود");
+        document.getElementById('historyOutput_'+m).innerHTML = `<h3>المريض: ${d.name}</h3>` + d.visits.reverse().map(v => `
             <div class="test-card" style="display:flex; justify-content:space-between; align-items:center;">
-                <div>التاريخ: ${v.date} <br> <small>المتبقي: ${v.remaining} SDG</small></div>
+                <div>التاريخ: ${v.date}</div>
                 <button class="btn btn-blue" style="width:80px; padding:8px; font-size:12px" onclick='printPDF("${d.name}","${d.code}",${JSON.stringify(v)})'>PDF</button>
             </div>`).join('');
     }
 
     function printPDF(n, c, v) {
         document.getElementById('prName').innerText = n; document.getElementById('prCode').innerText = c; document.getElementById('prDate').innerText = v.date;
-        let table = `<table><tr><th style="width:35%">Investigation</th><th>Result / Normal Range</th></tr>`;
+        let table = `<table><tr><th>Test</th><th>Result</th></tr>`;
         v.tests.forEach(x => table += `<tr><td><b>${x.n}</b></td><td style="white-space:pre-wrap">${x.r}</td></tr>`);
         document.getElementById('prTableArea').innerHTML = table + `</table>`;
-        document.getElementById('prFinance').innerHTML = `Total: ${v.total} SDG | Paid: ${v.paid} SDG | Remaining: ${v.remaining} SDG`;
         const area = document.getElementById('printArea'); area.style.left = "0";
         html2canvas(area, {scale:2, useCORS:true}).then(can => {
             const pdf = new jspdf.jsPDF();
