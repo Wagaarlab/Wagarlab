@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معمل وقار الحديث</title>
+    <title>معمل وقار الحديث - الإدارة الذكية</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { initializeFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        
-        // هذا هو "الرقم الجديد" لمشروعك Wagaarlab من صورتك الأخيرة
+        import { initializeFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyAMtySu0ZulKoWLfByBBDS05BIQ5qDNWE8",
             authDomain: "wagaarlab-a1e6c.firebaseapp.com",
@@ -17,52 +16,132 @@
             messagingSenderId: "922691536177",
             appId: "1:922691536177:web:d683fa18488853d3915c10"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = initializeFirestore(app, { experimentalForceLongPolling: true });
 
-        window.dbSave = async (data) => {
+        // دالة الحفظ السحابي مع التوقيت (المتطلب 6 و 7)
+        window.saveRecord = async (data) => {
             try {
                 const ref = doc(db, "records", data.code.toUpperCase());
-                await setDoc(ref, data, { merge: true });
+                await setDoc(ref, { ...data, timestamp: new Date().toISOString() }, { merge: true });
                 return true;
             } catch (e) { return false; }
         };
+
+        // دالة البحث (المتطلب 1)
+        window.searchRecord = async (code) => {
+            const ref = doc(db, "records", code.toUpperCase());
+            const snap = await getDoc(ref);
+            return snap.exists() ? snap.data() : null;
+        };
     </script>
+
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f0f2f5; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
-        button { width: 100%; padding: 12px; background: #003366; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        :root { --primary: #003366; --bg: #f4f7f6; --text: #333; }
+        @media (prefers-color-scheme: dark) { :root { --bg: #1a1a1a; --text: #eee; } } /* المتطلب 10 */
+        
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
+        .container { max-width: 600px; margin: 20px auto; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
+        .logo { width: 80px; height: 80px; background: #eee; border-radius: 50%; display: inline-block; } /* المتطلب 3 */
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .result-box { margin-top: 20px; padding: 15px; border: 1px dashed var(--primary); display: none; }
+        @media print { .no-print { display: none; } .container { box-shadow: none; border: none; } } /* المتطلب 8 */
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>إضافة مريض جديد 🔬</h2>
-        <input type="text" id="name" placeholder="اسم المريض">
-        <input type="text" id="code" placeholder="كود المريض (مثلاً WQR-101)">
-        <input type="text" id="result" placeholder="النتيجة">
-        <button id="btn" onclick="saveData()">حفظ في السحابة ✅</button>
+
+<div class="container" id="mainApp">
+    <div class="header">
+        <div class="logo">LOGO</div> <h2>معمل وقار الحديث 🔬</h2>
+        <p>نظام الإدارة والنتائج الذكي</p>
     </div>
 
-    <script>
-        async function saveData() {
-            const btn = document.getElementById('btn');
-            btn.innerText = "جاري الحفظ... ⏳";
-            const data = {
-                name: document.getElementById('name').value,
-                code: document.getElementById('code').value,
-                result: document.getElementById('result').value,
-                date: new Date().toLocaleString()
-            };
-            const ok = await window.dbSave(data);
-            if(ok) {
-                alert("تم الحفظ بنجاح في مشروع Wagaarlab الجديد!");
-                location.reload();
-            } else {
-                alert("فشل الحفظ! تأكد من إعدادات Rules في Firebase");
-                btn.innerText = "حفظ في السحابة ✅";
-            }
+    <div class="no-print">
+        <input type="text" id="searchCode" placeholder="ابحث عن كود المريض...">
+        <button class="btn" style="background: #28a745;" onclick="doSearch()">بحث سريع 🔍</button>
+        <hr>
+    </div>
+
+    <div id="entryForm" class="no-print">
+        <input type="text" id="pName" placeholder="اسم المريض الرباعي">
+        <input type="text" id="pCode" placeholder="الكود (مثال: WQR-500)">
+        
+        <select id="testType" onchange="calcLogic()">
+            <option value="">-- اختر الفحص أو أضف جديد --</option>
+            <option value="CBC">CBC - صورة دم</option>
+            <option value="Glucose">Glucose - سكر</option>
+            <option value="Custom">إدخال فحص يدوي جديد ➕</option>
+        </select>
+        
+        <div id="calcArea"></div> <input type="text" id="pResult" placeholder="النتيجة النهائية">
+        <button class="btn" onclick="doSave()">حفظ وتأكيد السحابة ✅</button>
+    </div>
+
+    <div id="printArea" class="result-box">
+        <h3 id="resName"></h3>
+        <p>التاريخ: <span id="resDate"></span></p>
+        <div style="min-height: 100px; border: 1px solid #eee; padding: 10px;">
+            <p>النتيجة: <b id="resVal"></b></p>
+        </div>
+        <div style="margin-top: 50px; text-align: left;">
+            <p>توقيع المدير الطبي:</p>
+            <img src="signature.png" alt="Signature" style="width: 100px;"> </div>
+        <button class="btn no-print" onclick="window.print()">تحميل النتيجة (PDF) 📥</button>
+        <button class="btn no-print" style="background:#dc3545; margin-top:10px;" onclick="exitSystem()">خروج 🚪</button>
+    </div>
+</div>
+
+<script>
+    // الآلة الحاسبة الذكية (المتطلب 4)
+    function calcLogic() {
+        const type = document.getElementById('testType').value;
+        const area = document.getElementById('calcArea');
+        if(type === 'Custom') {
+            area.innerHTML = '<input type="text" id="customTest" placeholder="اسم الفحص الجديد">';
+        } else {
+            area.innerHTML = '';
         }
-    </script>
+    }
+
+    // حفظ وإفراغ تلقائي (المتطلب 5 و 7)
+    async function doSave() {
+        const data = {
+            name: document.getElementById('pName').value,
+            code: document.getElementById('pCode').value,
+            test: document.getElementById('testType').value,
+            result: document.getElementById('pResult').value
+        };
+        const ok = await window.saveRecord(data);
+        if(ok) {
+            alert("تم الحفظ في سحابة Wagaarlab وإفراغ النموذج");
+            location.reload(); // إفراغ تلقائي (المتطلب 5)
+        }
+    }
+
+    // البحث (المتطلب 1)
+    async function doSearch() {
+        const code = document.getElementById('searchCode').value;
+        const data = await window.searchRecord(code);
+        if(data) {
+            document.getElementById('entryForm').style.display = 'none';
+            document.getElementById('printArea').style.display = 'block';
+            document.getElementById('resName').innerText = "المريض: " + data.name;
+            document.getElementById('resVal').innerText = data.result;
+            document.getElementById('resDate').innerText = data.timestamp || "غير مسجل";
+        } else {
+            alert("الكود غير موجود!");
+        }
+    }
+
+    // الخروج التلقائي (المتطلب 9)
+    function exitSystem() {
+        if(confirm("هل انتهيت من تحميل النتيجة؟ سيتم الخروج الآن.")) {
+            location.reload();
+        }
+    }
+</script>
 </body>
 </html>
