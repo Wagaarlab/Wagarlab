@@ -10,7 +10,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyCndh68IOzYk1bzf8VXvQ5b6aS4b5TXI-o",
@@ -24,19 +24,28 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // تفعيل ميزة العمل بدون إنترنت وتجنب خطأ Offline
+        enableIndexedDbPersistence(db).catch((err) => {
+            console.error("Persistence failed", err.code);
+        });
+
         window.dbSave = async (data) => {
-            const ref = doc(db, "records", data.code.toUpperCase());
-            const snap = await getDoc(ref);
-            if (snap.exists()) { 
-                await updateDoc(ref, { visits: arrayUnion(data.visit) }); 
-            } else { 
-                await setDoc(ref, { name: data.name, code: data.code, visits: [data.visit] }); 
-            }
+            try {
+                const ref = doc(db, "records", data.code.toUpperCase());
+                const snap = await getDoc(ref);
+                if (snap.exists()) { 
+                    await updateDoc(ref, { visits: arrayUnion(data.visit) }); 
+                } else { 
+                    await setDoc(ref, { name: data.name, code: data.code, visits: [data.visit] }); 
+                }
+            } catch (e) { alert("عذراً: مشكلة في الاتصال بالخادم، يرجى المحاولة مرة أخرى."); throw e; }
         };
 
         window.dbGet = async (code) => { 
-            const snap = await getDoc(doc(db, "records", code.toUpperCase())); 
-            return snap.exists() ? snap.data() : null; 
+            try {
+                const snap = await getDoc(doc(db, "records", code.toUpperCase())); 
+                return snap.exists() ? snap.data() : null; 
+            } catch (e) { alert("خطأ في جلب البيانات: تأكد من جودة الإنترنت."); return null; }
         };
     </script>
 
@@ -57,8 +66,7 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #000; padding: 12px; text-align: left; font-size: 18px; }
         th { background: #f0f0f0; }
-        /* ستايل التوقيع النصي ليكون مشابهاً لتوقيعك اليدوي */
-        .digital-signature { font-family: 'Dancing Script', cursive; font-size: 32px; color: #001f3f; margin-bottom: -10px; transform: rotate(-3deg); display: inline-block; }
+        .digital-signature { font-family: 'Dancing Script', cursive; font-size: 34px; color: #001f3f; margin-bottom: -10px; transform: rotate(-2deg); display: inline-block; }
     </style>
 </head>
 <body>
@@ -103,7 +111,7 @@
 <div id="printArea">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--blue); padding-bottom: 10px;">
         <div style="display: flex; align-items: center; gap: 20px;">
-            <img src="https://wagaarlab.github.io/Wagarlab/209963.png" style="height: 120px; width: 120px; border-radius: 50%; object-fit: cover; border: 2px solid var(--blue);" crossOrigin="anonymous">
+            <img src="https://raw.githubusercontent.com/Wagaarlab/Wagarlab/main/209963.png" style="height: 120px; width: 120px; border-radius: 50%; object-fit: cover; border: 2px solid var(--blue);" crossOrigin="anonymous">
             <div>
                 <h1 style="color: var(--blue); margin:0; font-size: 28px;">Waqar Medical Lab</h1>
                 <p style="margin: 5px 0; font-size: 18px;"><b>Dr. Alsunni Khalid Mohammed Ahmed Alsunni</b></p>
@@ -122,11 +130,11 @@
     <div style="margin-top: 50px; display: flex; justify-content: space-between; font-weight: bold; align-items: flex-end;">
         <div style="text-align: center;">
             <div class="digital-signature">Dr. Alsunni Khalid</div>
-            <p style="margin-top: 0; border-top: 1px solid #000; width: 200px; padding-top: 5px;">Lab Manager Signature</p>
+            <p style="margin-top: 0; border-top: 1px solid #000; width: 220px; padding-top: 5px;">Lab Manager Signature</p>
         </div>
         <div style="text-align: center;">
             <p style="margin-bottom: 40px;">Official Stamp</p>
-            <div style="border: 2px solid #003366; width: 100px; height: 100px; border-radius: 50%; margin: auto; opacity: 0.2; display: flex; align-items: center; justify-content: center; color: #003366; font-size: 12px;">Waqar Lab</div>
+            <div style="border: 2px solid #003366; width: 100px; height: 100px; border-radius: 50%; margin: auto; opacity: 0.15; display: flex; align-items: center; justify-content: center; color: #003366; font-size: 12px;">Waqar Lab</div>
         </div>
     </div>
 </div>
@@ -170,12 +178,14 @@
             await window.dbSave({ name, code, visit });
             alert("✅ تم الحفظ! الكود: " + code);
             currentVisitTests = []; renderQueue(); document.getElementById('admName').value = "";
-        } catch(e) { alert("خطأ: " + e.message); }
+        } catch(e) { console.error(e); }
         finally { btn.disabled = false; btn.innerText = "حفظ وتحديث السحابة ✅"; }
     }
 
     async function loadHistory() {
-        const data = await window.dbGet(document.getElementById('pSearch').value);
+        const codeInput = document.getElementById('pSearch').value;
+        if(!codeInput) return;
+        const data = await window.dbGet(codeInput);
         if(!data) return document.getElementById('historyOutput').innerHTML = "لا توجد بيانات لهذا الكود";
         document.getElementById('historyOutput').innerHTML = `<h3>المريض: ${data.name}</h3>` + data.visits.reverse().map(v => `
             <div class="test-card" style="display:flex; justify-content:space-between; align-items:center;">
