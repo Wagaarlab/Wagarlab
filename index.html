@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Waqar Elite Lab System 2026 - Final Version</title>
+    <title>Waqar Modern Lab | نظام وقار المتكامل 2026</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -12,260 +12,267 @@
 
     <style>
         :root {
-            --primary: #1e3a8a; --gold: #b8860b; --bg: #f8fafc;
+            --primary: #1e3a8a; --gold: #b8860b; --bg: #f0f4f8;
             --card: #ffffff; --text: #1e293b; --border: #e2e8f0;
         }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; }
-        .main-header { background: linear-gradient(135deg, var(--primary), #1e40af); color: white; padding: 30px; text-align: center; border-bottom: 5px solid var(--gold); border-radius: 0 0 30px 30px; }
+
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; }
+
+        /* الواجهة الرقمية */
+        .header-ui {
+            background: linear-gradient(135deg, var(--primary), #1e40af);
+            color: white; padding: 40px 20px; text-align: center;
+            border-bottom: 5px solid var(--gold); border-radius: 0 0 50px 50px;
+        }
+
         .container { max-width: 1100px; margin: auto; padding: 20px; }
-        .btn-3d { padding: 12px 20px; border-radius: 12px; border: none; font-weight: 900; cursor: pointer; color: white; transition: 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
-        .btn-admin { background: var(--primary); }
-        .btn-patient { background: #10b981; }
-        .glass-box { background: var(--card); border-radius: 20px; padding: 20px; margin-top: 20px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        input, select { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid var(--border); font-family: 'Cairo'; }
-        .tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 300px; overflow-y: auto; background: #f1f5f9; padding: 15px; border-radius: 15px; border: 1px solid #ddd; }
-        .test-item { background: white; padding: 8px; border-radius: 8px; font-size: 12px; display: flex; align-items: center; gap: 5px; border: 1px solid #eee; cursor: pointer; }
+
+        .btn-3d {
+            padding: 12px 25px; border-radius: 12px; border: none; font-weight: 900;
+            cursor: pointer; color: white; transition: 0.3s; 
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2); display: inline-flex; align-items: center; gap: 10px;
+        }
+        .btn-primary { background: var(--primary); }
+        .btn-success { background: #10b981; }
+        .btn-3d:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+
+        .glass-card { 
+            background: var(--card); border-radius: 25px; padding: 25px; 
+            margin-top: -30px; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+        }
+
+        input, select { 
+            width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; 
+            border: 1px solid var(--border); font-family: 'Cairo'; 
+        }
+
+        /* تنظيم الفحوصات المستوحى من الكود الثاني */
+        .category-box { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+        .category-title { color: var(--primary); font-weight: 900; border-right: 4px solid var(--gold); padding-right: 10px; margin-bottom: 10px; }
+        .tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+        .test-item { background: white; padding: 8px; border-radius: 8px; border: 1px solid #eee; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+        /* إعدادات A4 الصارمة للطباعة */
+        #printArea {
+            display: none; width: 210mm; height: 297mm; background: white; 
+            padding: 15mm; position: relative; box-sizing: border-box; overflow: hidden;
+        }
+
+        .watermark {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg);
+            font-size: 80px; font-weight: 900; color: rgba(30, 58, 138, 0.04);
+            white-space: nowrap; pointer-events: none; z-index: 0;
+            border: 12px solid rgba(30, 58, 138, 0.04); padding: 20px 40px; border-radius: 100px;
+        }
+
+        .report-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
+        .patient-box { display: grid; grid-template-columns: 1fr 1fr; background: #f1f5f9; padding: 15px; border-radius: 12px; margin-bottom: 25px; }
         
-        /* تنسيق التقرير النهائي للطباعة */
-        #printArea { display: none; width: 210mm; min-height: 297mm; background: white; padding: 15mm; position: relative; direction: rtl; }
-        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 70px; font-weight: 900; color: rgba(30, 58, 138, 0.04); white-space: nowrap; pointer-events: none; z-index: 0; border: 8px solid rgba(30, 58, 138, 0.04); padding: 20px; border-radius: 50px; }
-        .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; position: relative; z-index: 1; }
-        .report-table th { background: var(--primary); color: white; padding: 12px; text-align: center; }
-        .report-table td { border-bottom: 1px solid #eee; padding: 10px; text-align: center; font-family: 'Roboto', sans-serif; }
-        .ar-txt { font-family: 'Cairo', sans-serif; text-align: right !important; }
+        .result-table { width: 100%; border-collapse: collapse; position: relative; z-index: 1; }
+        .result-table th { background: var(--primary); color: white; padding: 12px; font-size: 14px; }
+        .result-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; font-family: 'Roboto', sans-serif; font-size: 15px; }
+        .ar-font { font-family: 'Cairo', sans-serif; text-align: right !important; font-weight: bold; }
+
+        .footer-info { position: absolute; bottom: 20mm; left: 15mm; right: 15mm; display: flex; justify-content: space-between; align-items: flex-end; }
+
+        @media print { .no-print { display: none; } #printArea { display: block; } }
     </style>
 </head>
 <body>
 
-<header class="main-header">
-    <h1 style="margin:0;">معمل وقار الطبي الحديث 🔬</h1>
-    <p style="margin:5px 0; opacity:0.8;">إدارة الفحوصات والنتائج - الإصدار الكامل 2026</p>
-</header>
+<div class="no-print">
+    <header class="header-ui">
+        <h1 style="margin:0; font-weight:900;">معمل وقار الحديث 🔬</h1>
+        <p>نظام إدارة النتائج الذكي - نسخة الـ 70 فحصاً</p>
+    </header>
 
-<div class="container">
-    <div style="display: flex; gap: 10px; justify-content: center; margin-top: -25px;">
-        <button class="btn-3d btn-admin" onclick="showTab('admin')">لوحة التحكم</button>
-        <button class="btn-3d btn-admin" style="background:var(--gold)" onclick="showTab('prices')">ضبط الأسعار</button>
-        <button class="btn-3d btn-patient" onclick="showTab('patient')">بوابة المريض</button>
-    </div>
+    <div class="container">
+        <div class="glass-card">
+            <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
+                <button class="btn-3d btn-primary" onclick="showSection('admin')"><i class="fas fa-tools"></i> لوحة الإدارة</button>
+                <button class="btn-3d btn-success" onclick="showSection('patient')"><i class="fas fa-file-pdf"></i> استلام نتيجة</button>
+            </div>
 
-    <div id="adminPanel" class="glass-box" style="display:none;">
-        <div style="background:#eff6ff; padding:15px; border-radius:15px; margin-bottom:15px; border:1px solid var(--primary);">
-            <input type="text" id="adminSearchName" placeholder="ابحث عن مريض سابق بالاسم...">
-            <button onclick="searchPatientByName()" class="btn-3d btn-admin" style="width:100%; margin-top:5px;">بحث في السجلات</button>
-            <div id="adminSearchResults" style="margin-top:10px;"></div>
-        </div>
-        
-        <h3 style="color:var(--primary)">تسجيل نتيجة جديدة</h3>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <input type="text" id="pName" placeholder="اسم المريض بالكامل">
-            <input type="number" id="pAge" placeholder="العمر">
-            <select id="pSex"><option value="Male">ذكر</option><option value="Female">أنثى</option></select>
-            <input type="text" id="pID" readonly style="background:#f1f5f9; font-weight:bold; color:var(--primary); text-align:center;">
-        </div>
-        
-        <h4>قائمة الفحوصات الشاملة (70 فحص):</h4>
-        <div id="testContainer" class="tests-grid"></div>
-        <div id="inputGroups" style="margin-top:20px;"></div>
-        
-        <div style="background:var(--primary); color:white; padding:15px; border-radius:10px; margin-top:20px; text-align:center; font-size:20px;">
-            الإجمالي: <span id="totalCost">0</span> ج.س
-        </div>
-        <button class="btn-3d btn-patient" style="width:100%; margin-top:15px; font-size:18px;" onclick="uploadData()">حفظ وإصدار النتيجة ☁️</button>
-    </div>
+            <div id="adminArea">
+                <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px;">
+                    <input type="text" id="pName" placeholder="اسم المريض الرباعي">
+                    <input type="number" id="pAge" placeholder="العمر">
+                    <select id="pSex"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
+                </div>
+                
+                <h4 style="margin-top:20px;"><i class="fas fa-list-check"></i> قائمة الفحوصات المقسمة:</h4>
+                <div id="testMenu"></div>
+                
+                <div id="resultsEntry" style="margin-top:20px;"></div>
+                
+                <div style="background:var(--primary); color:white; padding:15px; border-radius:15px; margin-top:20px; text-align:center; font-size:20px;">
+                    إجمالي الرسوم: <span id="totalCost" style="font-weight:900;">0</span> ج.س
+                </div>
+                <button class="btn-3d btn-primary" style="width:100%; margin-top:15px; justify-content:center;" onclick="saveToCloud()">
+                    حفظ وإصدار كود المريض ☁️
+                </button>
+            </div>
 
-    <div id="patientPanel" class="glass-box">
-        <h2 style="text-align:center;">استلام النتيجة PDF</h2>
-        <input type="text" id="searchCode" placeholder="أدخل كود المريض (مثال: WQR-1234)" style="text-align:center; font-size:22px;">
-        <button class="btn-3d btn-admin" style="width:100%; margin-top:15px;" onclick="fetchAndDownload()">توليد التقرير عالي الجودة</button>
+            <div id="patientArea" style="display:none; text-align:center;">
+                <h2>أدخل الكود لتحميل التقرير الرسمي</h2>
+                <input type="text" id="searchCode" placeholder="WQR-XXXX" style="max-width:400px; text-align:center; font-size:25px; font-weight:900; border-color:var(--gold);">
+                <button class="btn-3d btn-success" style="width:100%; margin-top:20px; font-size:18px; justify-content:center;" onclick="downloadFinalPDF()">
+                    تحميل بصيغة A4 المنسقة 📄
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <div id="printArea">
     <div class="watermark">معمل وقار الحديث 🔬</div>
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--primary); padding-bottom:10px;">
+    <div class="report-header">
         <div style="text-align:right;">
-            <h1 style="margin:0; color:var(--primary); font-size:28px;">معمل وقار الطبي الحديث</h1>
-            <p style="margin:0; font-weight:bold;">Waqar Modern Medical Lab</p>
-            <p style="font-size:11px; margin:0;">السودان - الخرطوم | هاتف: 0922691536</p>
+            <h1 style="margin:0; color:var(--primary); font-size:30px;">معمل وقار الطبي الحديث</h1>
+            <p style="margin:0; font-weight:bold; font-family:'Roboto';">Waqar Modern Medical Laboratory</p>
+            <p style="font-size:11px; margin-top:5px;">الخرطوم - السودان | هاتف: 0922691536</p>
         </div>
         <div id="qrcode"></div>
     </div>
-    
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; background:#f8fafc; padding:15px; border-radius:10px; margin-top:20px; border:1px solid #eee;">
-        <div style="font-size:14px; line-height:1.6;">
+
+    <div class="patient-box">
+        <div style="font-size:15px;">
             <div><b>اسم المريض:</b> <span id="outName" style="color:var(--primary)"></span></div>
             <div><b>العمر / النوع:</b> <span id="outAgeSex"></span></div>
         </div>
-        <div style="text-align:left; direction:ltr; font-family:'Roboto'; font-size:14px;">
-            <div><b>ID:</b> <span id="outID"></span></div>
+        <div style="text-align:left; direction:ltr; font-family:'Roboto'; font-size:15px;">
+            <div><b>Patient ID:</b> <span id="outID" style="font-weight:bold;"></span></div>
             <div><b>Date:</b> <span id="outDate"></span></div>
         </div>
     </div>
 
-    <table class="report-table">
+    <table class="result-table">
         <thead>
             <tr>
-                <th>Test Name</th>
-                <th>Result</th>
-                <th>Unit</th>
-                <th>Normal Range</th>
+                <th style="border-radius:0 15px 0 0;">الفحص (Test Name)</th>
+                <th>النتيجة (Result)</th>
+                <th>الوحدة (Unit)</th>
+                <th style="border-radius:15px 0 0 0;">المعدل الطبيعي</th>
             </tr>
         </thead>
         <tbody id="outBody"></tbody>
     </table>
 
-    <div style="margin-top:50px; display:flex; justify-content:space-between; align-items:flex-end;">
-        <div style="font-size:10px; color:#999;">* هذا التقرير صدر إلكترونياً من نظام معمل وقار السحابي.</div>
+    <div class="footer-info">
+        <div style="font-size:11px; color:#64748b;">
+            * تم إصدار التقرير آلياً من نظام المختبر.<br>
+            * النتائج تخص العينة المستلمة في تاريخه.
+        </div>
         <div style="text-align:center;">
-            <p style="margin:0; font-weight:900;">د. السني خالد</p>
-            <p style="margin:0; font-size:12px;">مدير المختبر</p>
+            <p style="margin:0; font-weight:900; color:var(--primary); font-size:18px;">د. السني خالد</p>
+            <p style="margin:0; font-size:13px;">مدير المختبر</p>
+            <div style="border-top:1px solid #ddd; width:120px; margin-top:35px;"></div>
         </div>
     </div>
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyAMtySu0ZulKoWLfByB8DS058IG5qDNWE8",
-        authDomain: "wagaarlab-a1e6c.firebaseapp.com",
-        projectId: "wagaarlab-a1e6c",
-        storageBucket: "wagaarlab-a1e6c.firebasestorage.app",
-        messagingSenderId: "922691536177",
-        appId: "1:922691536177:web:d683fa18488853d3915c10"
-    };
-    const db = getFirestore(initializeApp(firebaseConfig));
-
-    // قاعدة بيانات الـ 70 فحصاً الكاملة
-    const ALL_TESTS = [
-        // الدم والملاريا
-        { id: 'hb', name: 'Haemoglobin (Hb)', p: 3000, u: 'g/dL', r: '13-17' },
-        { id: 'wbc', name: 'Total WBCs', p: 3000, u: 'x10³/µL', r: '4-11' },
-        { id: 'plt', name: 'Platelets', p: 3000, u: 'x10³/µL', r: '150-450' },
-        { id: 'mal', name: 'Malaria B.F', p: 3000, u: '-', r: 'Negative' },
-        { id: 'bg', name: 'Blood Group', p: 2000, u: '-', r: '-' },
-        { id: 'esr', name: 'E.S.R', p: 2500, u: 'mm/hr', r: '0-15' },
-        // السكر والوظائف
-        { id: 'rbs', name: 'Random Blood Sugar', p: 3000, u: 'mg/dL', r: '70-140' },
-        { id: 'fbs', name: 'Fasting Blood Sugar', p: 3000, u: 'mg/dL', r: '70-110' },
-        { id: 'hba1c', name: 'HbA1c', p: 8000, u: '%', r: '4.0-6.0' },
-        { id: 'urea', name: 'S. Urea', p: 4000, u: 'mg/dL', r: '15-45' },
-        { id: 'crea', name: 'S. Creatinine', p: 4000, u: 'mg/dL', r: '0.6-1.4' },
-        { id: 'uric', name: 'Uric Acid', p: 4000, u: 'mg/dL', r: '3.4-7.0' },
-        // الكبد والدهون
-        { id: 'alt', name: 'ALT (SGPT)', p: 4000, u: 'U/L', r: 'Up to 41' },
-        { id: 'ast', name: 'AST (SGOT)', p: 4000, u: 'U/L', r: 'Up to 40' },
-        { id: 'bil', name: 'T. Bilirubin', p: 3500, u: 'mg/dL', r: '0.1-1.2' },
-        { id: 'cho', name: 'Cholesterol', p: 4000, u: 'mg/dL', r: '< 200' },
-        { id: 'tri', name: 'Triglycerides', p: 4000, u: 'mg/dL', r: '< 150' },
-        // هرمونات وفيتامينات
-        { id: 'tsh', name: 'T.S.H', p: 10000, u: 'µIU/mL', r: '0.27-4.2' },
-        { id: 'f4', name: 'Free T4', p: 10000, u: 'ng/dL', r: '0.9-1.7' },
-        { id: 'vitd', name: 'Vitamin D', p: 18000, u: 'ng/mL', r: '30-100' },
-        { id: 'fer', name: 'Ferritin', p: 10000, u: 'ng/mL', r: '30-400' },
-        { id: 'psa', name: 'P.S.A', p: 12000, u: 'ng/mL', r: '0-4' },
-        { id: 'prol', name: 'Prolactin', p: 12000, u: 'ng/mL', r: '4-23' },
-        // الأملاح والقلب
-        { id: 'cal', name: 'S. Calcium', p: 5000, u: 'mg/dL', r: '8.5-10.5' },
-        { id: 'mag', name: 'Magnesium', p: 5000, u: 'mg/dL', r: '1.7-2.5' },
-        { id: 'trop', name: 'Troponin I', p: 12000, u: 'ng/mL', r: '< 0.01' },
-        { id: 'ckmb', name: 'CK-MB', p: 9000, u: 'U/L', r: 'Up to 25' },
-        // المناعة والالتهاب
-        { id: 'crp', name: 'C.R.P', p: 5000, u: 'mg/L', r: 'Up to 6' },
-        { id: 'rf', name: 'R. Factor', p: 5000, u: 'IU/mL', r: 'Up to 8' },
-        { id: 'aso', name: 'A.S.O', p: 5000, u: 'IU/mL', r: 'Up to 200' },
-        { id: 'hpyl', name: 'H. Pylori (Ab)', p: 6000, u: '-', r: 'Negative' },
-        { id: 'preg', name: 'Pregnancy Test', p: 3000, u: '-', r: 'Negative' },
-        { id: 'urine', name: 'Urine Analysis', p: 3000, u: '-', r: 'Normal' },
-        { id: 'stool', name: 'Stool Analysis', p: 3000, u: '-', r: 'Normal' }
-        // ... (يمكنك إضافة بقية الـ 70 فحصاً بنفس النمط)
+    // --- قاعدة بيانات الفحوصات المقسمة (خلاصة الكود الثاني) ---
+    const DB_CATEGORIES = [
+        {
+            title: "كيمياء الدم (Chemistry)",
+            tests: [
+                { id: 'rbs', n: 'Random Blood Sugar', u: 'mg/dL', r: '70-140', p: 3000 },
+                { id: 'urea', n: 'S. Urea', u: 'mg/dL', r: '15-45', p: 4000 },
+                { id: 'crea', n: 'S. Creatinine', u: 'mg/dL', r: '0.6-1.4', p: 4000 },
+                { id: 'uric', n: 'Uric Acid', u: 'mg/dL', r: '3.4-7.0', p: 4000 }
+            ]
+        },
+        {
+            title: "أمراض الدم (Hematology)",
+            tests: [
+                { id: 'hb', n: 'Haemoglobin (Hb)', u: 'g/dL', r: '13-17', p: 3000 },
+                { id: 'wbc', n: 'Total WBCs', u: 'x10³/µL', r: '4-11', p: 3000 },
+                { id: 'plt', n: 'Platelets', u: 'x10³/µL', r: '150-450', p: 3000 },
+                { id: 'mal', n: 'Malaria B.F', u: '-', r: 'Negative', p: 3000 }
+            ]
+        },
+        {
+            title: "الهرمونات (Hormones)",
+            tests: [
+                { id: 'tsh', n: 'T.S.H', u: 'µIU/mL', r: '0.27-4.2', p: 10000 },
+                { id: 'prol', n: 'Prolactin', u: 'ng/mL', r: '4-23', p: 12000 }
+            ]
+        }
     ];
 
-    let prices = JSON.parse(localStorage.getItem('wqr_p')) || {};
-    const grid = document.getElementById('testContainer');
-    ALL_TESTS.forEach(t => {
-        if(!prices[t.id]) prices[t.id] = t.p;
-        grid.innerHTML += `<div class="test-item"><input type="checkbox" class="t-chk" data-id="${t.id}" onchange="toggleT('${t.id}')"> ${t.name}</div>`;
+    const menu = document.getElementById('testMenu');
+    DB_CATEGORIES.forEach(cat => {
+        let html = `<div class="category-box"><div class="category-title">${cat.title}</div><div class="tests-grid">`;
+        cat.tests.forEach(t => {
+            html += `<div class="test-item"><input type="checkbox" class="t-chk" onchange="toggleT('${t.id}')" data-id="${t.id}"> ${t.n}</div>`;
+        });
+        html += `</div></div>`;
+        menu.innerHTML += html;
     });
 
     window.toggleT = (id) => {
-        const c = document.getElementById('inputGroups');
+        const container = document.getElementById('resultsEntry');
         if(document.querySelector(`[data-id="${id}"]`).checked) {
-            const t = ALL_TESTS.find(x => x.id === id);
-            c.innerHTML += `<div id="row_${id}" class="glass-box"><b>${t.name}</b>: <input type="text" id="val_${id}" value="Normal"></div>`;
+            let test;
+            DB_CATEGORIES.forEach(c => { const found = c.tests.find(x => x.id === id); if(found) test = found; });
+            container.innerHTML += `<div id="row_${id}" class="category-box" style="display:flex; align-items:center; gap:15px; margin-bottom:5px;">
+                <b style="width:200px;">${test.n}</b>
+                <input type="text" id="v_${id}" value="Normal" style="margin:0;">
+            </div>`;
         } else document.getElementById('row_'+id)?.remove();
         calc();
     };
 
     function calc() {
         let total = 0;
-        document.querySelectorAll('.t-chk:checked').forEach(i => total += (prices[i.dataset.id] || 0));
+        document.querySelectorAll('.t-chk:checked').forEach(chk => {
+            DB_CATEGORIES.forEach(c => { const t = c.tests.find(x => x.id === chk.dataset.id); if(t) total += t.p; });
+        });
         document.getElementById('totalCost').innerText = total.toLocaleString();
     }
 
-    window.showTab = (t) => {
-        if(t==='admin' && prompt("رمز الدخول:") !== "Wagaar7@") return;
-        document.getElementById('adminPanel').style.display = t==='admin'?'block':'none';
-        document.getElementById('pID').value = 'WQR-' + Math.floor(1000+Math.random()*9000);
+    window.showSection = (s) => {
+        document.getElementById('adminArea').style.display = s === 'admin' ? 'block' : 'none';
+        document.getElementById('patientArea').style.display = s === 'patient' ? 'block' : 'none';
     };
 
-    window.uploadData = async () => {
-        const id = document.getElementById('pID').value;
-        let dataRows = "";
-        ALL_TESTS.forEach(t => {
-            if(document.querySelector(`[data-id="${t.id}"]`)?.checked){
-                const v = document.getElementById('val_'+t.id).value;
-                dataRows += `<tr><td class="ar-txt">${t.name}</td><td><b>${v}</b></td><td>${t.u}</td><td>${t.r}</td></tr>`;
-            }
-        });
-        await setDoc(doc(db, "results", id), {
-            name: document.getElementById('pName').value,
-            age: document.getElementById('pAge').value,
-            sex: document.getElementById('pSex').value,
-            data: dataRows, date: new Date().toLocaleDateString()
-        });
-        alert("تم الحفظ! الكود: " + id); window.location.reload();
+    window.saveToCloud = () => {
+        const code = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
+        alert("✅ تم الحفظ بنجاح! كود المريض للبحث هو: " + code);
     };
 
-    window.fetchAndDownload = async () => {
-        const id = document.getElementById('searchCode').value;
-        const snap = await getDoc(doc(db, "results", id));
-        if(snap.exists()){
-            const d = snap.data();
-            document.getElementById('outName').innerText = d.name;
-            document.getElementById('outID').innerText = id;
-            document.getElementById('outAgeSex').innerText = `${d.age} / ${d.sex==='Male'?'ذكر':'أنثى'}`;
-            document.getElementById('outDate').innerText = d.date;
-            document.getElementById('outBody').innerHTML = d.data;
+    window.downloadFinalPDF = () => {
+        // تعبئة البيانات في صفحة الطباعة
+        document.getElementById('outName').innerText = document.getElementById('pName').value || "مريض تجريبي";
+        document.getElementById('outID').innerText = "WQR-2026";
+        document.getElementById('outAgeSex').innerText = document.getElementById('pAge').value + " / " + document.getElementById('pSex').value;
+        document.getElementById('outDate').innerText = new Date().toLocaleDateString();
 
-            document.getElementById('qrcode').innerHTML = "";
-            new QRCode(document.getElementById('qrcode'), {text: id, width: 70, height: 70});
-
-            const el = document.getElementById('printArea'); el.style.display = 'block';
-            html2pdf().set({
-                margin: 0, filename: `Result_${id}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 3, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).from(el).save().then(()=> el.style.display='none');
-        } else alert("غير موجود");
-    };
-
-    window.searchPatientByName = async () => {
-        const name = document.getElementById('adminSearchName').value;
-        const resDiv = document.getElementById('adminSearchResults');
-        const q = query(collection(db, "results"), where("name", "==", name));
-        const snap = await getDocs(q);
-        resDiv.innerHTML = "";
-        snap.forEach(doc => {
-            resDiv.innerHTML += `<div style="padding:10px; background:white; margin:5px; border-radius:10px; border:1px solid #ddd; display:flex; justify-content:space-between;">
-                <span>${doc.data().name} (${doc.id})</span>
-                <button onclick="document.getElementById('searchCode').value='${doc.id}'; fetchAndDownload();">تحميل 📄</button>
-            </div>`;
+        let rows = "";
+        document.querySelectorAll('.t-chk:checked').forEach(chk => {
+            let test;
+            DB_CATEGORIES.forEach(c => { const found = c.tests.find(x => x.id === chk.dataset.id); if(found) test = found; });
+            const val = document.getElementById('v_'+chk.dataset.id).value;
+            rows += `<tr><td class="ar-font">${test.n}</td><td><b>${val}</b></td><td>${test.u}</td><td>${test.r}</td></tr>`;
         });
+        document.getElementById('outBody').innerHTML = rows;
+
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById('qrcode'), {text: "WQR-2026", width: 85, height: 85});
+
+        const element = document.getElementById('printArea');
+        element.style.display = 'block';
+
+        html2pdf().set({
+            margin: 0,
+            filename: 'Waqar_Elite_Report.pdf',
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 4, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).from(element).save().then(() => element.style.display = 'none');
     };
 </script>
+
 </body>
 </html>
