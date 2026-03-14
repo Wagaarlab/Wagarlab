@@ -247,4 +247,84 @@
     window.commitToCart = (type) => {
         const m = MODELS[type];
         m.f.forEach((field, i) => {
-            cart.push({ n: field.n, res: document.getElementById(`field_${i}`).value, u: field
+            cart.push({ n: field.n, res: document.getElementById(`field_${i}`).value, u: field.u, r: field.r });
+        });
+        currentTotal += m.p;
+        updateUI();
+        document.getElementById('dynamicFormArea').style.display = 'none';
+    };
+
+    function updateUI() {
+        document.getElementById('totalTxt').innerText = currentTotal + " ج.س";
+        document.getElementById('addedTestsList').innerHTML = cart.map(x => `<div class="added-test-row"><span>${x.n}</span><b>${x.res}</b></div>`).join('');
+        calcRemaining();
+    }
+
+    window.calcRemaining = () => {
+        const paid = parseInt(document.getElementById('paidAmt').value) || 0;
+        document.getElementById('remainTxt').innerText = (currentTotal - paid) + " ج.س";
+    };
+
+    window.saveRecord = async () => {
+        const name = document.getElementById('pName').value;
+        const phone = document.getElementById('pPhone').value;
+        const code = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
+        if(!name || cart.length === 0) return alert('أدخل بيانات المريض والفحوصات!');
+
+        const btn = document.getElementById('saveBtn');
+        btn.innerText = "⏳ جاري الرفع للسحابة...";
+        btn.disabled = true;
+
+        try {
+            const data = { name, phone, age: document.getElementById('pAge').value, sex: document.getElementById('pSex').value, tests: cart, total: currentTotal, date: new Date().toISOString() };
+            await setDoc(doc(db, "results", code), data);
+            
+            const msg = `*مختبرات وقار الحديثة*%0Aالمريض: ${name}%0Aتم رفع نتيجتك.%0Aالكود السري: *${code}*%0Aالرابط: https://wagaarlab-a1e6c.web.app`;
+            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+            alert('✅ تم الرفع بنجاح! الكود: ' + code);
+            location.reload();
+        } catch (e) {
+            alert('❌ خطأ في الرفع: ' + e.message);
+            btn.disabled = false; btn.innerText = "حفظ وإرسال 🚀";
+        }
+    };
+
+    async function loadArchive() {
+        const snap = await getDocs(query(collection(db, "results"), orderBy("date", "desc")));
+        const list = document.getElementById('archiveList');
+        list.innerHTML = '';
+        snap.forEach(d => {
+            const r = d.data();
+            list.innerHTML += `<div class="glass-card" style="padding:10px; display:flex; justify-content:space-between; align-items:center;">
+                <span><b>${d.id}</b> - ${r.name}</span>
+                <button class="btn btn-primary" onclick="printEx('${d.id}')">طباعة 🖨️</button>
+            </div>`;
+        });
+    }
+
+    window.patientDownload = async () => {
+        const code = document.getElementById('pSearchCode').value.trim();
+        const snap = await getDoc(doc(db, "results", code));
+        if(snap.exists()) generatePDF(snap.data(), code);
+        else alert('الكود غير موجود!');
+    };
+
+    window.printEx = async (code) => {
+        const snap = await getDoc(doc(db, "results", code));
+        generatePDF(snap.data(), code);
+    };
+
+    function generatePDF(d, code) {
+        document.getElementById('reportMeta').innerHTML = `<div>المريض: ${d.name}</div><div>كود: ${code}</div><div>التاريخ: ${new Date(d.date).toLocaleDateString()}</div><div>العمر/النوع: ${d.age} / ${d.sex}</div>`;
+        document.getElementById('resultsBody').innerHTML = d.tests.map(t => `<tr><td>${t.n}</td><td><b>${t.res}</b></td><td>${t.u}</td><td>${t.r}</td></tr>`).join('');
+        document.getElementById('qrcode').innerHTML = '';
+        new QRCode(document.getElementById('qrcode'), { text: code, width: 80, height: 80 });
+        document.getElementById('printArea').style.display = 'block';
+        html2pdf().from(document.getElementById('printArea')).set({margin:0, filename: d.name+'.pdf', html2canvas:{scale:3}}).save().then(() => {
+            alert('تم التحميل بنجاح.');
+            location.reload();
+        });
+    }
+</script>
+</body>
+</html>
