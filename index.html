@@ -279,7 +279,7 @@
             const data = { name, phone, age: document.getElementById('pAge').value, sex: document.getElementById('pSex').value, tests: cart, total: currentTotal, date: new Date().toISOString() };
             await setDoc(doc(db, "results", code), data);
             
-            const msg = `*مختبرات وقار الحديثة*%0Aالمريض: ${name}%0Aتم رفع نتيجتك.%0Aالكود السري: *${code}*%0Aالرابط: https://wagaarlab-a1e6c.web.app`;
+            const msg = `*مختبرات وقار الحديثة*%0Aالمريض: ${name}%0Aتم رفع نتيجتك.%0Aالكود السري: *${code}*%0Aالرابط: https://wagaarlab-a1e6c.github.io`;
             window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
             alert('✅ تم الرفع بنجاح! الكود: ' + code);
             location.reload();
