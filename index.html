@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام وقار الحديث V26 - الإصدار المعتمد</title>
+    <title>نظام وقار الحديث V27 - النسخة الشاملة</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -19,14 +19,17 @@
         .nav-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
         .nav-btn { flex: 1; padding: 15px; border-radius: 12px; border: 2px solid var(--accent); cursor: pointer; background: transparent; color: white; font-weight: bold; }
         .nav-btn.active { background: var(--accent); }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; text-align: center; font-family: 'Cairo'; }
-        .btn-action { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 16px; }
-
-        /* تنسيق التقرير للتحميل والطباعة */
-        #printPage { display: none; background: white; width: 210mm; padding: 15mm; color: #000; margin: auto; position: relative; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; text-align: center; border-bottom: 4px solid var(--gold); }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; background: #0f172a; color: white; border: 1px solid #334155; text-align: center; }
+        .tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; max-height: 300px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 15px; }
+        .test-box { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; font-size: 13px; }
+        .btn-action { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; color: white; }
+        
+        /* التقرير الطبي للتحميل */
+        #printPage { display: none; background: white; width: 210mm; padding: 15mm; color: #000; margin: auto; }
         .results-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .results-table th, .results-table td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 13px; }
-        .header-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #0a192f; padding-bottom: 10px; }
         
         @media print { .no-print { display: none !important; } #printPage { display: block !important; } }
     </style>
@@ -34,7 +37,7 @@
 <body>
 
 <div class="container no-print">
-    <img src="https://waqaarlab.github.io/W/210350.png" class="main-logo" alt="لوجو وقار الحديث" onerror="this.src='https://raw.githubusercontent.com/Alsunni/Logo/main/waqar.png'">
+    <img src="https://waqaarlab.github.io/W/210350.png" class="main-logo">
 
     <div class="nav-tabs">
         <button id="tabP" class="nav-btn active" onclick="showTab('patient')">بوابة المرضى 🏥</button>
@@ -43,50 +46,74 @@
 
     <div id="sectionPatient" class="glass-card" style="text-align: center;">
         <h2 style="color:var(--gold)">استلام النتيجة الطبية</h2>
-        <input type="text" id="searchCode" placeholder="WQR-7103" style="text-transform: uppercase; font-size: 24px;">
+        <input type="text" id="searchCode" placeholder="WQR-0000">
         <button class="btn-action" style="background:var(--accent); margin-top:15px;" onclick="patientSearch()">عرض النتيجة وتحميل PDF 📥</button>
     </div>
 
     <div id="sectionAdmin" style="display:none">
+        <div class="stats-grid">
+            <div class="stat-card">إجمالي المبيعات<h3 id="statTotal">0</h3></div>
+            <div class="stat-card" style="border-color:var(--success)">كاش<h3 id="statCash">0</h3></div>
+            <div class="stat-card" style="border-color:var(--danger)">ديون<h3 id="statDebt">0</h3></div>
+        </div>
+
         <div class="glass-card">
-            <h3>إضافة مريض جديد</h3>
-            <input type="text" id="admName" placeholder="اسم المريض">
-            <input type="text" id="admPhone" placeholder="رقم واتساب (مثال: 249...)">
+            <button class="btn-action" style="background:#1d6f42; margin-bottom:20px;" onclick="exportExcel()">تصدير تقرير Excel 📊</button>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="text" id="admName" placeholder="اسم المريض">
+                <input type="text" id="admPhone" placeholder="رقم الواتساب">
+            </div>
+            
             <div id="masterTests"></div> <div id="inputForms"></div>
-            <button class="btn-action" style="background:var(--success); margin-top:15px;" onclick="saveNewCase()">حفظ وإرسال تنبيه 💾</button>
+
+            <div class="glass-card" style="background:rgba(16, 185, 129, 0.1); margin-top:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>الإجمالي: <b id="billTotal">0</b> ج.س</span>
+                    <input type="number" id="admPaid" placeholder="المبلغ المدفوع" style="width:150px" oninput="updateFinance()">
+                </div>
+                <button class="btn-action" style="background:var(--success); margin-top:15px;" onclick="saveAndNotify()">حفظ النتيجة وإرسال تنبيه واتساب 📱</button>
+            </div>
         </div>
     </div>
 </div>
 
 <div id="printPage">
-    <div class="header-box">
-        <img src="https://waqaarlab.github.io/W/210350.png" width="100" style="object-fit: contain;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:4px solid #0a192f; padding-bottom:10px;">
+        <img src="https://waqaarlab.github.io/W/210350.png" width="100">
         <div style="text-align:center">
-            <h1 style="margin:0; font-size: 24px;">معمل وقار الحديث</h1>
+            <h1 style="margin:0;">معمل وقار الحديث</h1>
             <p style="margin:0;">برهان الثقة.. موطن الدقة</p>
         </div>
         <div id="qrcode"></div>
     </div>
-    
     <div id="prHeader" style="margin-top:20px; font-weight:bold; border:1px solid #000; padding:10px; background:#f9f9f9;"></div>
-    <div id="prResultsArea"></div>
-    
+    <div id="prResults"></div>
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:50px;">
-        <div style="text-align:center; width:250px; border-top:2px solid #000; padding-top:5px;">
-            <b>د. السني خالد محمد أحمد</b><br><small>مدير المختبر</small>
-        </div>
-        <img src="https://waqaarlab.github.io/W/210488.png" width="130" style="opacity: 0.9;">
+        <div style="text-align:center; width:220px; border-top:2px solid #000;"><b>د. السني خالد محمد أحمد</b><br><small>مدير المختبر</small></div>
+        <img src="https://waqaarlab.github.io/W/210488.png" width="120">
     </div>
 </div>
 
 <script>
-    // الإعدادات الأساسية
-    const ADMIN_PASS = "Wagaar7@";
-    let database = JSON.parse(localStorage.getItem('waqar_db_final')) || [];
+    const CLINICAL_LIB = [
+        { cat: 'Hematology', tests: [
+            { id: 'cbc', name: 'CBC Full Count', price: 10000, f: [{n:'Hb',u:'g/dl',r:'13-17'},{n:'WBCs',u:'10^3',r:'4-11'},{n:'PLT',u:'10^3',r:'150-410'}] },
+            { id: 'mal', name: 'Malaria B.F', price: 3000, f: [{n:'Result',u:'-',r:'Negative'}] },
+            { id: 'esr', name: 'ESR', price: 3000, f: [{n:'1st Hour',u:'mm/hr',r:'0-15'}] }
+        ]},
+        { cat: 'Biochemistry', tests: [
+            { id: 'sugar', name: 'Random Sugar', price: 4000, f: [{n:'Result',u:'mg/dl',r:'80-140'}] },
+            { id: 'urea', name: 'Urea', price: 6000, f: [{n:'Result',u:'mg/dl',r:'15-45'}] },
+            { id: 'cre', name: 'Creatinine', price: 6000, f: [{n:'Result',u:'mg/dl',r:'0.6-1.4'}] }
+        ]}
+        // ملاحظة: يمكنك إضافة بقية الـ 35 فحصاً هنا بنفس النسق
+    ];
+
+    let db = JSON.parse(localStorage.getItem('waqar_db_v27')) || [];
 
     function showTab(tab) {
         if(tab === 'admin') {
-            if(prompt("رمز الدخول للإدارة:") !== ADMIN_PASS) return alert("خطأ في الرمز!");
+            if(prompt("كلمة سر الإدارة:") !== "Wagaar7@") return alert("صلاحية الإدارة للدكتور السني فقط.");
             document.getElementById('sectionAdmin').style.display = 'block';
             document.getElementById('sectionPatient').style.display = 'none';
         } else {
@@ -95,37 +122,90 @@
         }
     }
 
+    const masterList = document.getElementById('masterTests');
+    CLINICAL_LIB.forEach(c => {
+        masterList.innerHTML += `<div style="color:var(--gold); margin-top:10px;">${c.cat}</div><div class="tests-grid" id="grid_${c.cat}"></div>`;
+        c.tests.forEach(t => {
+            document.getElementById(`grid_${c.cat}`).innerHTML += `
+                <div class="test-box">
+                    <label><input type="checkbox" id="chk_${t.id}" onchange="renderForm('${t.id}')"> ${t.name}</label>
+                    <input type="number" id="prc_${t.id}" value="${t.price}" style="width:70px; height:20px;" oninput="updateFinance()">
+                </div>`;
+        });
+    });
+
+    function renderForm(id) {
+        let t = null; CLINICAL_LIB.forEach(c => { let found = c.tests.find(x => x.id === id); if(found) t = found; });
+        if(document.getElementById('chk_'+id).checked) {
+            let h = `<div id="f_${id}" class="glass-card"><h4>نتائج: ${t.name}</h4><div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:10px;">`;
+            t.f.forEach(field => h += `<input type="text" placeholder="${field.n}" class="val_${id}">`);
+            document.getElementById('inputForms').innerHTML += h + `</div></div>`;
+        } else document.getElementById('f_'+id)?.remove();
+        updateFinance();
+    }
+
+    function updateFinance() {
+        let total = 0;
+        CLINICAL_LIB.forEach(c => c.tests.forEach(t => { if(document.getElementById('chk_'+t.id).checked) total += Number(document.getElementById('prc_'+t.id).value); }));
+        document.getElementById('billTotal').innerText = total.toLocaleString();
+        
+        let dTotal = 0, dCash = 0;
+        db.forEach(p => { dTotal += p.total; dCash += p.paid; });
+        document.getElementById('statTotal').innerText = dTotal.toLocaleString();
+        document.getElementById('statCash').innerText = dCash.toLocaleString();
+        document.getElementById('statDebt').innerText = (dTotal - dCash).toLocaleString();
+    }
+
+    function saveAndNotify() {
+        const name = document.getElementById('admName').value;
+        const phone = document.getElementById('admPhone').value;
+        const total = Number(document.getElementById('billTotal').innerText.replace(/,/g,''));
+        const paid = Number(document.getElementById('admPaid').value || 0);
+        const code = 'WQR-' + Math.floor(Math.random()*9000+1000);
+
+        let html = '';
+        CLINICAL_LIB.forEach(c => {
+            let active = c.tests.filter(t => document.getElementById('chk_'+t.id).checked);
+            if(active.length > 0) {
+                html += `<div style="background:#0a192f; color:#fff; padding:5px; margin-top:10px;">${c.cat}</div><table class="results-table"><tr><th>Test</th><th>Result</th><th>Unit</th><th>Range</th></tr>`;
+                active.forEach(t => {
+                    const inps = document.querySelectorAll('.val_'+t.id);
+                    t.f.forEach((f, i) => html += `<tr><td>${t.name} - ${f.n}</td><td><b>${inps[i].value}</b></td><td>${f.u}</td><td>${f.r}</td></tr>`);
+                });
+                html += `</table>`;
+            }
+        });
+
+        db.push({ code, name, phone, total, paid, html, date: new Date().toLocaleDateString() });
+        localStorage.setItem('waqar_db_v27', JSON.stringify(db));
+
+        const msg = `مرحباً أ/ ${name}، نتيجتك جاهزة. كود الدخول: ${code}.`;
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        location.reload();
+    }
+
     function patientSearch() {
         const code = document.getElementById('searchCode').value.toUpperCase();
-        const p = database.find(x => x.code === code);
-        
+        const p = db.find(x => x.code === code);
         if(p) {
             document.getElementById('prHeader').innerText = `المريض: ${p.name} | الكود: ${p.code} | التاريخ: ${p.date}`;
-            document.getElementById('prResultsArea').innerHTML = p.resultsHTML;
+            document.getElementById('prResults').innerHTML = p.html;
             document.getElementById('printPage').style.display = 'block';
-            
             document.getElementById('qrcode').innerHTML = "";
             new QRCode(document.getElementById("qrcode"), { text: p.code, width: 80, height: 80 });
 
-            // ميكانيكية التحميل المحدثة لضمان الصور
-            const element = document.getElementById('printPage');
-            const opt = {
-                margin: [10, 10],
-                filename: `Waqar_Result_${p.code}.pdf`,
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                console.log("PDF Generated Successfully");
-            });
-        } else {
-            alert("الكود غير موجود في السجلات.");
-        }
+            html2pdf().set({
+                margin: 10, filename: `Waqar_${p.code}.pdf`, html2canvas: { scale: 3, useCORS: true }, jsPDF: { format: 'a4' }
+            }).from(document.getElementById('printPage')).save();
+        } else alert("الكود غير موجود");
     }
 
-    // هنا تضع وظائف الحفظ (saveNewCase) وبناء قائمة الفحوصات (35 فحصاً) كما في النسخ السابقة لضمان استقرار العمل.
+    function exportExcel() {
+        const ws = XLSX.utils.json_to_sheet(db.map(p => ({التاريخ:p.date, المريض:p.name, الكود:p.code, الإجمالي:p.total, المدفوع:p.paid})));
+        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "حسابات");
+        XLSX.writeFile(wb, "Waqar_Report.xlsx");
+    }
+    updateFinance();
 </script>
 </body>
 </html>
