@@ -3,119 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معمل وقار الحديث - الإصدار الملكي V50</title>
+    <title>معمل وقار الحديث - النظام السحابي العالمي</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
-        :root { 
-            --primary: #050a15; --card-bg: #0f172a; --accent: #1e40af; --gold: #d4af37; 
-            --success: #10b981; --danger: #ef4444; --text: #f8fafc;
-        }
-
-        body { font-family: 'Cairo', sans-serif; background: var(--primary); color: var(--text); margin: 0; overflow-x: hidden; }
+        :root { --primary: #050a15; --card-bg: #0f172a; --accent: #1e40af; --gold: #d4af37; --success: #10b981; --text: #f8fafc; }
+        body { font-family: 'Cairo', sans-serif; background: var(--primary); color: var(--text); margin: 0; }
         .container { width: 95%; max-width: 1200px; margin: auto; padding: 15px; }
-
-        /* الإعلان المضيء والمبهر */
-        .eid-banner { 
-            background: linear-gradient(90deg, #000, #d4af37, #000);
-            background-size: 200% auto;
-            color: #fff; padding: 12px; text-align: center; font-weight: 900; border-radius: 15px; 
-            margin-bottom: 25px; border: 2px solid var(--gold);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
-            animation: shine 3s linear infinite, glow 2s ease-in-out infinite alternate;
-        }
-        @keyframes shine { to { background-position: 200% center; } }
-        @keyframes glow { from { box-shadow: 0 0 10px var(--gold); } to { box-shadow: 0 0 25px #fff; } }
-
-        /* اللوجو الرسمي */
-        .main-logo-container { width: 150px; height: 150px; margin: 0 auto 20px; border-radius: 50%; border: 4px solid var(--gold); background: #fff; box-shadow: 0 0 20px var(--gold); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .main-logo-container { width: 140px; height: 140px; margin: 0 auto 20px; border-radius: 50%; border: 4px solid var(--gold); background: #fff; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px var(--gold); }
         .main-logo { width: 100%; height: 100%; object-fit: contain; }
-
-        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border-radius: 25px; padding: 25px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 25px; transition: 0.3s; }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 20px; text-align: center; border-bottom: 5px solid var(--accent); }
-        .stat-card.cash { border-bottom-color: var(--success); }
-        .stat-card.debt { border-bottom-color: var(--danger); }
-
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border-radius: 25px; padding: 25px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
         input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; background: #1e293b; color: white; border: 1px solid #334155; text-align: center; font-family: 'Cairo'; }
-        .btn-action { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 17px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .btn-action:active { transform: scale(0.96); }
-
-        /* التقرير الطبي الكامل (A4) */
+        .btn-action { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; font-size: 16px; }
         #printPage { display: none; background: white; width: 210mm; padding: 15mm; color: #000; margin: auto; }
         .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; border: 2px solid #000; }
-        .results-table th, .results-table td { border: 1px solid #000; padding: 12px; text-align: center; font-size: 14px; font-weight: bold; }
-        .header-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid #0a192f; padding-bottom: 15px; }
+        .results-table th, .results-table td { border: 1px solid #000; padding: 10px; text-align: center; }
     </style>
 </head>
 <body>
 
-<audio id="clickSound" src="https://www.soundjay.com/buttons/button-16.mp3"></audio>
-
 <div class="container no-print">
-    <div class="eid-banner">✨ تهنئة خاصة: خصم 20% على فحوصات الكيمياء السريرية بمناسبة العيد ✨</div>
-    
     <div class="main-logo-container">
-        <img src="https://lh3.google.com/saves/AA8Ys27nR5kw4l7LCnssHGLDa_ji2U_hatLe3m9BLTwBrQdaCIbCGGB89EULUMgyEae0rQ_T5MK2b46ayYqj0d5XSrwq9X8SWgJu36h5qhvMzYX8cRVjr8D2dqqpw-yhgAF6XqGPsgusYEJNJgRZDAG3Zn1S0hE=s2048-w2017-h2048-n-k?authuser=0&source=sh%2Fx%2Fsaves%2Fuv%2Fm1%2F4&kgs=c461f961ff0566c1" class="main-logo" alt="لوجو وقار">
+        <img src="https://lh3.google.com/saves/AA8Ys27nR5kw4l7LCnssHGLDa_ji2U_hatLe3m9BLTwBrQdaCIbCGGB89EULUMgyEae0rQ_T5MK2b46ayYqj0d5XSrwq9X8SWgJu36h5qhvMzYX8cRVjr8D2dqqpw-yhgAF6XqGPsgusYEJNJgRZDAG3Zn1S0hE=s2048-w2017-h2048-n-k?authuser=0&source=sh%2Fx%2Fsaves%2Fuv%2Fm1%2F4&kgs=c461f961ff0566c1" class="main-logo">
     </div>
 
-    <div style="display:flex; gap:10px; margin-bottom:25px;">
-        <button class="btn-action" style="background:var(--accent)" onclick="playSound(); showTab('patient')">بوابة المرضى 🏥</button>
-        <button class="btn-action" style="background:#334155" onclick="playSound(); showTab('admin')">لوحة الإدارة 🔐</button>
+    <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <button class="btn-action" style="background:var(--accent)" onclick="showTab('patient')">بوابة المرضى 🏥</button>
+        <button class="btn-action" style="background:#334155" onclick="showTab('admin')">لوحة الإدارة 🔐</button>
     </div>
 
     <div id="sectionPatient" class="glass-card" style="text-align: center;">
         <h2 style="color:var(--gold)">استلام نتيجتك الطبية</h2>
-        <input type="text" id="searchCode" placeholder="أدخل كود المريض (WQR-0000)">
-        <button class="btn-action" style="background:linear-gradient(45deg, #1e40af, #3b82f6)" onclick="playSound(); patientSearch()">عرض وتحميل النتيجة PDF 📥</button>
+        <input type="text" id="searchCode" placeholder="أدخل كود المريض (مثلاً: WQR-100)">
+        <button id="searchBtn" class="btn-action" style="background:linear-gradient(45deg, #1e40af, #3b82f6)">عرض وتحميل النتيجة PDF 📥</button>
     </div>
 
     <div id="sectionAdmin" style="display:none">
-        <div class="stats-grid">
-            <div class="stat-card">المبيعات<h3 id="stTotal">0</h3></div>
-            <div class="stat-card cash">كاش<h3 id="stCash">0</h3></div>
-            <div class="stat-card debt">ديون<h3 id="stDebt">0</h3></div>
-        </div>
-
         <div class="glass-card">
-            <h3>البحث الذكي عن مريض 🔍</h3>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="admSearch" placeholder="ابحث باسم المريض...">
-                <button onclick="playSound(); filterPatients()" style="padding:0 25px; background:var(--gold); border:none; border-radius:12px; font-weight:bold; cursor:pointer;">بحث</button>
-            </div>
-            <div id="patientLog" style="max-height: 150px; overflow-y: auto; margin-top: 15px;"></div>
-        </div>
-
-        <div class="glass-card">
-            <h3>تسجيل حالة جديدة + المولد الذكي</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input type="text" id="admName" placeholder="اسم المريض">
-                <input type="text" id="admPhone" placeholder="واتساب المريض (249...)">
-            </div>
-            <div id="masterLib" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:10px; background:rgba(0,0,0,0.3); padding:15px; border-radius:15px; max-height:250px; overflow-y:auto; margin-bottom:15px;"></div>
-            
-            <button onclick="playSound(); addCustomTest()" style="margin-bottom:15px; background:none; color:var(--gold); border:1px dashed var(--gold); padding:12px; border-radius:12px; cursor:pointer; width:100%; font-weight:bold;">+ إضافة فحص يدوي (توليد ذكي)</button>
-            
-            <div id="formContainer"></div>
-
-            <div class="glass-card" style="background:rgba(16, 185, 129, 0.1); border:1px solid var(--success);">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>الإجمالي: <b id="billTotal" style="color:var(--gold); font-size:22px;">0</b> ج.س</span>
-                    <input type="number" id="admPaid" placeholder="المدفوع" style="width:130px" oninput="calculateFinance()">
-                </div>
-                <div style="color:var(--danger); font-weight:bold; margin-top:10px;">المتبقي (دين): <span id="billDebt">0</span> ج.س</div>
-                <button class="btn-action" style="background:var(--success); margin-top:20px;" onclick="playSound(); saveCase()">حفظ وإرسال الرابط للواتساب 📱</button>
-            </div>
+            <h3>تسجيل حالة سحابية جديدة</h3>
+            <input type="text" id="admCode" placeholder="كود الحالة (مثل: WQR-100)">
+            <input type="text" id="admName" placeholder="اسم المريض">
+            <textarea id="admHtml" style="width:100%; height:100px; background:#1e293b; color:white; border-radius:10px; padding:10px;" placeholder="أدخل جدول النتائج هنا..."></textarea>
+            <button id="saveBtn" class="btn-action" style="background:var(--success); margin-top:10px;">رفع النتيجة للسحابة ☁️</button>
         </div>
     </div>
 </div>
 
 <div id="printPage">
-    <div class="header-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:5px solid #0a192f; padding-bottom:15px;">
         <img src="https://lh3.google.com/saves/AA8Ys27nR5kw4l7LCnssHGLDa_ji2U_hatLe3m9BLTwBrQdaCIbCGGB89EULUMgyEae0rQ_T5MK2b46ayYqj0d5XSrwq9X8SWgJu36h5qhvMzYX8cRVjr8D2dqqpw-yhgAF6XqGPsgusYEJNJgRZDAG3Zn1S0hE=s2048-w2017-h2048-n-k?authuser=0&source=sh%2Fx%2Fsaves%2Fuv%2Fm1%2F4&kgs=c461f961ff0566c1" width="100">
         <div style="text-align:center"><h2>معمل وقار الحديث</h2><p>برهان الثقة.. موطن الدقة</p></div>
         <div id="qrcode"></div>
@@ -124,116 +62,65 @@
     <div id="prResults"></div>
     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:70px;">
         <div style="text-align:center; width:250px; border-top:2px solid #000; padding-top:10px;"><b>د. السني خالد محمد أحمد</b><br><small>مدير المختبر</small></div>
-        <img src="https://lh3.google.com/saves/AA8Ys25odkEoAO55qko3ZQzNRUCnC6xPn8Er8fzf1WSEuyyGNzrDqxXNjPX90-THGkRiFbL65N3czMdqKNWjl9pqFojwD-l9SDNeox5FoIIZVcGEgQjAAZEO_dWTglAohghhsIBDEOCNHpRKOaL2HruTXcX7O8pG=s1984-w1984-h1920-n-k" width="130">
+        <img src="https://lh3.google.com/saves/AA8Ys25odkEoAO55qko3ZQzNRUCnC6xPn8Er8fzf1WSEuyyGNzrDqxXNjPX90-THGkRiFbL65N3czMdqKNWjl9pqFojwD-l9SDNeox5FoIIZVcGEgQjAAZEO_dWTglAohghhsIBDEOCNHpRKOaL2HruTXcX7O8pG=s1984-w1984-h1920-n-k?authuser=0" width="130">
     </div>
 </div>
 
-<script>
-    const CLICK_SND = document.getElementById('clickSound');
-    function playSound() { CLICK_SND.currentTime = 0; CLICK_SND.play(); }
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
-    const CLINICAL_LIB = [
-        { cat: 'Hematology', tests: [
-            { id: 'cbc', name: 'CBC Full Count', price: 10000, f: [{n:'Hb',u:'g/dl',r:'13-17'},{n:'WBCs',u:'10^3',r:'4-11'},{n:'PLT',u:'10^3',r:'150-410'}] },
-            { id: 'mal', name: 'Malaria B.F', price: 3500, f: [{n:'Result',u:'-',r:'Negative'}] },
-            { id: 'esr', name: 'ESR', price: 3000, f: [{n:'1st Hour',u:'mm/hr',r:'0-15'}] }
-        ]},
-        { cat: 'Chemistry (خصم 20%)', tests: [
-            { id: 'rbs', name: 'Random Sugar', price: 4000, disc: 0.2, f: [{n:'Result',u:'mg/dl',r:'80-140'}] },
-            { id: 'urea', name: 'Urea', price: 6000, disc: 0.2, f: [{n:'Result',u:'mg/dl',r:'15-45'}] },
-            { id: 'cre', name: 'Creatinine', price: 6000, disc: 0.2, f: [{n:'Result',u:'mg/dl',r:'0.6-1.4'}] }
-        ]}
-    ];
+    // بيانات مشروعك من الصورة
+    const firebaseConfig = {
+        apiKey: "AIzaSyAMtySu0ZulKoWlfByBBDS05...", 
+        authDomain: "wagaarlab-a1e6c.firebaseapp.com",
+        projectId: "wagaarlab-a1e6c",
+        storageBucket: "wagaarlab-a1e6c.appspot.com",
+        messagingSenderId: "922691536177",
+        appId: "1:922691536177:web:d683fa16488853d3915c10"
+    };
 
-    let db = JSON.parse(localStorage.getItem('waqar_final_db')) || [];
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    const libDiv = document.getElementById('masterLib');
-    CLINICAL_LIB.forEach(g => {
-        libDiv.innerHTML += `<div style="color:var(--gold); grid-column:1/-1; font-weight:bold; margin-top:10px;">${g.cat}</div>`;
-        g.tests.forEach(t => {
-            let p = t.disc ? t.price * 0.8 : t.price;
-            libDiv.innerHTML += `<div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:10px; font-size:12px;"><input type="checkbox" id="chk_${t.id}" onchange="toggleTest('${t.id}')"> ${t.name}<br><input type="number" value="${p}" id="prc_${t.id}" style="height:25px; width:100%; font-size:10px; margin-top:5px" oninput="calculateFinance()"></div>`;
-        });
-    });
+    // دالة الحفظ في السحابة
+    document.getElementById('saveBtn').onclick = async () => {
+        const code = document.getElementById('admCode').value.toUpperCase();
+        const data = {
+            name: document.getElementById('admName').value,
+            html: document.getElementById('admHtml').value,
+            date: new Date().toLocaleDateString()
+        };
+        await setDoc(doc(db, "records", code), data);
+        alert("تم الحفظ في السحابة بنجاح! يمكن للمريض الآن استلام نتيجته.");
+    };
 
-    function toggleTest(id) {
-        let t = null; CLINICAL_LIB.forEach(g => { let f = g.tests.find(x => x.id === id); if(f) t = f; });
-        if(document.getElementById('chk_'+id).checked) {
-            let h = `<div id="f_${id}" class="glass-card"><h4>${t.name}</h4><div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px;">`;
-            t.f.forEach(f => h += `<div><label style="font-size:11px;">${f.n}</label><input type="text" class="val_${id}"></div>`);
-            document.getElementById('formContainer').innerHTML += h + `</div></div>`;
-        } else document.getElementById('f_'+id)?.remove();
-        calculateFinance();
-    }
-
-    function addCustomTest() {
-        let name = prompt("اسم الفحص الجديد:"); if(!name) return;
-        let id = 'c' + Date.now();
-        document.getElementById('formContainer').innerHTML += `<div id="f_${id}" class="glass-card" style="border-right:5px solid var(--gold)"><h4>${name}</h4><div style="display:flex; gap:10px;"><input type="text" class="val_${id}" placeholder="النتيجة"><input type="text" class="unit_${id}" placeholder="الوحدة"><input type="text" class="range_${id}" placeholder="المدى"></div><input type="number" id="prc_${id}" value="0" oninput="calculateFinance()"><input type="hidden" id="name_${id}" value="${name}"><input type="checkbox" id="chk_${id}" checked style="display:none"></div>`;
-        calculateFinance();
-    }
-
-    function calculateFinance() {
-        let total = 0;
-        document.querySelectorAll('input[id^="chk_"]:checked').forEach(c => total += Number(document.getElementById('prc_'+c.id.split('_')[1]).value || 0));
-        document.getElementById('billTotal').innerText = total.toLocaleString();
-        document.getElementById('billDebt').innerText = (total - Number(document.getElementById('admPaid').value || 0)).toLocaleString();
-        let sT=0, sC=0; db.forEach(x => { sT += x.total; sC += x.paid; });
-        document.getElementById('stTotal').innerText = sT.toLocaleString();
-        document.getElementById('stCash').innerText = sC.toLocaleString();
-        document.getElementById('stDebt').innerText = (sT-sC).toLocaleString();
-    }
-
-    function saveCase() {
-        const name = document.getElementById('admName').value;
-        const phone = document.getElementById('admPhone').value;
-        const total = Number(document.getElementById('billTotal').innerText.replace(/,/g,''));
-        const paid = Number(document.getElementById('admPaid').value || 0);
-        const code = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
-        let html = '';
-        document.querySelectorAll('input[id^="chk_"]:checked').forEach(c => {
-            let id = c.id.split('_')[1];
-            let t = null; CLINICAL_LIB.forEach(g => { let f = g.tests.find(x => x.id === id); if(f) t = f; });
-            html += `<table class="results-table"><tr><th colspan="4">${t ? t.name : document.getElementById('name_'+id).value}</th></tr><tr><th>Test</th><th>Result</th><th>Unit</th><th>Range</th></tr>`;
-            if(t) t.f.forEach((f, i) => html += `<tr><td>${f.n}</td><td>${document.querySelectorAll('.val_'+id)[i].value}</td><td>${f.u}</td><td>${f.r}</td></tr>`);
-            else html += `<tr><td>Result</td><td>${document.querySelector('.val_'+id).value}</td><td>${document.querySelector('.unit_'+id).value}</td><td>${document.querySelector('.range_'+id).value}</td></tr>`;
-            html += `</table>`;
-        });
-        db.push({ code, name, phone, total, paid, html, date: new Date().toLocaleDateString() });
-        localStorage.setItem('waqar_final_db', JSON.stringify(db));
-        const link = window.location.href.split('?')[0] + '?code=' + code;
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent('أهلاً أ/ '+name+' نتيجتك جاهزة.\nرابط التحميل المباشر: '+link+'\nكودك السري: '+code)}`, '_blank');
-        location.reload();
-    }
-
-    function patientSearch() {
+    // دالة البحث السحابي للمريض
+    document.getElementById('searchBtn').onclick = async () => {
         const code = document.getElementById('searchCode').value.toUpperCase();
-        const p = db.find(x => x.code === code);
-        if(p) {
-            document.getElementById('prHeader').innerHTML = `المريض: ${p.name} | الكود: ${p.code} | التاريخ: ${p.date} <br> الحساب: الإجمالي ${p.total} | المدفوع ${p.paid} | المتبقي ${p.total-p.paid}`;
+        const docRef = doc(db, "records", code);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const p = docSnap.data();
+            document.getElementById('prHeader').innerText = `المريض: ${p.name} | الكود: ${code} | التاريخ: ${p.date}`;
             document.getElementById('prResults').innerHTML = p.html;
             document.getElementById('printPage').style.display = 'block';
             document.getElementById('qrcode').innerHTML = "";
             new QRCode(document.getElementById("qrcode"), { text: code, width: 80, height: 80 });
-            html2pdf().from(document.getElementById('printPage')).set({ margin: 10, filename: `Waqar_${code}.pdf`, html2canvas: { scale: 3 }, jsPDF: { format: 'a4' } }).save();
-        } else alert("الكود غير موجود");
-    }
+            html2pdf().from(document.getElementById('printPage')).save(`Waqar_${code}.pdf`);
+        } else {
+            alert("عذراً، الكود غير موجود في النظام السحابي.");
+        }
+    };
+</script>
 
-    function filterPatients() {
-        const q = document.getElementById('admSearch').value;
-        const log = document.getElementById('patientLog'); log.innerHTML = "";
-        db.filter(x => x.name.includes(q)).reverse().forEach(x => log.innerHTML += `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid rgba(255,255,255,0.1);"><span>${x.name}</span><button onclick="document.getElementById('searchCode').value='${x.code}'; patientSearch()">تحميل 📥</button></div>`);
-    }
-
+<script>
     function showTab(t) {
-        if(t==='admin' && prompt("الرمز السري:")!=="Wagaar7@") return;
+        if(t==='admin' && prompt("الرمز:")!=="Wagaar7@") return;
         document.getElementById('sectionAdmin').style.display = t==='admin'?'block':'none';
         document.getElementById('sectionPatient').style.display = t==='patient'?'block':'none';
     }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.has('code')) { document.getElementById('searchCode').value = urlParams.get('code'); patientSearch(); }
-    calculateFinance();
 </script>
 </body>
 </html>
