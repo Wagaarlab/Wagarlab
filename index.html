@@ -77,8 +77,8 @@
         .report-table th, .report-table td { border: 1px solid #000; padding: 10px; text-align: right; }
         
         .result-item-admin {
-            display: flex; justify-content: space-between; align-items: center; background: white; padding: 12px;
-            border-radius: 10px; margin-bottom: 8px; border: 1px solid #ddd;
+            display: flex; justify-content: space-between; background: white; padding: 10px;
+            border-radius: 10px; margin-bottom: 5px; border: 1px solid #ddd;
         }
     </style>
 </head>
@@ -208,7 +208,28 @@
         { id: 'hpyl', name: 'H. Pylori (Ab)', p: 6000, f: [{n:'Result', u:'-', r:'Negative'}] },
         { id: 'preg', name: 'Pregnancy Test', p: 3000, f: [{n:'Result', u:'-', r:'Negative'}] },
         { id: 'urine', name: 'Urine Analysis', p: 3000, f: [{n:'Pus Cells', u:'/hpf', r:'2-4'}, {n:'RBCs', u:'/hpf', r:'0-2'}] },
-        { id: 'stool', name: 'Stool Analysis', p: 3000, f: [{n:'Result', u:'-', r:'Normal'}] },
+        { id: 'stool', name: 'Stool Analysis', p: 3000, f: [
+            {n:'Color', u:'-', r:'Brownish'},
+            {n:'Odor', u:'-', r:'Offensive'},
+            {n:'Consistency', u:'-', r:'Formed'},
+            {n:'Blood', u:'-', r:'Absent'},
+            {n:'Mucus', u:'-', r:'Absent'},
+            {n:'pH', u:'-', r:'Alkaline 8.0'},
+            {n:'Food Particles', u:'-', r:'Absent'},
+            {n:'Worms', u:'-', r:'Absent'},
+            {n:'Pus Cells', u:'/hpf', r:'0-1'},
+            {n:'RBCs', u:'/hpf', r:'0-1'},
+            {n:'Undigested Food', u:'-', r:'Absent'},
+            {n:'Fats', u:'-', r:'Absent'},
+            {n:'Starch', u:'-', r:'Absent'},
+            {n:'Muscles', u:'-', r:'Absent'},
+            {n:'Vegetables', u:'-', r:'Absent'},
+            {n:'Ova', u:'-', r:'Not Detect'},
+            {n:'Trophozoite', u:'-', r:'Absent'},
+            {n:'Cysts', u:'-', r:'Absent'},
+            {n:'Larva', u:'-', r:'Absent'},
+            {n:'Others (Monilia)', u:'-', r:'Absent'}
+        ] },
         { id: 'hiv', name: 'HIV (I&II)', p: 7000, f: [{n:'Result', u:'-', r:'Non-reactive'}] },
         { id: 'hbsag', name: 'HBsAg', p: 6000, f: [{n:'Result', u:'-', r:'Non-reactive'}] },
         { id: 'hcv', name: 'H.C.V', p: 6000, f: [{n:'Result', u:'-', r:'Non-reactive'}] },
@@ -243,7 +264,10 @@
         if(document.querySelector(`[data-id="${id}"]`).checked) {
             let t = MASTER_TESTS.find(x => x.id === id);
             let html = `<div id="field_${id}" class="glass-box" style="margin-top:10px; border-right:8px solid var(--gold);"><b>💉 ${t.name}</b><div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px;">`;
-            t.f.forEach((field, i) => html += `<input type="text" id="val_${id}_${i}" value="Normal" placeholder="${field.n}">`);
+            t.f.forEach((field, i) => {
+                let defaultVal = field.r.includes('-') || field.r.includes('Up to') ? "Normal" : field.r;
+                html += `<input type="text" id="val_${id}_${i}" value="${defaultVal}" placeholder="${field.n}">`;
+            });
             cont.insertAdjacentHTML('beforeend', html + '</div></div>');
         } else document.getElementById('field_'+id)?.remove();
         calcTotal();
@@ -267,10 +291,8 @@
         const name = document.getElementById('adminSearchName').value;
         const resDiv = document.getElementById('adminSearchResults');
         resDiv.innerHTML = "جاري البحث...";
-        
         const q = query(collection(db, "results"), where("name", "==", name));
         const querySnapshot = await getDocs(q);
-        
         resDiv.innerHTML = "";
         if (querySnapshot.empty) {
             resDiv.innerHTML = "لم يتم العثور على نتائج بهذا الاسم.";
@@ -279,10 +301,10 @@
                 const d = doc.data();
                 resDiv.innerHTML += `
                     <div class="result-item-admin">
-                        <span><b>${d.name}</b> (كود: ${doc.id})</span>
+                        <span><b>${d.name}</b> - كود: ${doc.id}</span>
                         <div style="display:flex; gap:8px;">
-                            <button onclick="printFromAdmin('${doc.id}')" style="background:var(--gold); border:none; color:white; border-radius:5px; padding:8px 15px; cursor:pointer;">عرض 👁️</button>
-                            <button onclick="sendWhatsApp('${d.name}', '${doc.id}')" style="background:#25D366; border:none; color:white; border-radius:10px; padding:8px 15px; cursor:pointer;"><i class="fab fa-whatsapp"></i></button>
+                            <button onclick="printFromAdmin('${doc.id}')" style="background:var(--gold); border:none; color:white; border-radius:5px; padding:5px 10px; cursor:pointer;">عرض 👁️</button>
+                            <button onclick="sendWhatsApp('${d.name}', '${doc.id}')" style="background:#25D366; border:none; color:white; border-radius:10px; padding:5px 10px; cursor:pointer;"><i class="fab fa-whatsapp"></i></button>
                         </div>
                     </div>`;
             });
@@ -292,15 +314,9 @@
     window.sendWhatsApp = (name, code) => {
         let phone = prompt("أدخل رقم واتساب المريض (بدون + مثلاً 2499...):");
         if(!phone) return;
-
-        // تنظيف الرقم من أي رموز مخفية (مثل %E2%80%8F) أو مسافات لضمان عمل الرابط
         phone = phone.replace(/[^\d]/g, ''); 
-
         const currentUrl = window.location.href.split('?')[0];
-        
-        // نص الرسالة مع إخطار جاهزية النتيجة ورابط الموقع والكود
-        const message = `مرحباً أ/ *${name}*%0Aنتائج فحوصاتك من *معمل وقار الطبي الحديث* جاهزة الآن.%0A%0Aيمكنك تحميل النتيجة مباشرة عبر الرابط التالي:%0A${currentUrl}%0A%0Aكود الدخول الخاص بك: *${code}*%0A(قم بنسخ الكود ووضعه في خانة استلام النتيجة بالرابط أعلاه)`;
-        
+        const message = `مرحباً أ/ *${name}*%0Aنتائج فحوصاتك من *معمل وقار الطبي الحديث* جاهزة الآن.%0A%0Aيمكنك تحميل النتيجة مباشرة عبر الرابط التالي:%0A${currentUrl}%0A%0Aكود الدخول الخاص بك: *${code}*`;
         window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
     };
 
@@ -313,7 +329,6 @@
         const id = document.getElementById('pID').value;
         const name = document.getElementById('pName').value;
         if(!name) return alert("الرجاء إدخال اسم المريض");
-
         let reportRows = "";
         MASTER_TESTS.forEach(t => {
             if(document.querySelector(`[data-id="${t.id}"]`)?.checked) {
@@ -323,7 +338,6 @@
                 });
             }
         });
-
         await setDoc(doc(db, "results", id), {
             name, age: document.getElementById('pAge').value, sex: document.getElementById('pSex').value,
             data: reportRows, date: new Date().toLocaleDateString()
