@@ -3,82 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معمل وقار الحديث - النظام السحابي الشامل V80</title>
-    
+    <title>نظام وقار المختبري المتكامل V100</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-
     <style>
-        :root { --primary: #050a15; --card-bg: #0f172a; --accent: #1e40af; --gold: #d4af37; --success: #10b981; --text: #f8fafc; }
-        body { font-family: 'Cairo', sans-serif; background: var(--primary); color: var(--text); margin: 0; }
-        .container { width: 95%; max-width: 1200px; margin: auto; padding: 15px; }
-        .main-logo-container { width: 130px; height: 130px; margin: 0 auto 20px; border-radius: 50%; border: 3px solid var(--gold); background: #fff; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px var(--gold); }
+        :root { --primary: #050a15; --card-bg: #0f172a; --accent: #1e40af; --gold: #d4af37; --success: #10b981; --danger: #ef4444; --text: #f8fafc; }
+        body { font-family: 'Cairo', sans-serif; background: var(--primary); color: var(--text); margin: 0; padding-bottom: 50px; }
+        .container { width: 95%; max-width: 1200px; margin: auto; padding: 10px; }
+        .main-logo-container { width: 110px; height: 110px; margin: 0 auto 10px; border-radius: 50%; border: 3px solid var(--gold); background: #fff; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .main-logo { width: 90%; height: 90%; object-fit: contain; }
-        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; background: #1e293b; color: white; border: 1px solid #334155; font-family: 'Cairo'; text-align: center; }
-        .btn-action { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 16px; transition: 0.3s; }
-        .test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; max-height: 300px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; }
+        .glass-card { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 15px; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; border-radius: 10px; background: #1e293b; color: white; border: 1px solid #334155; font-family: 'Cairo'; text-align: center; }
+        .btn-action { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 16px; margin-top: 10px; }
+        .test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 5px; max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 10px; border: 1px solid var(--gold); }
+        .cat-title { grid-column: 1/-1; color: var(--gold); border-bottom: 1px solid #334155; margin-top: 10px; font-weight: bold; font-size: 14px; }
         #printPage { display: none; background: white; width: 210mm; padding: 15mm; color: #000; margin: auto; }
-        .results-table { width: 100%; border-collapse: collapse; margin-top: 20px; border: 2px solid #000; }
-        .results-table th, .results-table td { border: 1px solid #000; padding: 10px; text-align: center; font-size: 13px; }
-        .header-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #0a192f; padding-bottom: 10px; }
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 15px; border: 2px solid #000; }
+        .results-table th, .results-table td { border: 1px solid #000; padding: 5px; text-align: center; font-size: 12px; }
+        .bank-box { background: rgba(16, 185, 129, 0.1); border: 1px dashed var(--success); padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div class="container no-print">
-    <div class="main-logo-container">
-        <img src="https://lh3.google.com/saves/AA8Ys27nR5kw4l7LCnssHGLDa_ji2U_hatLe3m9BLTwBrQdaCIbCGGB89EULUMgyEae0rQ_T5MK2b46ayYqj0d5XSrwq9X8SWgJu36h5qhvMzYX8cRVjr8D2dqqpw-yhgAF6XqGPsgusYEJNJgRZDAG3Zn1S0hE=s2048-w2017-h2048-n-k?authuser=0&source=sh%2Fx%2Fsaves%2Fuv%2Fm1%2F4&kgs=c461f961ff0566c1" class="main-logo">
-    </div>
-
-    <div style="display:flex; gap:10px; margin-bottom:20px;">
+    <div class="main-logo-container"><img src="https://lh3.google.com/saves/AA8Ys27nR5kw4l7LCnssHGLDa_ji2U_hatLe3m9BLTwBrQdaCIbCGGB89EULUMgyEae0rQ_T5MK2b46ayYqj0d5XSrwq9X8SWgJu36h5qhvMzYX8cRVjr8D2dqqpw-yhgAF6XqGPsgusYEJNJgRZDAG3Zn1S0hE=s2048-w2017-h2048-n-k?authuser=0&source=sh%2Fx%2Fsaves%2Fuv%2Fm1%2F4&kgs=c461f961ff0566c1" class="main-logo"></div>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
         <button class="btn-action" style="background:var(--accent)" onclick="showTab('patient')">بوابة المرضى 🏥</button>
-        <button class="btn-action" style="background:#334155" onclick="showTab('admin')">لوحة الإدارة 🔐</button>
+        <button class="btn-action" style="background:#334155" onclick="showTab('admin')">لوحة المختبر 🔐</button>
     </div>
 
     <div id="sectionPatient" class="glass-card" style="text-align: center;">
-        <h2 style="color:var(--gold)">استلام النتيجة السحابية</h2>
-        <input type="text" id="searchCode" placeholder="أدخل كود المريض (مثلاً: WQR-100)">
-        <button id="searchBtn" class="btn-action" style="background:linear-gradient(45deg, #1e40af, #3b82f6)">عرض النتيجة وتحميل PDF 📥</button>
+        <h3 style="color:var(--gold)">استلام النتيجة السحابية</h3>
+        <input type="text" id="searchCode" placeholder="أدخل كود المريض">
+        <button id="searchBtn" class="btn-action" style="background:linear-gradient(45deg, #1e40af, #3b82f6)">عرض النتيجة 📥</button>
+        <div class="bank-box">
+            <h4 style="margin:0; color:var(--success)">💳 بنك الخرطوم: 4046346</h4>
+            <small>باسم: السني خالد محمد أحمد السني</small>
+        </div>
     </div>
 
     <div id="sectionAdmin" style="display:none">
         <div class="glass-card">
-            <h3>تسجيل حالة جديدة (70 فحص متاح)</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input type="text" id="admCode" placeholder="كود المريض (مثلاً: WQR-100)">
-                <input type="text" id="admName" placeholder="اسم المريض بالكامل">
+            <h3>تسجيل حالة جديدة (قائمة الـ 70 فحصاً)</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <input type="text" id="admCode" placeholder="الكود">
+                <input type="text" id="admName" placeholder="الاسم">
+                <input type="number" id="admAge" placeholder="العمر">
+                <select id="admGender"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
+                <input type="text" id="admPhone" placeholder="واتساب (249...)">
             </div>
-            
-            <p style="color:var(--gold); font-weight:bold;">اختر الفحوصات المطلوبة:</p>
+            <p style="color:var(--gold); font-size:13px; margin:10px 0;">اختر الفحوصات:</p>
             <div id="masterLib" class="test-grid"></div>
-            
-            <div id="formFields" style="margin-top:20px;"></div>
-            
-            <button id="saveBtn" class="btn-action" style="background:var(--success); margin-top:20px;">حفظ ورفع النتيجة للسحابة فوراً ☁️</button>
+            <div id="formFields" style="margin-top:15px;"></div>
+            <div class="glass-card" style="border:1px solid var(--gold); margin-top:10px; padding:10px;">
+                <div style="display:flex; justify-content:space-between; font-weight:bold;">
+                    <span>الإجمالي: <span id="billTotal" style="color:var(--success)">0</span></span>
+                    <span>المتبقي: <span id="billDebt" style="color:var(--danger)">0</span></span>
+                </div>
+                <input type="number" id="admPaid" placeholder="المبلغ المدفوع" oninput="calcFinance()">
+            </div>
+            <button id="saveBtn" class="btn-action" style="background:var(--success)">حفظ سحابي + واتساب 🚀</button>
         </div>
     </div>
 </div>
 
 <div id="printPage">
-    <div class="header-box">
-        <img src="https://lh3.google.com/saves/AA8Ys27nR5kw4l7LCnssHGLDa_ji2U_hatLe3m9BLTwBrQdaCIbCGGB89EULUMgyEae0rQ_T5MK2b46ayYqj0d5XSrwq9X8SWgJu36h5qhvMzYX8cRVjr8D2dqqpw-yhgAF6XqGPsgusYEJNJgRZDAG3Zn1S0hE=s2048-w2017-h2048-n-k?authuser=0&source=sh%2Fx%2Fsaves%2Fuv%2Fm1%2F4&kgs=c461f961ff0566c1" width="100">
-        <div style="text-align:center">
-            <h1 style="margin:0; color:#0a192f;">معمل وقار الحديث</h1>
-            <p style="margin:5px 0; font-weight:bold;">Waqar Modern Medical Laboratory</p>
-            <p style="margin:0; font-size:12px;">برهان الثقة.. موطن الدقة</p>
-        </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:4px solid #0a192f; padding-bottom:10px;">
+        <img src="https://lh3.google.com/saves/AA8Ys27nR5kw4l7LCnssHGLDa_ji2U_hatLe3m9BLTwBrQdaCIbCGGB89EULUMgyEae0rQ_T5MK2b46ayYqj0d5XSrwq9X8SWgJu36h5qhvMzYX8cRVjr8D2dqqpw-yhgAF6XqGPsgusYEJNJgRZDAG3Zn1S0hE=s2048-w2017-h2048-n-k?authuser=0&source=sh%2Fx%2Fsaves%2Fuv%2Fm1%2F4&kgs=c461f961ff0566c1" width="80">
+        <div style="text-align:center"><h2>معمل وقار الحديث</h2><p style="margin:0; font-size:11px;">Waqar Modern Medical Laboratory</p></div>
         <div id="qrcode"></div>
     </div>
-    <div id="prHeader" style="margin-top:20px; font-weight:bold; border:2px solid #000; padding:15px; background:#f0f4f8; display:grid; grid-template-columns: 1fr 1fr; gap:10px;"></div>
+    <div id="prHeader" style="margin-top:10px; padding:8px; border:1px solid #000; display:grid; grid-template-columns: 1fr 1fr; font-size:11px; background:#f5f5f5;"></div>
     <div id="prResults"></div>
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:80px;">
-        <div style="text-align:center; width:250px; border-top:2px solid #000; padding-top:10px;">
-            <b>د. السني خالد محمد أحمد</b><br>
-            <small>مدير المختبر - Lab Director</small>
-        </div>
-        <img src="https://lh3.google.com/saves/AA8Ys25odkEoAO55qko3ZQzNRUCnC6xPn8Er8fzf1WSEuyyGNzrDqxXNjPX90-THGkRiFbL65N3czMdqKNWjl9pqFojwD-l9SDNeox5FoIIZVcGEgQjAAZEO_dWTglAohghhsIBDEOCNHpRKOaL2HruTXcX7O8pG=s1984" width="140">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:50px;">
+        <div style="text-align:center; width:200px; border-top:1px solid #000; padding-top:5px;"><b>د. السني خالد</b><br><small>مدير المختبر</small></div>
+        <img src="https://lh3.google.com/saves/AA8Ys25odkEoAO55qko3ZQzNRUCnC6xPn8Er8fzf1WSEuyyGNzrDqxXNjPX90-THGkRiFbL65N3czMdqKNWjl9pqFojwD-l9SDNeox5FoIIZVcGEgQjAAZEO_dWTglAohghhsIBDEOCNHpRKOaL2HruTXcX7O8pG=s1984-w1984-h1920-n-k" width="100">
     </div>
 </div>
 
@@ -98,87 +98,124 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const TESTS_LIB = [
+    const LIB = [
         { cat: 'الكيمياء السريرية', tests: [
-            { id: 'glu', n: 'Fasting Blood Sugar', u: 'mg/dl', r: '70-110' },
-            { id: 'rbs', n: 'Random Blood Sugar', u: 'mg/dl', r: '80-140' },
-            { id: 'hb1c', n: 'HbA1c', u: '%', r: '4.5-6.5' },
-            { id: 'ure', n: 'Urea', u: 'mg/dl', r: '15-45' },
-            { id: 'cre', n: 'Creatinine', u: 'mg/dl', r: '0.6-1.4' },
-            { id: 'uric', n: 'Uric Acid', u: 'mg/dl', r: '3.5-7.2' },
-            { id: 'chol', n: 'Total Cholesterol', u: 'mg/dl', r: '<200' },
-            { id: 'trig', n: 'Triglycerides', u: 'mg/dl', r: '<150' }
+            { id: 'fbs', n: 'FBS', p: 4000, f: [{n:'Sugar',u:'mg/dl',r:'70-110'}] },
+            { id: 'rbs', n: 'RBS', p: 4000, f: [{n:'Sugar',u:'mg/dl',r:'80-140'}] },
+            { id: 'hba', n: 'HbA1c', p: 12000, f: [{n:'Accumulative',u:'%',r:'4.8-5.9'}] },
+            { id: 'ure', n: 'Urea', p: 6000, f: [{n:'Result',u:'mg/dl',r:'15-45'}] },
+            { id: 'cre', n: 'Creatinine', p: 6000, f: [{n:'Result',u:'mg/dl',r:'0.6-1.4'}] },
+            { id: 'uri', n: 'Uric Acid', p: 6000, f: [{n:'Result',u:'mg/dl',r:'3.5-7.2'}] },
+            { id: 'cho', n: 'Cholesterol', p: 7000, f: [{n:'Total',u:'mg/dl',r:'<200'}] },
+            { id: 'tri', n: 'Triglycerides', p: 7000, f: [{n:'Result',u:'mg/dl',r:'<150'}] },
+            { id: 'hdl', n: 'HDL', p: 8000, f: [{n:'Good',u:'mg/dl',r:'>40'}] },
+            { id: 'ldl', n: 'LDL', p: 8000, f: [{n:'Bad',u:'mg/dl',r:'<130'}] }
         ]},
-        { cat: 'وظائف الكبد', tests: [
-            { id: 'sgot', n: 'AST (SGOT)', u: 'U/L', r: 'up to 40' },
-            { id: 'sgpt', n: 'ALT (SGPT)', u: 'U/L', r: 'up to 41' },
-            { id: 'alp', n: 'Alkaline Phosphatase', u: 'U/L', r: '40-129' },
-            { id: 'bil', n: 'Total Bilirubin', u: 'mg/dl', r: '0.1-1.2' }
+        { cat: 'وظائف الكبد والكلى', tests: [
+            { id: 'gpt', n: 'ALT (SGPT)', p: 6000, f: [{n:'Result',u:'U/L',r:'Up to 41'}] },
+            { id: 'got', n: 'AST (SGOT)', p: 6000, f: [{n:'Result',u:'U/L',r:'Up to 40'}] },
+            { id: 'alp', n: 'ALP', p: 8000, f: [{n:'Result',u:'U/L',r:'40-129'}] },
+            { id: 'tbi', n: 'T. Bilirubin', p: 5000, f: [{n:'Result',u:'mg/dl',r:'0.1-1.2'}] },
+            { id: 'dbi', n: 'D. Bilirubin', p: 5000, f: [{n:'Result',u:'mg/dl',r:'0-0.3'}] },
+            { id: 'alb', n: 'S.Albumin', p: 6000, f: [{n:'Result',u:'g/dl',r:'3.5-5.0'}] },
+            { id: 'tp', n: 'Total Protein', p: 6000, f: [{n:'Result',u:'g/dl',r:'6.6-8.7'}] },
+            { id: 'cal', n: 'Calcium', p: 8000, f: [{n:'Total',u:'mg/dl',r:'8.5-10.5'}] },
+            { id: 'pod', n: 'Sodium', p: 9000, f: [{n:'Result',u:'mmol/L',r:'135-145'}] },
+            { id: 'pot', n: 'Potassium', p: 9000, f: [{n:'Result',u:'mmol/L',r:'3.5-5.1'}] }
         ]},
-        { cat: 'أمراض الدم', tests: [
-            { id: 'hb', n: 'Hemoglobin', u: 'g/dl', r: '13-17' },
-            { id: 'wbc', n: 'WBCs Count', u: '10^3', r: '4-11' },
-            { id: 'plt', n: 'Platelets', u: '10^3', r: '150-410' },
-            { id: 'esr', n: 'ESR (1st hr)', u: 'mm/hr', r: '0-15' }
+        { cat: 'أمراض الدم والمناعة', tests: [
+            { id: 'cbc', n: 'C.B.C', p: 10000, f: [{n:'Hb',u:'g/dl',r:'12-18'},{n:'WBCs',u:'10^3',r:'4-11'},{n:'PLT',u:'10^3',r:'150-410'}] },
+            { id: 'esr', n: 'E.S.R', p: 3000, f: [{n:'1st Hour',u:'mm/hr',r:'0-15'}] },
+            { id: 'mal', n: 'Malaria B.F', p: 3500, f: [{n:'Result',u:'-',r:'Negative'}] },
+            { id: 'ict', n: 'Malaria ICT', p: 5000, f: [{n:'Result',u:'-',r:'Negative'}] },
+            { id: 'bg', n: 'Blood Group', p: 3000, f: [{n:'Group',u:'-',r:'-'}] },
+            { id: 'hp', n: 'H.Pylori (Ag)', p: 9000, f: [{n:'Result',u:'-',r:'Negative'}] },
+            { id: 'crp', n: 'CRP', p: 8000, f: [{n:'Result',u:'mg/L',r:'Up to 6'}] },
+            { id: 'vid', n: 'Widal Test', p: 6000, f: [{n:'S.Typhi O',u:'-',r:'<1/80'}] },
+            { id: 'aslo', n: 'ASLO', p: 9000, f: [{n:'Result',u:'IU/ml',r:'Up to 200'}] },
+            { id: 'rf', n: 'R.F', p: 9000, f: [{n:'Result',u:'IU/ml',r:'Up to 12'}] }
+        ]},
+        { cat: 'الفيروسات والهرمونات', tests: [
+            { id: 'hiv', n: 'HIV 1&2', p: 10000, f: [{n:'Result',u:'-',r:'Non-reactive'}] },
+            { id: 'hbs', n: 'HBsAg', p: 10000, f: [{n:'Result',u:'-',r:'Non-reactive'}] },
+            { id: 'hcv', n: 'HCV', p: 10000, f: [{n:'Result',u:'-',r:'Non-reactive'}] },
+            { id: 'vdr', n: 'VDRL (Syphilis)', p: 7000, f: [{n:'Result',u:'-',r:'Non-reactive'}] },
+            { id: 'tsh', n: 'T.S.H', p: 15000, f: [{n:'Result',u:'uIU/ml',r:'0.27-4.2'}] },
+            { id: 't3', n: 'Free T3', p: 15000, f: [{n:'Result',u:'pg/ml',r:'2.0-4.4'}] },
+            { id: 't4', n: 'Free T4', p: 15000, f: [{n:'Result',u:'ng/dl',r:'0.9-1.7'}] },
+            { id: 'psa', n: 'PSA', p: 18000, f: [{n:'Result',u:'ng/ml',r:'Up to 4'}] },
+            { id: 'vitd', n: 'Vitamin D', p: 25000, f: [{n:'Result',u:'ng/ml',r:'30-100'}] },
+            { id: 'b12', n: 'Vitamin B12', p: 20000, f: [{n:'Result',u:'pg/ml',r:'200-900'}] }
+        ]},
+        { cat: 'البول والبراز والتحاليل العامة', tests: [
+            { id: 'ua', n: 'Urine Analysis', p: 4000, f: [{n:'Pus Cells',u:'/hpf',r:'0-5'},{n:'RBCs',u:'/hpf',r:'0-2'},{n:'Crystals',u:'-',r:'Nil'}] },
+            { id: 'sa', n: 'Stool Analysis', p: 4000, f: [{n:'Pus Cells',u:'/hpf',r:'0-2'},{n:'Trophozoite',u:'-',r:'Not seen'}] },
+            { id: 'pt', n: 'Pregnancy Test', p: 5000, f: [{n:'Result',u:'-',r:'-'}] },
+            { id: 'bt', n: 'Bleeding Time', p: 4000, f: [{n:'Result',u:'min',r:'2-5'}] },
+            { id: 'ct', n: 'Clotting Time', p: 4000, f: [{n:'Result',u:'min',r:'5-11'}] }
         ]}
     ];
 
     const libDiv = document.getElementById('masterLib');
-    TESTS_LIB.forEach(g => {
-        libDiv.innerHTML += `<div style="grid-column:1/-1; color:var(--gold); border-bottom:1px solid #334155; padding:5px 0;">${g.cat}</div>`;
+    LIB.forEach(g => {
+        libDiv.innerHTML += `<div class="cat-title">${g.cat}</div>`;
         g.tests.forEach(t => {
-            libDiv.innerHTML += `<div style="font-size:11px;"><input type="checkbox" id="chk_${t.id}" onchange="toggleTest('${t.id}')"> ${t.n}</div>`;
+            libDiv.innerHTML += `<div><input type="checkbox" id="chk_${t.id}" onchange="toggleTest('${t.id}')"> ${t.n}</div>`;
         });
     });
 
     window.toggleTest = (id) => {
-        let t = null; TESTS_LIB.forEach(g => { let f = g.tests.find(x => x.id === id); if(f) t = f; });
+        let t = null; LIB.forEach(g => { let f = g.tests.find(x => x.id === id); if(f) t = f; });
         if(document.getElementById('chk_'+id).checked) {
-            document.getElementById('formFields').innerHTML += `<div id="f_${id}" class="glass-card"><b>${t.n}</b><input type="text" class="val_${id}" placeholder="النتيجة"></div>`;
+            let html = `<div id="f_${id}" class="glass-card"><b>${t.n}</b><div style="display:grid; grid-template-columns:repeat(${t.f.length}, 1fr); gap:5px;">`;
+            t.f.forEach((f, i) => html += `<input type="text" class="val_${id}" placeholder="${f.n}">`);
+            document.getElementById('formFields').innerHTML += html + `</div></div>`;
         } else document.getElementById('f_'+id)?.remove();
+        calcFinance();
+    };
+
+    window.calcFinance = () => {
+        let total = 0;
+        document.querySelectorAll('input[id^="chk_"]:checked').forEach(c => {
+            let id = c.id.split('_')[1];
+            LIB.forEach(g => { let f = g.tests.find(x => x.id === id); if(f) total += f.p; });
+        });
+        document.getElementById('billTotal').innerText = total;
+        document.getElementById('billDebt').innerText = (total - (Number(document.getElementById('admPaid').value) || 0));
     };
 
     document.getElementById('saveBtn').onclick = async () => {
         const code = document.getElementById('admCode').value.toUpperCase();
-        let resultsHtml = `<table class="results-table"><thead><tr><th>Test Name</th><th>Result</th><th>Unit</th><th>Reference Range</th></tr></thead><tbody>`;
-        
+        let resHtml = `<table class="results-table"><tr><th>Test Name</th><th>Result</th><th>Unit</th><th>Reference</th></tr>`;
         document.querySelectorAll('input[id^="chk_"]:checked').forEach(c => {
-            let id = c.id.split('_')[1];
-            let t = null; TESTS_LIB.forEach(g => { let f = g.tests.find(x => x.id === id); if(f) t = f; });
-            let val = document.querySelector('.val_'+id).value;
-            resultsHtml += `<tr><td>${t.n}</td><td style="font-weight:bold">${val}</td><td>${t.u}</td><td>${t.r}</td></tr>`;
+            let id = c.id.split('_')[1]; let t = null; LIB.forEach(g => { let f = g.tests.find(x => x.id === id); if(f) t = f; });
+            const v = document.querySelectorAll('.val_'+id);
+            t.f.forEach((f, i) => resHtml += `<tr><td>${f.n}</td><td style="font-weight:bold">${v[i].value}</td><td>${f.u}</td><td>${f.r}</td></tr>`);
         });
-        resultsHtml += `</tbody></table>`;
-
-        await setDoc(doc(db, "records", code), {
-            name: document.getElementById('admName').value,
-            html: resultsHtml,
-            date: new Date().toLocaleString('ar-EG')
-        });
-        alert("تم الحفظ والرفع بنجاح!");
+        await setDoc(doc(db, "records", code), { name: document.getElementById('admName').value, age: document.getElementById('admAge').value, gender: document.getElementById('admGender').value, html: resHtml + `</table>`, date: new Date().toLocaleDateString('ar-EG') });
+        window.open(`https://wa.me/${document.getElementById('admPhone').value}?text=مرحباً أ/${document.getElementById('admName').value}. نتيجتك جاهزة. كودك: ${code}`, '_blank');
+        alert("تم الحفظ والإرسال!");
     };
 
     document.getElementById('searchBtn').onclick = async () => {
         const code = document.getElementById('searchCode').value.toUpperCase();
-        const docSnap = await getDoc(doc(db, "records", code));
-        if (docSnap.exists()) {
-            const p = docSnap.data();
-            document.getElementById('prHeader').innerHTML = `<div>اسم المريض: ${p.name}</div><div>الكود: ${code}</div><div>التاريخ: ${p.date}</div><div>الجهة: معمل وقار الحديث</div>`;
+        const snap = await getDoc(doc(db, "records", code));
+        if(snap.exists()){
+            const p = snap.data();
+            document.getElementById('prHeader').innerHTML = `<div>المريض: ${p.name}</div><div>العمر/النوع: ${p.age} / ${p.gender}</div><div>الكود: ${code}</div><div>التاريخ: ${p.date}</div>`;
             document.getElementById('prResults').innerHTML = p.html;
             document.getElementById('printPage').style.display = 'block';
             document.getElementById('qrcode').innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), { text: code, width: 80, height: 80 });
+            new QRCode(document.getElementById("qrcode"), { text: code, width: 70, height: 70 });
             html2pdf().from(document.getElementById('printPage')).save(`Waqar_${code}.pdf`);
         } else alert("الكود غير موجود");
     };
-</script>
 
-<script>
-    function showTab(t) {
+    window.showTab = (t) => {
         if(t==='admin' && prompt("كلمة السر:")!=="Wagaar7@") return;
         document.getElementById('sectionAdmin').style.display = t==='admin'?'block':'none';
         document.getElementById('sectionPatient').style.display = t==='patient'?'block':'none';
-    }
+    };
 </script>
 </body>
 </html>
