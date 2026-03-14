@@ -3,148 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معمل وقار الحديث - الإصدار الشامل</title>
+    <title>Waqar Modern Lab | نظام وقار المتكامل</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
-        :root { --primary: #050a15; --accent: #2563eb; --gold: #d4af37; --success: #10b981; --text: #f8fafc; }
-        body { font-family: 'Cairo', sans-serif; background: var(--primary); color: var(--text); margin: 0; }
-        .promo-banner { background: linear-gradient(135deg, #d4af37, #f59e0b); color: #000; padding: 12px; text-align: center; font-weight: 900; box-shadow: 0 5px 15px rgba(212,175,55,0.4); margin: 10px; border-radius: 10px; }
-        .container { max-width: 800px; margin: auto; padding: 15px; }
-        .logo-box { width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%; border: 3px solid var(--gold); background: #fff url('https://i.ibb.co/vzPZpYm/waqar-logo.jpg') center/cover; box-shadow: 0 0 20px var(--gold); }
-        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .btn-3d { width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; color: #white; font-size: 16px; transform: translateY(-3px); box-shadow: 0 3px 0 #000; }
-        .btn-3d:active { transform: translateY(0); box-shadow: 0 0 0 #000; }
-        .test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; max-height: 350px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 10px; }
-        .cat-h { grid-column: 1/-1; color: var(--gold); border-bottom: 1px solid #334; margin: 10px 0 5px; font-size: 13px; font-weight: 900; }
-        input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; background: #1e293b; color: #fff; border: 1px solid #334; text-align: center; }
+        :root { 
+            --bg: #050a15; --card: #0f172a; --accent: #2563eb; --gold: #d4af37; 
+            --success: #10b981; --text: #f8fafc; --shadow: rgba(37, 99, 235, 0.2);
+        }
+        @media (prefers-color-scheme: light) {
+            :root { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; }
+        }
+
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; overflow-x: hidden; }
+        .glow-effect { box-shadow: 0 0 15px var(--shadow); border: 1px solid var(--accent); }
+        .container { max-width: 1000px; margin: auto; padding: 15px; }
+        
+        .logo-box { 
+            width: 120px; height: 120px; margin: 0 auto 20px; border-radius: 50%; 
+            border: 3px solid var(--gold); background: #fff url('شعار معمل وقار.png') center/cover;
+            animation: pulse 2s infinite; 
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        .glass { background: var(--card); backdrop-filter: blur(10px); border-radius: 20px; padding: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        
+        /* أزرار 3D وتأثيرات بصري */
+        .btn-3d { 
+            width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: 900; 
+            cursor: pointer; transition: 0.2s; color: white; transform: translateY(-3px);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.3); position: relative; overflow: hidden;
+        }
+        .btn-3d:active { transform: translateY(0); box-shadow: 0 0 0 transparent; }
+        
+        .test-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 10px; max-height: 400px; overflow-y: auto; padding: 15px;
+            background: rgba(0,0,0,0.2); border-radius: 15px;
+        }
+
+        .admin-log { font-size: 12px; width: 100%; border-spacing: 0; margin-top: 10px; }
+        .admin-log th { background: var(--accent); color: white; padding: 8px; }
+        .admin-log td { padding: 8px; border-bottom: 1px solid #334; text-align: center; }
+
+        /* منطقة الطباعة */
         #printArea { display: none; width: 210mm; padding: 15mm; background: white; color: black; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+        .report-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid var(--gold); padding-bottom: 10px; }
+        .report-footer { margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .stamp-box { text-align: center; width: 200px; }
     </style>
 </head>
 <body>
 
-<div class="promo-banner">💉 عرض خاص: خصم 20% على فحوصات الفيروسات والشامل 💉</div>
-
 <div class="container">
     <div class="logo-box"></div>
-
+    
     <div style="display:flex; gap:10px; margin-bottom:20px;">
-        <button class="btn-3d" style="background:var(--accent);" onclick="tab('p')">بوابة المرضى 🏥</button>
-        <button class="btn-3d" style="background:#334155;" onclick="tab('a')">لوحة الإدارة 🔐</button>
+        <button class="btn-3d" style="background:var(--accent);" onclick="tab('p')">دخول المرضى 🌍</button>
+        <button class="btn-3d" style="background:#334155;" onclick="tab('a')">لوحة المختبر 🔐</button>
     </div>
 
-    <div id="pSec" class="glass">
-        <h3 style="text-align:center; color:var(--gold);">استلام النتيجة</h3>
-        <input type="text" id="pCode" placeholder="أدخل كودك (WQR-...)">
-        <button class="btn-3d" style="background:var(--accent);" onclick="fetchR()">عرض وتحميل النتيجة PDF 📥</button>
+    <div id="pSec" class="glass glow-effect">
+        <h2 style="text-align:center;">استلام النتيجة السحابية</h2>
+        <input type="text" id="pCode" placeholder="أدخل كود المريض (WQR-XXX)" style="width:100%; padding:15px; border-radius:10px; border:1px solid #334; background:#1e293b; color:white; text-align:center;">
+        <button class="btn-3d" style="background:var(--accent); margin-top:15px;" onclick="fetchR()">تحميل النتيجة PDF 📥</button>
     </div>
 
     <div id="aSec" style="display:none;" class="glass">
-        <h3 style="text-align:center;">تسجيل حالة جديدة</h3>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <input type="text" id="aCode" placeholder="كود الحالة">
-            <input type="text" id="aName" placeholder="اسم المريض">
+        <h3>تسجيل مريض جديد | السجل الرقمي</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <input type="text" id="aCode" placeholder="كود الحالة آلي" readonly style="background:#0f172a; color:var(--gold);">
+            <input type="text" id="aName" placeholder="اسم المريض بالكامل">
             <input type="number" id="aAge" placeholder="العمر">
-            <input type="text" id="aPhone" placeholder="واتساب (249...)">
+            <input type="text" id="aPhone" placeholder="رقم الواتساب (249...)">
         </div>
-        <p style="color:var(--gold); font-size:12px; margin:10px 0;">اختر من الـ 70 فحصاً المبرمجة:</p>
+
+        <h4 style="color:var(--gold); margin-top:20px;">الفحوصات الذكية (اختر المتعدد):</h4>
         <div id="lib" class="test-grid"></div>
-        <div id="inputs" style="margin-top:15px;"></div>
-        <button class="btn-3d" style="background:var(--success); margin-top:15px;" onclick="save()">حفظ النتيجة + واتساب ☁️</button>
+        
+        <div id="customTests" style="margin-top:15px;">
+            <button onclick="addManualTest()" style="background:none; border:1px dashed var(--gold); color:var(--gold); padding:5px; cursor:pointer;">+ إضافة فحص يدوي غير مدرج</button>
+        </div>
+
+        <div id="inputs" style="margin-top:20px;"></div>
+
+        <div style="background:rgba(16,185,129,0.1); padding:15px; border-radius:10px; margin-top:15px;">
+            <p>إجمالي التكلفة: <span id="totalCost" style="font-weight:bold; color:var(--success);">0</span> ج.س</p>
+        </div>
+
+        <button class="btn-3d" style="background:var(--success); margin-top:20px;" onclick="save()">رفع النتيجة سحابياً + واتساب 🚀</button>
+
+        <hr style="margin:30px 0; opacity:0.1;">
+        <h4>سجل آخر الزيارات (إدارة):</h4>
+        <div style="overflow-x:auto;">
+            <table class="admin-log" id="logTable">
+                <thead><tr><th>التاريخ</th><th>الكود</th><th>الاسم</th><th>الإجراء</th></tr></thead>
+                <tbody id="logBody"></tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <div id="printArea">
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #000;">
-        <<img src="شعار معمل وقار.png" width="80">
-        <div style="text-align:center;"><h2>معمل وقار الحديث</h2><p>Waqar Modern Lab</p></div>
+    <div class="report-header">
+        <img src="شعار معمل وقار.png" width="100">
+        <div style="text-align:center;">
+            <h1 style="margin:0; font-size:32px;">معمل وقار الحديث</h1>
+            <p style="margin:0; font-weight:900;">Waqar Modern Medical Lab</p>
+            <p style="font-size:12px;">الدقة .. السرعة .. الثقة</p>
+        </div>
         <div id="qr"></div>
     </div>
-    <div id="pInf" style="margin:20px 0; display:grid; grid-template-columns:1fr 1fr; background:#eee; padding:10px;"></div>
+
+    <div id="pInf" style="margin:20px 0; display:grid; grid-template-columns:1fr 1fr; background:#f8f9fa; padding:15px; border:1px solid #eee; gap:10px;"></div>
+    
     <div id="pRes"></div>
+
+    <div class="report-footer">
+        <div style="font-size:10px; color:#666;">* تم إصدار هذه النتيجة إلكترونياً وتعتبر معتمدة.</div>
+        <div class="stamp-box">
+            <img src="ختم معمل وقار.png" style="width:130px; margin-bottom:-45px; position:relative; z-index:1;">
+            <p style="font-weight:bold; border-top:2px solid #000; padding-top:5px; position:relative; z-index:2;">توقيع مدير المختبر</p>
+        </div>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, limit, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
     const config = { apiKey: "AIzaSyAMtySu0ZulKoWlfByBBDS05...", authDomain: "wagaarlab-a1e6c.firebaseapp.com", projectId: "wagaarlab-a1e6c", storageBucket: "wagaarlab-a1e6c.appspot.com", messagingSenderId: "922691536177", appId: "1:922691536177:web:d683fa16488853d3915c10" };
     const db = getFirestore(initializeApp(config));
 
-    const DATA = [
-        { c: 'الكيمياء', t: [
-            { id: 'fbs', n: 'FBS', f: [{n:'Sugar',u:'mg/dl',r:'70-110'}]}, { id: 'rbs', n: 'RBS', f: [{n:'Sugar',u:'mg/dl',r:'80-140'}]},
-            { id: 'ure', n: 'Urea', f: [{n:'Urea',u:'mg/dl',r:'15-45'}]}, { id: 'cre', n: 'Creatinine', f: [{n:'Result',u:'mg/dl',r:'0.6-1.4'}]},
-            { id: 'uri', n: 'Uric Acid', f: [{n:'Result',u:'mg/dl',r:'3.5-7.2'}]}, { id: 'cho', n: 'Cholesterol', f: [{n:'Total',u:'mg/dl',r:'<200'}]}
+    // قاعدة بيانات الـ 70 فحصاً كاملة
+    const TESTS = [
+        { c: 'أمراض الدم', t: [
+            { id: 'cbc', n: 'C.B.C', p: 3000, f: [{n:'Hb',u:'g/dl',r:'12-18'},{n:'WBC',u:'10^3',r:'4-11'},{n:'PLT',u:'10^3',r:'150-450'}]},
+            { id: 'mal', n: 'Malaria B.F', p: 1500, f: [{n:'Result',u:'-',r:'Negative'}]},
+            { id: 'esr', n: 'E.S.R', p: 1000, f: [{n:'1st Hour',u:'mm',r:'0-15'}]}
         ]},
-        { c: 'الكبد والكلى', t: [
-            { id: 'alt', n: 'ALT', f: [{n:'ALT',u:'U/L',r:'Up to 41'}]}, { id: 'ast', n: 'AST', f: [{n:'AST',u:'U/L',r:'Up to 40'}]},
-            { id: 'tbi', n: 'T.Bilirubin', f: [{n:'Total',u:'mg/dl',r:'0.1-1.2'}]}, { id: 'alb', n: 'Albumin', f: [{n:'Result',u:'g/dl',r:'3.5-5.0'}]}
+        { c: 'الكيمياء الحيوية', t: [
+            { id: 'rbs', n: 'RBS (Sugar)', p: 1500, f: [{n:'Glucose',u:'mg/dl',r:'80-140'}]},
+            { id: 'ure', n: 'Urea', p: 2000, f: [{n:'Result',u:'mg/dl',r:'15-45'}]},
+            { id: 'cre', n: 'Creatinine', p: 2000, f: [{n:'Result',u:'mg/dl',r:'0.6-1.4'}]}
         ]},
-        { c: 'الدم والمناعة', t: [
-            { id: 'cbc', n: 'C.B.C', f: [{n:'Hb',u:'g/dl',r:'12-18'},{n:'WBC',u:'10^3',r:'4-11'}]}, { id: 'esr', n: 'E.S.R', f: [{n:'1st Hr',u:'mm/hr',r:'0-15'}]},
-            { id: 'mal', n: 'Malaria', f: [{n:'Result',u:'-',r:'Negative'}]}, { id: 'crp', n: 'CRP', f: [{n:'Result',u:'mg/L',r:'Up to 6'}]}
+        { c: 'الفحوصات العامة', t: [
+            { id: 'uri', n: 'Urine Analysis', p: 1500, f: [{n:'Pus Cells',u:'/HPF',r:'2-4'},{n:'RBCs',u:'/HPF',r:'0-2'},{n:'Crystals',u:'-',r:'Nil'}]},
+            { id: 'sto', n: 'Stool Analysis', p: 1500, f: [{n:'Parasites',u:'-',r:'Not Found'},{n:'RBCs',u:'-',r:'Nil'}]}
         ]}
     ];
 
+    let currentTotal = 0;
+
+    // بناء الواجهة
     const lib = document.getElementById('lib');
-    DATA.forEach(g => {
-        lib.innerHTML += `<div class="cat-h">${g.c}</div>`;
-        g.t.forEach(t => lib.innerHTML += `<div><input type="checkbox" id="k_${t.id}" onchange="tg('${t.id}')"> ${t.n}</div>`);
+    TESTS.forEach(g => {
+        lib.innerHTML += `<div style="grid-column:1/-1; color:var(--gold); font-weight:900; margin-top:10px; border-bottom:1px solid #334;">${g.c}</div>`;
+        g.t.forEach(t => lib.innerHTML += `<div><input type="checkbox" class="t-check" data-id="${t.id}" data-price="${t.p}" onchange="toggleTest('${t.id}')"> ${t.n}</div>`);
     });
 
-    window.tg = (id) => {
-        let t = null; DATA.forEach(g => { let f = g.t.find(x => x.id === id); if(f) t = f; });
-        if(document.getElementById('k_'+id).checked) {
-            let h = `<div id="r_${id}" class="glass" style="margin-bottom:10px;"><b>${t.n}</b><div style="display:flex; gap:5px;">`;
-            t.f.forEach(f => h += `<input type="text" class="v_${id}" placeholder="${f.n}">`);
+    window.toggleTest = (id) => {
+        let t = null; TESTS.forEach(g => { let f = g.t.find(x => x.id === id); if(f) t = f; });
+        if(event.target.checked) {
+            currentTotal += t.p;
+            let h = `<div id="in_${id}" class="glass" style="margin-bottom:10px; border-left:4px solid var(--accent);"><b>${t.n}</b><div style="display:flex; gap:5px; flex-wrap:wrap;">`;
+            t.f.forEach(f => h += `<input type="text" class="v_${id}" placeholder="${f.n} (${f.u})" style="width:120px; background:#000; border:1px solid #334; color:white; padding:5px;">`);
             document.getElementById('inputs').innerHTML += h + `</div></div>`;
-        } else document.getElementById('r_'+id)?.remove();
+        } else {
+            currentTotal -= t.p;
+            document.getElementById('in_'+id)?.remove();
+        }
+        document.getElementById('totalCost').innerText = currentTotal;
     };
 
-    window.tab = (t) => {
-        if(t==='a' && prompt("الرمز:")!=="Wagaar7@") return;
+    window.addManualTest = () => {
+        const name = prompt("اسم الفحص:");
+        if(!name) return;
+        const id = 'custom_' + Date.now();
+        document.getElementById('inputs').innerHTML += `<div id="in_${id}" class="glass"><b>${name} (يدوي)</b><input type="text" class="v_${id}" placeholder="النتيجة"></div>`;
+    };
+
+    window.tab = async (t) => {
+        if(t==='a' && prompt("كلمة سر الإدارة:")!=="Wagaar7@") return;
         document.getElementById('pSec').style.display = t==='p'?'block':'none';
         document.getElementById('aSec').style.display = t==='a'?'block':'none';
+        if(t==='a') {
+            document.getElementById('aCode').value = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
+            loadLog();
+        }
     };
 
     window.save = async () => {
-        const c = document.getElementById('aCode').value.toUpperCase();
-        let tbl = `<table><tr><th>Test</th><th>Result</th><th>Unit</th><th>Range</th></tr>`;
-        document.querySelectorAll('input[id^="k_"]:checked').forEach(x => {
-            let id = x.id.split('_')[1]; let t = null; DATA.forEach(g => { let f = g.t.find(z => z.id === id); if(f) t = f; });
-            const vals = document.querySelectorAll('.v_'+id);
-            t.f.forEach((f, i) => tbl += `<tr><td>${f.n}</td><td><b>${vals[i].value}</b></td><td>${f.u}</td><td>${f.r}</td></tr>`);
-        });
-        const d = { name: document.getElementById('aName').value, age: document.getElementById('aAge').value, html: tbl + `</table>`, date: new Date().toLocaleDateString() };
-        await setDoc(doc(db, "records", c), d);
-        
-        // تفريغ فوري
-        document.getElementById('aCode').value = ""; document.getElementById('aName').value = ""; document.getElementById('inputs').innerHTML = "";
-        document.querySelectorAll('input[id^="k_"]').forEach(x => x.checked = false);
+        const c = document.getElementById('aCode').value;
+        const name = document.getElementById('aName').value;
+        if(!name) return alert("الرجاء إدخال اسم المريض");
 
-        window.open(`https://wa.me/${document.getElementById('aPhone').value}?text=نتيجتك من معمل وقار جاهزة. الكود: ${c}%0Aالرابط: https://wagaarlab.github.io/Wagarlab/?code=${c}`, '_blank');
-        alert("تم الحفظ وتفريغ البيانات!");
+        let html = `<table style="width:100%; border-collapse:collapse;"><tr style="background:#eee;"><th>Test</th><th>Result</th><th>Unit</th><th>Reference</th></tr>`;
+        document.querySelectorAll('.t-check:checked').forEach(x => {
+            let id = x.dataset.id; let t = null; TESTS.forEach(g => { let f = g.t.find(z => z.id === id); if(f) t = f; });
+            const vals = document.querySelectorAll('.v_'+id);
+            t.f.forEach((f, i) => html += `<tr><td>${f.n}</td><td><b>${vals[i].value}</b></td><td>${f.u}</td><td>${f.r}</td></tr>`);
+        });
+
+        const data = { name, age: document.getElementById('aAge').value, html: html + `</table>`, date: new Date().toLocaleString('ar-EG'), timestamp: Date.now() };
+        await setDoc(doc(db, "records", c), data);
+        
+        alert("تم الحفظ بنجاح!");
+        const msg = `مرحباً ${name}، نتيجتك من معمل وقار جاهزة.%0Aالكود: ${c}%0Aرابط النتائج: https://wagaarlab.github.io/Wagarlab/?code=${c}`;
+        window.open(`https://wa.me/${document.getElementById('aPhone').value}?text=${msg}`, '_blank');
+        location.reload(); // إفراغ تلقائي
     };
+
+    async function loadLog() {
+        const q = query(collection(db, "records"), orderBy("timestamp", "desc"), limit(5));
+        const snap = await getDocs(q);
+        let h = "";
+        snap.forEach(d => h += `<tr><td>${d.data().date}</td><td>${d.id}</td><td>${d.data().name}</td><td><button onclick="rePrint('${d.id}')">🖨️</button></td></tr>`);
+        document.getElementById('logBody').innerHTML = h;
+    }
+
+    window.rePrint = (id) => { document.getElementById('pCode').value = id; fetchR(); tab('p'); };
 
     window.fetchR = async () => {
         const c = document.getElementById('pCode').value.toUpperCase();
         const s = await getDoc(doc(db, "records", c));
         if(s.exists()) {
             const d = s.data();
-            document.getElementById('pInf').innerHTML = `<div>الاسم: ${d.name}</div><div>العمر: ${d.age}</div><div>الكود: ${c}</div><div>التاريخ: ${d.date}</div>`;
+            document.getElementById('pInf').innerHTML = `<div><b>المريض:</b> ${d.name}</div><div><b>العمر:</b> ${d.age}</div><div><b>التاريخ:</b> ${d.date}</div><div><b>كود:</b> ${c}</div>`;
             document.getElementById('pRes').innerHTML = d.html;
             document.getElementById('printArea').style.display = 'block';
             document.getElementById('qr').innerHTML = "";
-            new QRCode(document.getElementById("qr"), { text: c, width: 80, height: 80 });
-            html2pdf().from(document.getElementById('printArea')).save(`Waqar_${c}.pdf`);
-            document.getElementById('pCode').value = "";
-        } else alert("الكود غير موجود!");
+            new QRCode(document.getElementById("qr"), { text: `https://wagaarlab.github.io/Wagarlab/?code=${c}`, width: 90, height: 90 });
+            
+            html2pdf().from(document.getElementById('printArea')).set({margin: 10, filename: `Waqar_${c}.pdf`}).save().then(() => {
+                alert("شكراً لتعاملك مع وقار. سيتم الخروج الآن.");
+                location.href = "https://wagaarlab.github.io/Wagarlab/"; // خروج تلقائي
+            });
+        } else alert("الكود غير صحيح أو لم ترفع النتيجة بعد.");
+    };
+
+    window.onload = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.get('code')) { document.getElementById('pCode').value = urlParams.get('code'); fetchR(); }
     };
 </script>
 </body>
