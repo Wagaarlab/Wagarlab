@@ -232,9 +232,24 @@
         if (querySnapshot.empty) { resDiv.innerHTML = "لا توجد نتائج."; } else {
             querySnapshot.forEach((doc) => {
                 const d = doc.data();
-                resDiv.innerHTML += `<div class="result-item-admin"><span><b>${d.name}</b> (${doc.id})</span><button onclick="printFromAdmin('${doc.id}')" style="background:var(--gold); border:none; color:white; border-radius:5px; padding:5px 10px; cursor:pointer;">عرض</button></div>`;
+                resDiv.innerHTML += `
+                    <div class="result-item-admin">
+                        <span><b>${d.name}</b> (${doc.id})</span>
+                        <div style="display:flex; gap:5px;">
+                            <button onclick="printFromAdmin('${doc.id}')" style="background:var(--gold); border:none; color:white; border-radius:5px; padding:5px 10px; cursor:pointer;">عرض</button>
+                            <button onclick="sendWhatsApp('${d.name}', '${doc.id}')" style="background:#25D366; border:none; color:white; border-radius:5px; padding:5px 10px; cursor:pointer;"><i class="fab fa-whatsapp"></i></button>
+                        </div>
+                    </div>`;
             });
         }
+    };
+
+    window.sendWhatsApp = (name, code) => {
+        const phone = prompt("أدخل رقم واتساب المريض (بدون + مثلاً 2499...):");
+        if(!phone) return;
+        const currentUrl = window.location.href.split('?')[0];
+        const message = `مرحباً أ/ *${name}*%0Aنتائج فحوصاتك من *معمل وقار الطبي الحديث* جاهزة الآن.%0A%0Aيمكنك تحميل النتيجة مباشرة عبر الرابط التالي:%0A${currentUrl}%0A%0Aكود الدخول الخاص بك: *${code}*%0A(قم بنسخ الكود ووضعه في خانة استلام النتيجة بالرابط أعلاه)`;
+        window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
     };
 
     window.printFromAdmin = (id) => { document.getElementById('searchCode').value = id; window.fetchAndDownload(); };
@@ -283,3 +298,4 @@
 </script>
 </body>
 </html>
+ 
