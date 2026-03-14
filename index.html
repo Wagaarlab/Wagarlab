@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Waqar Elite System | A4 Printing Ready</title>
+    <title>Waqar Elite System | Live Search Edition</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -73,7 +73,7 @@
             text-align: center; font-size: 28px; font-weight: 900;
         }
 
-        /* --- تنسيق منطقة الطباعة A4 المدمج من كودك --- */
+        /* تنسيق A4 */
         #printArea {
             display: none;
             background: white;
@@ -124,9 +124,12 @@
         }
         
         .result-item-admin {
-            display: flex; justify-content: space-between; background: white; padding: 10px;
-            border-radius: 10px; margin-bottom: 5px; border: 1px solid #ddd;
+            display: flex; justify-content: space-between; align-items: center; background: white; padding: 12px;
+            border-radius: 12px; margin-bottom: 10px; border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            animation: fadeIn 0.3s ease;
         }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -145,12 +148,9 @@
 
     <div id="adminPanel" class="glass-box" style="display:none;">
         <div class="search-admin-box">
-            <h3 style="margin-top:0;"><i class="fas fa-search"></i> استعلام المدير (بالاسم)</h3>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="adminSearchName" placeholder="أدخل اسم المريض للبحث...">
-                <button onclick="searchPatientByName()" class="btn-3d btn-admin" style="padding:10px 30px; transform:none; box-shadow:none;">بحث</button>
-            </div>
-            <div id="adminSearchResults" style="margin-top:15px; max-height:200px; overflow-y:auto;"></div>
+            <h3 style="margin-top:0;"><i class="fas fa-bolt" style="color: #ff9800;"></i> بحث فوري عن مريض</h3>
+            <input type="text" id="adminSearchName" oninput="searchPatientByName()" placeholder="ابدأ بكتابة اسم المريض لرؤية الاقتراحات فوراً...">
+            <div id="adminSearchResults" style="margin-top:15px; max-height:300px; overflow-y:auto; border-radius: 10px;"></div>
         </div>
 
         <h2 style="color:var(--primary);"><i class="fas fa-plus-circle"></i> تسجيل حالة جديدة</h2>
@@ -188,26 +188,18 @@
         <p style="margin:5px 0;">تقرير النتيجة الرسمي - Official Lab Report</p>
         <div id="qrcode" style="display: inline-block; margin-top: 10px;"></div>
     </div>
-
     <div class="patient-info-grid">
         <div><strong>Name:</strong> <span id="outName"></span></div>
         <div><strong>Patient ID:</strong> <span id="outID"></span></div>
         <div><strong>Age / Sex:</strong> <span id="outAgeSex"></span></div>
         <div><strong>Date:</strong> <span id="outDate"></span></div>
     </div>
-
     <table class="result-table">
         <thead>
-            <tr>
-                <th>Test Name</th>
-                <th>Result</th>
-                <th>Unit</th>
-                <th>Normal Range</th>
-            </tr>
+            <tr><th>Test Name</th><th>Result</th><th>Unit</th><th>Normal Range</th></tr>
         </thead>
         <tbody id="outBody"></tbody>
     </table>
-
     <div style="margin-top: 60px; display: flex; justify-content: space-between; align-items: flex-end;">
         <div style="text-align: center;">
             <p>توقيع المسؤول / Signature</p>
@@ -219,7 +211,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, orderBy, startAt, endAt } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAMtySu0ZulKoWLfByB8DS058IG5qDNWE8",
@@ -332,24 +324,41 @@
         if(tab==='admin') document.getElementById('pID').value = 'WQR-' + Math.floor(1000+Math.random()*9000);
     };
 
+    // ميزة البحث الفوري المحدثة
     window.searchPatientByName = async () => {
-        const name = document.getElementById('adminSearchName').value;
+        const nameVal = document.getElementById('adminSearchName').value.trim();
         const resDiv = document.getElementById('adminSearchResults');
-        resDiv.innerHTML = "جاري البحث...";
-        const q = query(collection(db, "results"), where("name", "==", name));
+        
+        if (nameVal.length < 1) {
+            resDiv.innerHTML = "";
+            return;
+        }
+
+        // استخدام query مع startAt و endAt للبحث عن الأسماء التي تبدأ بالحرف المدخل
+        const q = query(
+            collection(db, "results"), 
+            orderBy("name"), 
+            startAt(nameVal), 
+            endAt(nameVal + "\uf8ff")
+        );
+
         const querySnapshot = await getDocs(q);
         resDiv.innerHTML = "";
+
         if (querySnapshot.empty) {
-            resDiv.innerHTML = "لم يتم العثور على نتائج.";
+            resDiv.innerHTML = "<p style='padding:10px; color:#666;'>لا توجد نتائج مطابقة...</p>";
         } else {
             querySnapshot.forEach((doc) => {
                 const d = doc.data();
                 resDiv.innerHTML += `
                     <div class="result-item-admin">
-                        <span><b>${d.name}</b> - كود: ${doc.id}</span>
+                        <div>
+                            <span style="display:block; font-weight:900; color:var(--primary);">${d.name}</span>
+                            <small style="color:#777;">ID: ${doc.id} | التاريخ: ${d.date}</small>
+                        </div>
                         <div style="display:flex; gap:8px;">
-                            <button onclick="printFromAdmin('${doc.id}')" style="background:var(--gold); border:none; color:white; border-radius:5px; padding:5px 10px; cursor:pointer;">عرض 👁️</button>
-                            <button onclick="sendWhatsApp('${d.name}', '${doc.id}')" style="background:#25D366; border:none; color:white; border-radius:10px; padding:5px 10px; cursor:pointer;"><i class="fab fa-whatsapp"></i></button>
+                            <button onclick="printFromAdmin('${doc.id}')" style="background:var(--gold); border:none; color:white; border-radius:8px; padding:8px 12px; cursor:pointer;"><i class="fas fa-eye"></i></button>
+                            <button onclick="sendWhatsApp('${d.name}', '${doc.id}')" style="background:#25D366; border:none; color:white; border-radius:8px; padding:8px 12px; cursor:pointer;"><i class="fab fa-whatsapp"></i></button>
                         </div>
                     </div>`;
             });
@@ -357,7 +366,7 @@
     };
 
     window.sendWhatsApp = (name, code) => {
-        let phone = prompt("أدخل رقم واتساب المريض (بدون + مثلاً 2499...):");
+        let phone = prompt("أدخل رقم واتساب المريض (مثلاً 2499...):");
         if(!phone) return;
         phone = phone.replace(/[^\d]/g, ''); 
         const currentUrl = window.location.href.split('?')[0];
@@ -403,7 +412,6 @@
             document.getElementById('qrcode').innerHTML = "";
             new QRCode(document.getElementById('qrcode'), {text: id, width: 70, height: 70});
             
-            // تهيئة إعدادات PDF ليكون متوافقاً تماماً مع A4
             const element = document.getElementById('printArea');
             element.style.display = 'block';
             
@@ -429,3 +437,4 @@
 </script>
 </body>
 </html>
+ 
