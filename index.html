@@ -2,322 +2,272 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Waqar Lab - Final System with Watermark</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet"> <style>
-        :root { --primary: #1e3a8a; --gold: #b8860b; --bg: #f0f4f8; --card: #ffffff; --text: #1e293b; --stamp-blue: #0000ff; }
-        [data-theme="dark"] { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.4s; overflow-x: hidden; }
-        header { background: var(--card); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--gold); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .container { max-width: 1100px; margin: auto; padding: 20px; }
-        .glass-card { background: var(--card); border-radius: 25px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(30, 58, 138, 0.1); }
-        .btn { padding: 12px 25px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; font-size: 16px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-gold { background: var(--gold); color: white; }
-        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1; background: var(--card); color: var(--text); margin-top: 5px; box-sizing: border-box; }
-        .added-test-row { background: rgba(184, 134, 11, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--gold); display: flex; justify-content: space-between; }
-        
-        /* منطقة التقرير للطباعة */
-        #printArea { display: none; width: 210mm; background: white; padding: 10mm; position: relative; color: #000; direction: ltr; text-align: left; }
-        
-        /* تفعيل العلامة المائية */
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام معمل وقار الحديث - د. السني خالد</title>
+    <style>
+        :root {
+            --primary-color: #004d40;
+            --secondary-color: #c62828;
+            --accent-color: #2e7d32;
+            --bg-color: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            background: white;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* العلامة المائية */
         .watermark {
             position: absolute;
-            top: 55%; /* يتوسط خلفية الجدول */
+            top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-40deg); /* مائلة */
+            transform: translate(-50%, -50%) rotate(-30deg);
             font-size: 80px;
-            font-weight: 900;
-            color: rgba(220, 220, 220, 0.3); /* شفافة جداً ومائلة للرمادي */
+            color: rgba(0, 77, 64, 0.05);
             white-space: nowrap;
-            pointer-events: none; /* لا تعيق الضغط */
-            z-index: 1; /* خلف الجدول */
-            font-family: 'Cairo', sans-serif;
+            pointer-events: none;
+            z-index: 0;
+            font-weight: bold;
         }
 
-        #printArea table { width: 100%; border-collapse: collapse; margin-top: 20px; position: relative; z-index: 2; /* أمام العلامة المائية */ }
-        #printArea th { background: var(--primary); color: white; padding: 10px; border: 1px solid #ddd; }
-        #printArea td { padding: 8px; border: 1px solid #ddd; text-align: center; }
-
-        /* بيانات المريض المرتبة */
-        .report-meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; font-size: 16px; color: #333; position: relative; z-index: 2; }
-        .report-meta-grid div { display: flex; align-items: center; gap: 10px; }
-        .report-meta-grid b { color: var(--primary); width: 80px; }
-
-        /* الختم الرسمي الأزرق */
-        .official-stamp { 
-            position: absolute; bottom: 40px; left: 50px; width: 180px; height: 180px; 
-            border: 5px double var(--stamp-blue); border-radius: 50%; padding: 5px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            color: var(--stamp-blue); font-weight: bold; transform: rotate(-15deg); 
-            box-shadow: 0 0 10px rgba(0, 0, 255, 0.2); pointer-events: none; z-index: 10;
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
         }
-        .official-stamp .lab-name { font-size: 14px; text-transform: uppercase; border-bottom: 1px solid var(--stamp-blue); }
-        .official-stamp .dr-name { font-size: 16px; margin: 5px 0; }
-        .official-stamp .spec { font-size: 10px; text-align: center; line-height: 1.2; }
+
+        .logo {
+            width: 120px;
+            height: auto;
+        }
+
+        h1 { color: var(--primary-color); margin: 10px 0; }
         
-        .signature-line { margin-top: 40px; text-align: left; position: relative; font-weight: bold; z-index: 2; }
-        .digital-signature { font-family: 'Great Vibes', cursive; font-size: 32px; color: var(--stamp-blue); position: absolute; top: -20px; left: 20px; }
+        .patient-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: #e0f2f1;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--primary-color); }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            z-index: 1;
+            position: relative;
+        }
+
+        th { background: var(--primary-color); color: white; padding: 12px; }
+        td { padding: 10px; border-bottom: 1px solid #ddd; text-align: center; }
+
+        .result-row input { border: none; background: transparent; text-align: center; font-weight: bold; }
+
+        .footer {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stamp-area {
+            text-align: center;
+        }
+
+        .stamp {
+            width: 150px;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.2));
+        }
+
+        .btn-add {
+            background: var(--accent-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-print {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            display: block;
+            margin: 30px auto;
+        }
+
+        @media print {
+            .btn-add, .btn-print, .controls { display: none; }
+            body { padding: 0; background: white; }
+            .container { box-shadow: none; border: none; }
+        }
     </style>
 </head>
-<body data-theme="light">
-
-<header>
-    <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:45px; height:45px; background:var(--primary); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:24px;">W</div>
-        <div><h1 style="margin:0; font-size:20px;">مختبرات وقار الحديثة</h1><small>د. السني خالد - أخصائي أول</small></div>
-    </div>
-    <div style="display:flex; gap:8px;">
-        <button class="btn btn-primary" onclick="switchView('patient')">بوابة المريض</button>
-        <button class="btn btn-gold" onclick="switchView('admin')">لوحة الإدارة</button>
-    </div>
-</header>
+<body>
 
 <div class="container">
-    <section id="patientView" class="glass-card">
-        <h2 style="text-align:center;">استعلام النتائج الإلكتروني 📥</h2>
-        <div style="max-width: 450px; margin: 30px auto; text-align: center;">
-            <input type="text" id="pSearchCode" placeholder="أدخل الكود (WQR-xxxx)" style="text-align:center; font-size: 22px;">
-            <button class="btn btn-primary" style="width:100%; margin-top: 15px; justify-content:center;" onclick="patientDownload()">تحميل النتيجة PDF</button>
+    <div class="watermark">معمل وقار الحديث</div>
+    
+    <header>
+        <img src="https://raw.githubusercontent.com/WaqarMedicalLab/Waqar/main/210350.png" alt="Waqar Logo" class="logo">
+        <h1>معمل وقار الحديث للتحاليل الطبية</h1>
+        <p>د. السني خالد محمد أحمد - أخصائي المختبرات الطبية</p>
+    </header>
+
+    <div class="patient-info">
+        <div class="form-group">
+            <label>اسم المريض:</label>
+            <input type="text" placeholder="أدخل اسم المريض">
         </div>
-    </section>
-
-    <section id="adminView" class="glass-card" style="display:none;">
-        <div id="adminAuth">
-            <h3 style="text-align:center;">دخول الإدارة الآمن</h3>
-            <input type="password" id="adminPass" placeholder="كلمة المرور" style="max-width:300px; display:block; margin: 15px auto; text-align:center;">
-            <button class="btn btn-gold" style="display:block; margin:auto;" onclick="verifyAdmin()">دخول</button>
+        <div class="form-group">
+            <label>التاريخ:</label>
+            <input type="date" id="currentDate">
         </div>
-
-        <div id="adminPanel" style="display:none;">
-            <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <button class="btn btn-primary" onclick="setTab('new')">مريض جديد +</button>
-                <button class="btn btn-gold" onclick="setTab('archive')">سجل المرضى 📂</button>
-            </div>
-
-            <div id="tabNew">
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; background:#f8fafc; padding:15px; border-radius:15px;">
-                    <input type="text" id="pName" placeholder="اسم المريض بالكامل">
-                    <input type="text" id="pPhone" placeholder="رقم الواتساب (249...)">
-                    <input type="number" id="pAge" placeholder="العمر">
-                    <select id="pSex"><option>ذكر (Male)</option><option>أنثى (Female)</option></select>
-                </div>
-                <h3 style="margin-top:25px;">إدراج الفحوصات الطبية</h3>
-                <select id="testModelSelect" onchange="loadTestForm(this.value)">
-                    <option value="">-- اختر الفحص --</option>
-                    <option value="Malaria">الملاريا (Malaria BF/ICT)</option>
-                    <option value="CBC">صورة الدم الكاملة (CBC)</option>
-                    <option value="Urine">فحص البول الكامل (Urine Analysis)</option>
-                    <option value="Stool">فحص البراز الكامل (Stool Analysis)</option>
-                    <option value="Widal">التايفويد (Widal/Typhoid)</option>
-                </select>
-                <div id="dynamicFormArea" style="margin-top:20px; padding:20px; background:#fffbeb; border-radius:15px; display:none;"></div>
-                <div id="addedTestsList" style="margin-top:20px;"></div>
-                <button class="btn btn-primary" id="saveBtn" style="width:100%; margin-top:20px; font-size:18px; justify-content:center;" onclick="saveRecord()">حفظ، رفع سحابي، وإرسال واتساب 🚀</button>
-            </div>
-
-            <div id="tabArchive" style="display:none;">
-                <h3>سجل النتائج السحابي</h3>
-                <div id="archiveList"></div>
-            </div>
+        <div class="form-group">
+            <label>العمر:</label>
+            <input type="number">
         </div>
-    </section>
-</div>
-
-<div id="printArea">
-    <div style="border:5px solid var(--primary); padding:10mm; min-height:270mm; position:relative;">
-        
-        <div class="watermark">معمل وقار الحديث</div>
-
-        <div style="display:flex; justify-content:space-between; border-bottom:4px solid var(--gold); padding-bottom:15px; position:relative; z-index:2;">
-            <div style="text-align:left;">
-                <h1 style="color:var(--primary); margin:0; font-size:32px;">WAQAR MODERN MEDICAL LAB</h1>
-                <p style="margin:5px 0; font-weight:bold; font-size:16px;">
-                    د. السني خالد محمد أحمد السني<br>
-                    Dr. Elsunni Khalid M. A. Elsunni
-                </p>
-                <p style="margin:0; font-size:12px; color:#555;">Laboratory Specialist</p>
-            </div>
-            <div id="qrcode" style="position:absolute; top:0; right:0;"></div>
+        <div class="form-group">
+            <label>الجنس:</label>
+            <select id="gender" onchange="updateReferences()">
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+            </select>
         </div>
+    </div>
 
-        <div class="report-meta-grid" id="reportMeta"></div>
+    <div class="controls">
+        <label>اختر الفحص المراد إضافته:</label>
+        <select id="testSelector">
+            <optgroup label="صورة الدم (CBC)">
+                <option value="RBC">Red Blood Cells (RBC)</option>
+                <option value="HGB">Hemoglobin (HB)</option>
+                <option value="WBC">White Blood Cells (WBC)</option>
+                <option value="PLT">Platelets</option>
+            </optgroup>
+            <optgroup label="وظائف الكبد">
+                <option value="ALT">ALT / SGPT</option>
+                <option value="AST">AST / SGOT</option>
+                <option value="BIL">Bilirubin Total</option>
+            </optgroup>
+            <optgroup label="وظائف الكلى والأملاح">
+                <option value="CREA">Creatinine</option>
+                <option value="UREA">BUN / Urea</option>
+                <option value="SOD">Sodium (Na+)</option>
+                <option value="POT">Potassium (K+)</option>
+            </optgroup>
+            <optgroup label="الهرمونات والقلب">
+                <option value="TSH">TSH</option>
+                <option value="TROP">Troponin T</option>
+                <option value="CHOL">Total Cholesterol</option>
+            </optgroup>
+        </select>
+        <button class="btn-add" onclick="addTestRow()">إضافة الفحص للتقرير +</button>
+    </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Test Name</th>
-                    <th>Result</th>
-                    <th>Unit</th>
-                    <th>Reference Range</th>
-                </tr>
-            </thead>
-            <tbody id="resultsBody"></tbody>
-        </table>
+    <table id="resultsTable">
+        <thead>
+            <tr>
+                <th>اسم الفحص (Test)</th>
+                <th>النتيجة (Result)</th>
+                <th>الوحدة (Unit)</th>
+                <th>المدى المرجعي (Reference Range)</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
 
-        <div class="signature-line" style="margin-top:100px;">
-            <div class="digital-signature">D. Elsunni</div>
-            <p>Lab Manager / Specialist:</p>
-            <p>_______________________</p>
+    <div class="footer">
+        <div class="signatures">
+            <p><strong>توقيع الأخصائي:</strong></p>
+            <p>د. السني خالد</p>
         </div>
-
-        <div class="official-stamp">
-            <div class="lab-name">Waqar Modern Lab</div>
-            <img src="https://via.placeholder.com/60/0000ff/ffffff?text=W" style="width:50px; height:50px; margin:5px 0; border-radius:50%;" alt="Logo">
-            <div class="dr-name">د. السني خالد</div>
-            <div class="spec">إخصائي أول أمراض الدم<br>بنك الدم والمناعة</div>
-        </div>
-
-        <div style="position:absolute; bottom:15mm; left:10mm; right:10mm; text-align:center; border-top:2px solid var(--primary); padding-top:10px; font-size:12px; color:#555; z-index:2;">
-            Khartoum - Sudan | Phone: +249 111 729 111 | wagaarlab.github.io/Wagarlab
+        <div class="stamp-area">
+            <p>ختم المعمل</p>
+            <img src="https://raw.githubusercontent.com/WaqarMedicalLab/Waqar/main/210488.png" alt="Waqar Stamp" class="stamp">
+            <p style="color: var(--secondary-color); font-weight: bold;">موطن الثقة</p>
         </div>
     </div>
 </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+<button class="btn-print" onclick="window.print()">طباعة التقرير (PDF)</button>
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAMtySu0ZulKoWLfByB8DS058IG5qDNWE8",
-        authDomain: "wagaarlab-a1e6c.firebaseapp.com",
-        projectId: "wagaarlab-a1e6c",
-        storageBucket: "wagaarlab-a1e6c.firebasestorage.app",
-        messagingSenderId: "922691536177",
-        appId: "1:922691536177:web:d683fa18488853d3915c10"
-    };
-    const db = getFirestore(initializeApp(firebaseConfig));
+<script>
+    document.getElementById('currentDate').valueAsDate = new Date();
 
-    const MODELS = {
-        "Malaria": { p: 2000, f: [{n:"Malaria BF/ICT", u:"-", r:"Negative"}] },
-        "CBC": { p: 5000, f: [{n:"Hb", u:"g/dL", r:"13-17"}, {n:"WBCs", u:"10^3", r:"4-11"}, {n:"Platelets", u:"10^3", r:"150-450"}] },
-        "Urine": { p: 2000, f: [{n:"Pus Cells", u:"/hpf", r:"0-5"}, {n:"RBCs", u:"/hpf", r:"0-2"}, {n:"S. haematobium", u:"-", r:"Not Seen"}] },
-        "Stool": { p: 2000, f: [{n:"S. mansoni", u:"-", r:"Not Seen"}, {n:"E. histolytica", u:"-", r:"Not Seen"}] },
-        "Widal": { p: 3000, f: [{n:"S. Typhi O", u:"Titre", r:"<1/80"}, {n:"S. Typhi H", u:"Titre", r:"<1/80"}] }
-    };
-
-    let cart = [];
-
-    window.switchView = (v) => {
-        document.getElementById('patientView').style.display = v === 'patient' ? 'block' : 'none';
-        document.getElementById('adminView').style.display = v === 'admin' ? 'block' : 'none';
+    const testData = {
+        'RBC': { unit: '10^6/μL', m: '4.5 - 5.7', f: '3.9 - 5.03' },
+        'HGB': { unit: 'g/dL', m: '13.3 - 16.6', f: '11.6 - 15.0' },
+        'WBC': { unit: '10^3/μL', m: '3.5 - 10.5', f: '3.5 - 10.5' },
+        'PLT': { unit: '10^3/μL', m: '150 - 450', f: '150 - 450' },
+        'ALT': { unit: 'U/L', m: '7 - 55', f: '7 - 55' },
+        'AST': { unit: 'U/L', m: '8 - 48', f: '8 - 48' },
+        'BIL': { unit: 'mg/dL', m: '0.1 - 1.2', f: '0.1 - 1.2' },
+        'CREA': { unit: 'mg/dL', m: '0.7 - 1.3', f: '0.6 - 1.1' },
+        'SOD': { unit: 'mg/L', m: '1.7 - 2.2', f: '1.7 - 2.2' },
+        'POT': { unit: 'mmol/L', m: '3.7 - 5.1', f: '3.7 - 5.1' },
+        'TSH': { unit: 'μIU/mL', m: '0.4 - 4.0', f: '0.4 - 4.0' },
+        'TROP': { unit: 'ng/mL', m: '< 0.1', f: '< 0.1' },
+        'CHOL': { unit: 'mg/dL', m: '< 200', f: '< 200' }
     };
 
-    window.verifyAdmin = () => {
-        if(document.getElementById('adminPass').value === 'Wagaar7@') {
-            document.getElementById('adminAuth').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
-        } else alert('كلمة مرور خاطئة!');
-    };
+    function addTestRow() {
+        const selector = document.getElementById('testSelector');
+        const testKey = selector.value;
+        const testName = selector.options[selector.selectedIndex].text;
+        const gender = document.getElementById('gender').value;
+        const data = testData[testKey];
+        const refRange = (gender === 'male') ? data.m : data.f;
 
-    window.setTab = (tabName) => {
-        document.getElementById('tabNew').style.display = tabName === 'new' ? 'block' : 'none';
-        document.getElementById('tabArchive').style.display = tabName === 'archive' ? 'block' : 'none';
-        if(tabName === 'archive') loadArchive();
-    };
-
-    window.loadTestForm = (type) => {
-        const area = document.getElementById('dynamicFormArea');
-        if(!type) { area.style.display = 'none'; return; }
-        area.style.display = 'block';
-        area.innerHTML = MODELS[type].f.map((field, i) => `
-            <div style="margin-bottom:10px;">
-                <label style="font-weight:bold;">${field.n} (${field.u}):</label>
-                <input type="text" id="field_${i}" value="${field.r}">
-            </div>
-        `).join('') + `<button class="btn btn-gold" style="width:100%; margin-top:10px;" onclick="commitToCart('${type}')">إضافة للقائمة</button>`;
-    };
-
-    window.commitToCart = (type) => {
-        const m = MODELS[type];
-        m.f.forEach((field, i) => {
-            cart.push({ n: field.n, res: document.getElementById(`field_${i}`).value, u: field.u, r: field.r });
-        });
-        document.getElementById('addedTestsList').innerHTML = cart.map(x => `<div class="added-test-row"><span>${x.n}</span><b>${x.res}</b></div>`).join('');
-        document.getElementById('dynamicFormArea').style.display = 'none';
-        document.getElementById('testModelSelect').value = "";
-    };
-
-    window.saveRecord = async () => {
-        const name = document.getElementById('pName').value;
-        const phone = document.getElementById('pPhone').value;
-        const code = 'WQR-' + Math.floor(1000 + Math.random() * 9000);
-        if(!name || cart.length === 0) { alert('أدخل بيانات المريض وفحوصاته!'); return; }
-
-        const btn = document.getElementById('saveBtn');
-        btn.innerText = "⏳ جاري الرفع للسحابة..."; btn.disabled = true;
-
-        try {
-            await setDoc(doc(db, "results", code), { 
-                name, phone, age: document.getElementById('pAge').value, 
-                sex: document.getElementById('pSex').value, tests: cart, 
-                date: new Date().toISOString() 
-            });
-            const msg = `*مختبرات وقار الحديثة*%0Aالمريض: ${name}%0Aتم رفع نتيجتكم بنجاح.%0Aالكود السري: *${code}*%0Aرابط النتائج: https://wagaarlab.github.io/Wagarlab/`;
-            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
-            alert('تم الحفظ بنجاح! الكود السري للمريض: ' + code);
-            location.reload();
-        } catch (e) { alert('خطأ في الاتصال بالقاعدة!'); btn.disabled = false; }
-    };
-
-    window.loadArchive = async () => {
-        const snap = await getDocs(query(collection(db, "results"), orderBy("date", "desc")));
-        const list = document.getElementById('archiveList');
-        list.innerHTML = '';
-        snap.forEach(d => {
-            const r = d.data();
-            list.innerHTML += `<div class="glass-card" style="padding:15px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <div><b>${r.name}</b> <br><small>${d.id} | ${new Date(r.date).toLocaleDateString()}</small></div>
-                <button class="btn btn-primary" onclick="printEx('${d.id}')">إصدار PDF 🖨️</button>
-            </div>`;
-        });
-    };
-
-    window.printEx = async (code) => {
-        const snap = await getDoc(doc(db, "results", code));
-        if(snap.exists()) generatePDF(snap.data(), code);
-    };
-
-    window.patientDownload = async () => {
-        const code = document.getElementById('pSearchCode').value.trim();
-        if(!code) return;
-        const snap = await getDoc(doc(db, "results", code));
-        if(snap.exists()) generatePDF(snap.data(), code);
-        else alert('عذراً، الكود غير صحيح.');
-    };
-
-    function generatePDF(d, code) {
-        document.getElementById('reportMeta').innerHTML = `
-            <div><b>Name:</b> ${d.name}</div>
-            <div><b>Age/Sex:</b> ${d.age} / ${d.sex}</div>
-            <div><b>Date:</b> ${new Date(d.date).toLocaleDateString()}</div>
-            <div><b>Patient ID:</b> ${code}</div>
+        const tableBody = document.querySelector('#resultsTable tbody');
+        const row = tableBody.insertRow();
+        row.innerHTML = `
+            <td>${testName}</td>
+            <td class="result-row"><input type="text" placeholder="0.0"></td>
+            <td>${data.unit}</td>
+            <td>${refRange}</td>
         `;
-        document.getElementById('resultsBody').innerHTML = d.tests.map(t => `
-            <tr><td>${t.n}</td><td><b>${t.res}</b></td><td>${t.u}</td><td>${t.r}</td></tr>
-        `).join('');
-        
-        document.getElementById('qrcode').innerHTML = '';
-        new QRCode(document.getElementById('qrcode'), { text: code, width: 90, height: 90 });
-        
-        document.getElementById('printArea').style.display = 'block';
-        
-        const opt = { 
-            margin: 0, 
-            filename: `WaqarLab_${code}.pdf`, 
-            image: {type: 'jpeg', quality: 0.98}, 
-            html2canvas: {scale: 3, useCORS: true}, 
-            jsPDF: {unit: 'mm', format: 'a4', orientation: 'portrait'} 
-        };
-        
-        html2pdf().from(document.getElementById('printArea')).set(opt).save().then(() => {
-            document.getElementById('printArea').style.display = 'none';
-        });
+    }
+
+    function updateReferences() {
+        // يمكن تطوير هذه الوظيفة لتحديث الصفوف الموجودة فعلياً عند تغيير الجنس
+        alert('تم تغيير الجنس، يرجى إعادة إضافة الفحوصات لضمان دقة المدى المرجعي.');
     }
 </script>
+
 </body>
 </html>
